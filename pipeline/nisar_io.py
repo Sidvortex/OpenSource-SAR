@@ -137,3 +137,89 @@ def read_crop(path, bbox_lonlat, polarisations=("HH", "HV"), margin_m=2000):
             bands=bands,
             source=str(path),
         )
+
+
+# ---------------------------------------------------------------- GUNW (Part 3)
+
+DEFAULT_CENTER_FREQUENCY = 1.257e9   # NISAR L-band, Hz (about 24 cm wavelength)
+SPEED_OF_LIGHT = 299_792_458.0
+
+
+@dataclass
+class PairGrid:
+    """One interferogram's cropped layers. Phase is in radians."""
+    reference: date
+    secondary: date
+    epsg: int
+    x: np.ndarray
+    y: np.ndarray
+    phase: np.ndarray
+    coherence: np.ndarray | None
+    components: np.ndarray | None
+    ionosphere: np.ndarray | None
+    wavelength: float
+    source: str
+
+
+def _find_datasets(f, names):
+    found = []
+
+    def visit(name, obj):
+        if isinstance(obj, h5py.Dataset) and name.rsplit("/", 1)[-1] in names:
+            found.append(name)
+    f.visititems(visit)
+    found.sort(key=lambda n: ("frequencyA" not in n, len(n)))
+    return found
+
+
+def pair_dates(path):
+    stamps = sorted({datetime.strptime(d, "%Y%m%d").date() for d in TIMESTAMP.findall(str(path))})
+    if len(stamps) < 2:
+        raise ValueError(f"Could not find two acquisition dates in {path}")
+    first = stamps[0]
+    later = [d for d in stamps if (d - first).days >= 6]   # skip timestamps that only cross midnight
+    return first, (later[0] if later else stamps[-1])
+
+
+def read_gunw_crop(path, bbox_lonlat, margin_m=2000):
+    """Read only the part of a GUNW product (unwrapped interferogram) that covers bbox."""
+    with h5py.File(path, "r") as f:
+        hits = _find_datasets(f, {"unwrappedPhase"})
+        if not hits:
+            raise KeyError("No unwrappedPhase dataset. Run the inspect command and add the name you see.")
+        phase_ds = f[hits[0]]
+        layers = phase_ds.parent
+        grid = layers
+        while grid.name != "/" and not any(n in grid for n in X_NAMES):
+            grid = grid.parent
+        if not any(n in grid for n in X_NAMES):
+            raise KeyError("Could not find xCoordinates/yCoordinates for the interferogram grid.")
+        epsg = _epsg(grid)
+        x = np.asarray(_first(grid, X_NAMES)[()], dtype="float64")
+        y = np.asarray(_first(grid, Y_NAMES)[()], dtype="float64")
+        west, south, east, north = transform_bounds("EPSG:4326", f"EPSG:{epsg}", *bbox_lonlat, densify_pts=21)
+        pad = margin_m if epsg != 4326 else margin_m / 111_000
+        xr, yr = _index_range(x, west - pad, east + pad), _index_range(y, south - pad, north + pad)
+        if xr is None or yr is None:
+            return None
+
+        def layer(names):
+            name = next((n for n in names if n in layers), None)
+            if name is None or layers[name].shape != phase_ds.shape:
+                return None
+            return layers[name][yr[0]:yr[1], xr[0]:xr[1]].astype("float32")
+
+        phase = phase_ds[yr[0]:yr[1], xr[0]:xr[1]].astype("float32")
+        phase[~np.isfinite(phase)] = np.nan
+        freq_hits = _find_datasets(f, {"centerFrequency"})
+        frequency = float(np.asarray(f[freq_hits[0]][()]).ravel()[0]) if freq_hits else DEFAULT_CENTER_FREQUENCY
+        reference, secondary = pair_dates(path)
+        return PairGrid(
+            reference=reference, secondary=secondary, epsg=epsg,
+            x=x[xr[0]:xr[1]], y=y[yr[0]:yr[1]], phase=phase,
+            coherence=layer(["coherenceMagnitude", "coherence"]),
+            components=layer(["connectedComponents"]),
+            ionosphere=layer(["ionospherePhaseScreen"]),
+            wavelength=SPEED_OF_LIGHT / frequency,
+            source=str(path),
+        )

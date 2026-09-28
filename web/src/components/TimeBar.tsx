@@ -1,12 +1,40 @@
 import { useMemo, useRef } from 'react';
 import type { PointerEvent } from 'react';
 import { formatDate } from '../catalog';
-import type { LayerKind, LayerManifest } from '../types';
+import type { Frame, LayerDef, LayerManifest, StatDef } from '../types';
 
 const GAP = { start: '2026-07-27', end: '2026-08-10' };   // permanent NISAR instrument gap
 const W = 560;
 const H = 84;
 const PAD = { left: 8, right: 8, top: 10, bottom: 18 };
+const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`) / 864e5;
+
+export const frameLabel = (f: Frame) => (/^\d{4}-\d{2}-\d{2}$/.test(f.label) ? formatDate(f.label) : f.label);
+export const statText = (s: StatDef, value: number | undefined) =>
+  value === undefined ? `${s.label}: none` : `${s.label} ${Math.round(value).toLocaleString('en')} ${s.unit}`.trim();
+
+export function Legend({ layer }: { layer: LayerDef }) {
+  if (layer.legend) {
+    return (
+      <p className="legend">
+        {layer.legend.map((item) => (
+          <span key={item.label} className="legend-item"><span className="key" style={{ background: item.color }} aria-hidden="true" />{item.label}</span>
+        ))}
+      </p>
+    );
+  }
+  if (!layer.ramp) return null;
+  const r = layer.ramp;
+  const range = r.unit === 'cm' || r.unit === 'dB' ? `${r.min} to ${r.max} ${r.unit}` : '';
+  return (
+    <div className="legend legend-ramp">
+      <span className="ramp-end">{r.low}</span>
+      <span className="ramp-bar" style={{ background: `linear-gradient(90deg, ${r.colors.join(', ')})` }} aria-hidden="true" />
+      <span className="ramp-end">{r.high}</span>
+      {range && <span className="ramp-range">{range}</span>}
+    </div>
+  );
+}
 
 interface Props {
   manifest: LayerManifest;
@@ -14,72 +42,75 @@ interface Props {
   onIndex: (i: number) => void;
   playing: boolean;
   onPlaying: (p: boolean) => void;
-  kind: LayerKind;
-  onKind: (k: LayerKind) => void;
+  kind: string;
+  onKind: (k: string) => void;
 }
 
-const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`) / 864e5;
-const km2 = (n: number) => `${Math.round(n).toLocaleString('en')} km²`;
-
 export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, onKind }: Props) {
-  const dates = manifest.dates;
-  const current = dates[index];
+  const frames = manifest.frames;
+  const current = frames[index];
+  const layer = manifest.layers.find((l) => l.id === kind) ?? manifest.layers[0];
   const svgRef = useRef<SVGSVGElement>(null);
 
   const chart = useMemo(() => {
-    const t0 = day(dates[0].date);
-    const t1 = day(dates[dates.length - 1].date);
-    const totals = dates.map((d) => d.open_water_km2 + d.flooded_veg_km2);
-    const max = Math.max(...totals) * 1.1;
+    const t0 = day(frames[0].start ?? frames[0].date);
+    const t1 = day(frames[frames.length - 1].date);
+    const area = frames.map((f) => f.stats[manifest.chart.area] ?? 0);
+    const line = manifest.chart.line ? frames.map((f) => f.stats[manifest.chart.line!] ?? 0) : null;
+    const max = Math.max(...area, ...(line ?? [0]), 1) * 1.1;
     const x = (iso: string) => PAD.left + ((day(iso) - t0) / Math.max(t1 - t0, 1)) * (W - PAD.left - PAD.right);
     const y = (v: number) => H - PAD.bottom - (v / max) * (H - PAD.top - PAD.bottom);
-    const line = (values: number[]) => values.map((v, i) => `${i ? 'L' : 'M'}${x(dates[i].date).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
+    const path = (values: number[]) => values.map((v, i) => `${i ? 'L' : 'M'}${x(frames[i].date).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
     const base = y(0);
-    const area = (values: number[]) => `${line(values)} L${x(dates[dates.length - 1].date).toFixed(1)} ${base} L${x(dates[0].date).toFixed(1)} ${base} Z`;
-    const gapIn = day(GAP.end) > t0 && day(GAP.start) < t1;
+    const inRange = (iso: string | null) => !!iso && day(iso) > t0 && day(iso) < t1;
     return {
       x, base,
-      totalArea: area(totals),
-      openLine: line(dates.map((d) => d.open_water_km2)),
-      gap: gapIn ? { x0: Math.max(x(GAP.start), PAD.left), x1: Math.min(x(GAP.end), W - PAD.right) } : null,
+      area: `${path(area)} L${x(frames[frames.length - 1].date).toFixed(1)} ${base} L${x(frames[0].date).toFixed(1)} ${base} Z`,
+      line: line ? path(line) : null,
+      gap: day(GAP.end) > t0 && day(GAP.start) < t1
+        ? { x0: Math.max(x(GAP.start), PAD.left), x1: Math.min(x(GAP.end), W - PAD.right) } : null,
+      event: inRange(manifest.event) ? x(manifest.event!) : null,
     };
-  }, [dates]);
+  }, [frames, manifest]);
 
-  // Click or drag on the chart to jump to the nearest pass.
   const scrub = (event: PointerEvent<SVGSVGElement>) => {
-    const svg = svgRef.current;
-    if (!svg) return;
-    const rect = svg.getBoundingClientRect();
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return;
     const px = ((event.clientX - rect.left) / rect.width) * W;
     let best = 0;
-    dates.forEach((d, i) => {
-      if (Math.abs(chart.x(d.date) - px) < Math.abs(chart.x(dates[best].date) - px)) best = i;
-    });
+    frames.forEach((f, i) => { if (Math.abs(chart.x(f.date) - px) < Math.abs(chart.x(frames[best].date) - px)) best = i; });
     onPlaying(false);
     onIndex(best);
   };
 
   return (
-    <section className="timebar" aria-label="Water dance over time">
+    <section className="timebar" aria-label={manifest.title}>
       {manifest.synthetic && (
-        <p className="synthetic">Synthetic demo data, not NISAR measurements. Run the pipeline to replace it with real passes.</p>
+        <p className="synthetic">Synthetic demo data, not NISAR measurements. Run the pipeline to replace it with real {manifest.frame_noun}.</p>
       )}
       <div className="timebar-row">
-        <button type="button" className="play" onClick={() => onPlaying(!playing)} aria-label={playing ? 'Pause' : 'Play through the passes'}>
-          {playing
-            ? <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" /><rect x="9.5" y="2" width="3.5" height="12" /></svg>
-            : <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2l10 6-10 6z" /></svg>}
-        </button>
+        {frames.length > 1 && (
+          <button type="button" className="play" onClick={() => onPlaying(!playing)} aria-label={playing ? 'Pause' : `Play through the ${manifest.frame_noun}`}>
+            {playing
+              ? <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" /><rect x="9.5" y="2" width="3.5" height="12" /></svg>
+              : <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2l10 6-10 6z" /></svg>}
+          </button>
+        )}
         <div className="now">
-          <p className="now-date">{formatDate(current.date)}</p>
+          <p className="now-date">{frameLabel(current)}</p>
           <p className="now-stats">
-            <span className="key" style={{ background: manifest.legend[0]?.color }} aria-hidden="true" />Open water {km2(current.open_water_km2)}
-            <span className="key" style={{ background: manifest.legend[1]?.color }} aria-hidden="true" />Flooded vegetation {km2(current.flooded_veg_km2)}
+            {manifest.stats.map((s) => (
+              <span key={s.id} className="stat">
+                {s.color && <span className="key" style={{ background: s.color }} aria-hidden="true" />}
+                {statText(s, current.stats[s.id])}
+              </span>
+            ))}
           </p>
         </div>
         <div className="segmented" role="group" aria-label="Layer">
-          <button type="button" aria-pressed={kind === 'water'} onClick={() => onKind('water')}>Water map</button>
-          <button type="button" aria-pressed={kind === 'radar'} onClick={() => onKind('radar')}>Radar image</button>
+          {manifest.layers.map((l) => (
+            <button key={l.id} type="button" aria-pressed={kind === l.id} onClick={() => onKind(l.id)}>{l.label}</button>
+          ))}
         </div>
       </div>
 
@@ -92,22 +123,32 @@ export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, on
             <text x={(chart.gap.x0 + chart.gap.x1) / 2} y={H - 5} textAnchor="middle">no data</text>
           </g>
         )}
-        <path className="chart-total" d={chart.totalArea} />
-        <path className="chart-open" d={chart.openLine} />
-        {dates.map((d, i) => (
-          <circle key={d.date} className={i === index ? 'chart-dot is-current' : 'chart-dot'} cx={chart.x(d.date)} cy={chart.base} r={i === index ? 4 : 2.5} />
+        {chart.event !== null && (
+          <g className="chart-event">
+            <line x1={chart.event} x2={chart.event} y1={PAD.top - 6} y2={chart.base} />
+            <text x={chart.event + 4} y={PAD.top + 4}>event</text>
+          </g>
+        )}
+        <path className="chart-total" d={chart.area} />
+        {chart.line && <path className="chart-open" d={chart.line} />}
+        {frames.map((f, i) => (
+          <circle key={f.date + (f.start ?? '')} className={i === index ? 'chart-dot is-current' : 'chart-dot'} cx={chart.x(f.date)} cy={chart.base} r={i === index ? 4 : 2.5} />
         ))}
         <line className="chart-now" x1={chart.x(current.date)} x2={chart.x(current.date)} y1={PAD.top - 4} y2={chart.base} />
       </svg>
 
-      <label className="scrubber">
-        <span className="visually-hidden">Pass date</span>
-        <input type="range" min={0} max={dates.length - 1} step={1} value={index}
-          aria-valuetext={formatDate(current.date)}
-          onChange={(e) => { onPlaying(false); onIndex(Number(e.target.value)); }} />
-      </label>
+      {frames.length > 1 && (
+        <label className="scrubber">
+          <span className="visually-hidden">Choose a {manifest.frame_noun === 'pairs' ? 'pair' : 'pass'}</span>
+          <input type="range" min={0} max={frames.length - 1} step={1} value={index} aria-valuetext={frameLabel(current)}
+            onChange={(e) => { onPlaying(false); onIndex(Number(e.target.value)); }} />
+        </label>
+      )}
+      <Legend layer={layer} />
+      {layer.note && <p className="timebar-foot">{layer.note}</p>}
       <p className="timebar-foot">
-        {dates.length} passes, {formatDate(dates[0].date)} to {formatDate(dates[dates.length - 1].date)}. The grey band is NISAR's instrument gap.
+        {frames.length} {manifest.frame_noun}, {frameLabel(frames[0])} to {frameLabel(frames[frames.length - 1])}. Chart: {manifest.chart.label}.
+        {chart.gap ? " The grey band is NISAR's instrument gap." : ''}
       </p>
     </section>
   );

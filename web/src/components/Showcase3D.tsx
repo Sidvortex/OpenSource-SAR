@@ -1,28 +1,28 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent, PointerEvent } from 'react';
 import maplibregl from 'maplibre-gl';
-import { formatDate } from '../catalog';
 import { STYLE_URL, TERRAIN_ATTRIBUTION, TERRAIN_URL, applyOverlay, siteUrl, useOfflineFallback } from '../mapStyle';
 import type { Overlay } from '../mapStyle';
-import type { Hotspot, LayerKind, LayerManifest } from '../types';
+import type { Hotspot, LayerManifest } from '../types';
+import { Legend, frameLabel, statText } from './TimeBar';
 
 interface Props {
   spot: Hotspot;
   manifest: LayerManifest;
-  kind: LayerKind;
+  kind: string;
   onClose: () => void;
 }
 
 const REVEAL_MS = 7000;
-const km2 = (n: number) => `${Math.round(n).toLocaleString('en')} km²`;
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function overlayFor(manifest: LayerManifest, index: number, kind: LayerKind): Overlay {
-  const d = manifest.dates[index];
+export function overlayFor(manifest: LayerManifest, index: number, kind: string): Overlay {
+  const frame = manifest.frames[index];
+  const layer = manifest.layers.find((l) => l.id === kind && frame.files[l.id]) ?? manifest.layers.find((l) => frame.files[l.id])!;
   return {
-    url: siteUrl(`data/layers/${manifest.hotspot}/${kind === 'water' ? d.water : d.radar}`),
+    url: siteUrl(`data/layers/${manifest.hotspot}/${frame.files[layer.id]}`),
     coordinates: manifest.bounds,
-    opacity: kind === 'water' ? 0.85 : 0.9,
+    opacity: layer.opacity,
   };
 }
 
@@ -67,10 +67,12 @@ function createMap(container: HTMLElement, spot: Hotspot, exaggeration: number, 
 }
 
 export function Showcase3D({ spot, manifest, kind: initialKind, onClose }: Props) {
-  const last = manifest.dates.length - 1;
-  const [before, setBefore] = useState(0);
-  const [after, setAfter] = useState(last);
-  const [kind, setKind] = useState<LayerKind>(initialKind);
+  const last = manifest.frames.length - 1;
+  const [defaultLeft, defaultRight] = manifest.compare ?? [0, last];
+  const [before, setBefore] = useState(defaultLeft);
+  const [after, setAfter] = useState(Math.max(defaultRight, Math.min(defaultLeft + 1, last)));
+  const [kind, setKind] = useState<string>(initialKind);
+  const [sideA, sideB] = manifest.sides ?? ['Before', 'After'];
   const [split, setSplit] = useState(50);
   const [exaggeration, setExaggeration] = useState(1.5);
   const [revealing, setRevealing] = useState(false);
@@ -154,19 +156,17 @@ export function Showcase3D({ spot, manifest, kind: initialKind, onClose }: Props
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  const b = manifest.dates[before];
-  const a = manifest.dates[after];
-  const total = (d: typeof a) => d.open_water_km2 + d.flooded_veg_km2;
-  const change = total(b) > 0 ? Math.round((total(a) / total(b)) * 10) / 10 : null;
+  const b = manifest.frames[before];
+  const a = manifest.frames[after];
+  const stat = manifest.side_stat;
+  const layer = manifest.layers.find((l) => l.id === kind) ?? manifest.layers[0];
 
   return (
     <div className="showcase" role="dialog" aria-modal="true" aria-labelledby="showcase-title">
       <header className="showcase-head">
         <div>
           <h2 id="showcase-title" className="showcase-title">{spot.name} in 3D</h2>
-          <p className="showcase-sub">
-            {change && change > 1 ? `Water covered ${change} times more ground on ${formatDate(a.date)} than on ${formatDate(b.date)}.` : 'Drag the divider to compare the two passes.'}
-          </p>
+          <p className="showcase-sub">{manifest.headline} Drag the divider to compare.</p>
         </div>
         <button ref={closeButton} type="button" className="showcase-close" onClick={onClose}>Close 3D view</button>
       </header>
@@ -176,13 +176,14 @@ export function Showcase3D({ spot, manifest, kind: initialKind, onClose }: Props
         <div ref={beforeBox} className="stage-map" />
         <div ref={afterBox} className="stage-map" style={{ clipPath: `inset(0 0 0 ${split}%)` }} />
         <div className="side-label side-before">
-          <strong>Before, {formatDate(b.date)}</strong>
-          <span>Open water {km2(b.open_water_km2)}</span>
+          <strong>{sideA}: {frameLabel(b)}</strong>
+          {stat && <span>{statText(stat, b.stats[stat.id])}</span>}
         </div>
         <div className="side-label side-after">
-          <strong>After, {formatDate(a.date)}</strong>
-          <span>Open water {km2(a.open_water_km2)}</span>
+          <strong>{sideB}: {frameLabel(a)}</strong>
+          {stat && <span>{statText(stat, a.stats[stat.id])}</span>}
         </div>
+        <div className="stage-legend"><Legend layer={layer} /></div>
         <div className="divider" style={{ left: `${split}%` }}
           role="slider" tabIndex={0} aria-label="Before and after divider" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(split)}
           onKeyDown={onDividerKey}
@@ -196,19 +197,20 @@ export function Showcase3D({ spot, manifest, kind: initialKind, onClose }: Props
 
       <footer className="showcase-controls">
         <button type="button" className="primary" onClick={reveal} disabled={revealing}>{revealing ? 'Revealing' : 'Play reveal'}</button>
-        <label>Before
+        <label>{sideA}
           <select value={before} onChange={(e) => setBefore(Number(e.target.value))}>
-            {manifest.dates.map((d, i) => <option key={d.date} value={i} disabled={i >= after}>{formatDate(d.date)}</option>)}
+            {manifest.frames.map((f, i) => <option key={f.label} value={i} disabled={i >= after}>{frameLabel(f)}</option>)}
           </select>
         </label>
-        <label>After
+        <label>{sideB}
           <select value={after} onChange={(e) => setAfter(Number(e.target.value))}>
-            {manifest.dates.map((d, i) => <option key={d.date} value={i} disabled={i <= before}>{formatDate(d.date)}</option>)}
+            {manifest.frames.map((f, i) => <option key={f.label} value={i} disabled={i <= before}>{frameLabel(f)}</option>)}
           </select>
         </label>
         <div className="segmented segmented-dark" role="group" aria-label="Layer">
-          <button type="button" aria-pressed={kind === 'water'} onClick={() => setKind('water')}>Water map</button>
-          <button type="button" aria-pressed={kind === 'radar'} onClick={() => setKind('radar')}>Radar image</button>
+          {manifest.layers.map((l) => (
+            <button key={l.id} type="button" aria-pressed={kind === l.id} onClick={() => setKind(l.id)}>{l.label}</button>
+          ))}
         </div>
         <label className="range">Terrain height x{exaggeration.toFixed(1)}
           <input type="range" min={1} max={4} step={0.5} value={exaggeration} onChange={(e) => setExaggeration(Number(e.target.value))} />

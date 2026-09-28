@@ -15,30 +15,20 @@ import json
 import os
 import sys
 from collections import defaultdict
-from datetime import date
 from pathlib import Path
 
 import numpy as np
-from PIL import Image
 
 import coverage_check as cc
+import layers
 import nisar_io
 import water
+from layers import ROOT, WORK, load_spot
 
-ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data"
-WORK = ROOT / "pipeline" / "work"
 WATER_RGBA = (31, 143, 209, 215)       # open water, the module's radar blue
 VEG_RGBA = (55, 194, 176, 205)         # likely flooded vegetation, teal
 RADAR_RANGE_DB = (-25.0, 0.0)
-
-
-def load_spot(spot_id):
-    spots = json.loads((DATA / "hotspots.json").read_text())["hotspots"]
-    for spot in spots:
-        if spot["id"] == spot_id:
-            return spot
-    sys.exit(f"No hotspot called {spot_id!r}. Choose one of: {', '.join(s['id'] for s in spots)}")
+hexcolour = lambda rgba: "#%02x%02x%02x" % rgba[:3]
 
 
 # ---------------------------------------------------------------- download
@@ -83,24 +73,6 @@ def cmd_download(args):
 
 # ---------------------------------------------------------------- process
 
-def radar_png(hh_db, path):
-    lo, hi = RADAR_RANGE_DB
-    grey = np.clip((hh_db - lo) / (hi - lo), 0, 1)
-    valid = np.isfinite(hh_db)
-    la = np.zeros(hh_db.shape + (2,), dtype="uint8")          # grey + alpha: half the size of RGBA
-    la[..., 0] = np.where(valid, grey * 255, 0).astype("uint8")
-    la[..., 1] = np.where(valid, 255, 0)
-    # WebP keeps transparency and shrinks speckled radar images several-fold compared with PNG.
-    Image.fromarray(la, mode="LA").convert("RGBA").save(path, "WEBP", quality=78, method=6)
-
-
-def water_png(open_water, veg, path):
-    rgba = np.zeros(open_water.shape + (4,), dtype="uint8")
-    rgba[open_water] = WATER_RGBA
-    rgba[veg] = VEG_RGBA
-    Image.fromarray(rgba).save(path, optimize=True)
-
-
 def build_layers(spot, files, synthetic, res):
     target = water.target_grid(spot["bbox"], res=res)
     by_date = defaultdict(list)
@@ -124,59 +96,56 @@ def build_layers(spot, files, synthetic, res):
         sources[day] = [name for _, name in items]
 
     masks, reference = water.water_masks(hh_db)
-    out = DATA / "layers" / spot["id"]
-    out.mkdir(parents=True, exist_ok=True)
-    for old in list(out.glob("*.png")) + list(out.glob("*.webp")):
-        old.unlink()
-    dates = []
+    out = layers.layer_folder(spot["id"])
+    frames = []
     for day in sorted(masks):
         open_water, veg, threshold = masks[day]
         stamp = day.isoformat()
-        water_png(open_water, veg, out / f"water_{stamp}.png")
-        radar_png(hh_db[day], out / f"radar_{stamp}.webp")
-        dates.append({
+        layers.save_classes({"open": open_water, "veg": veg}, {"open": WATER_RGBA, "veg": VEG_RGBA}, out / f"water_{stamp}.png")
+        layers.save_ramp(hh_db[day], *RADAR_RANGE_DB, "gray", out / f"radar_{stamp}.webp", webp=True)
+        open_km2, veg_km2 = water.area_km2(open_water, target), water.area_km2(veg, target)
+        frames.append({
             "date": stamp,
-            "water": f"water_{stamp}.png",
-            "radar": f"radar_{stamp}.webp",
-            "open_water_km2": round(water.area_km2(open_water, target), 1),
-            "flooded_veg_km2": round(water.area_km2(veg, target), 1),
-            "threshold_db": round(threshold, 1),
+            "label": stamp,
+            "files": {"water": f"water_{stamp}.png", "radar": f"radar_{stamp}.webp"},
+            "stats": {"open_water_km2": round(open_km2, 1), "flooded_veg_km2": round(veg_km2, 1),
+                      "water_total_km2": round(open_km2 + veg_km2, 1), "threshold_db": round(threshold, 1)},
             "sources": sources[day],
         })
-    manifest = {
-        "hotspot": spot["id"],
+    first, last = frames[0], frames[-1]
+    return layers.write_manifest(spot, out, {
         "module": "water",
         "title": f"{spot['name']}: the water dance",
+        "headline": (f"Open water grew from {first['stats']['open_water_km2']:,.0f} km² to "
+                     f"{last['stats']['open_water_km2']:,.0f} km² between the first and last pass."),
         "synthetic": synthetic,
-        "created": date.today().isoformat(),
         "product": "NISAR L2 GCOV (terrain-corrected backscatter), HH polarisation",
-        "grid": {"crs": water.WEB_CRS, "resolution_m": res, "width": target.width, "height": target.height},
         "bounds": target.corners_lonlat(),
-        "reference_date": reference.isoformat(),
+        "event": spot.get("event"),
+        "frame_noun": "passes",
+        "sides": ["Before", "After"],
+        "side_stat": {"id": "open_water_km2", "label": "Open water", "unit": "km²"},
+        "layers": [
+            {"id": "water", "label": "Water map", "opacity": 0.85,
+             "legend": [{"label": "Open water", "color": hexcolour(WATER_RGBA)},
+                        {"label": "Likely flooded vegetation", "color": hexcolour(VEG_RGBA)}]},
+            {"id": "radar", "label": "Radar image", "opacity": 0.9,
+             "ramp": {"colors": layers.ramp_colours("gray"), "min": RADAR_RANGE_DB[0], "max": RADAR_RANGE_DB[1], "unit": "dB",
+                      "low": "Dark: smooth water", "high": "Bright: rough ground or flooded forest"}},
+        ],
+        "stats": [
+            {"id": "open_water_km2", "label": "Open water", "unit": "km²", "color": hexcolour(WATER_RGBA)},
+            {"id": "flooded_veg_km2", "label": "Flooded vegetation", "unit": "km²", "color": hexcolour(VEG_RGBA)},
+        ],
+        "chart": {"area": "water_total_km2", "line": "open_water_km2", "label": "Water, km²"},
         "method": [
             "Each pass is averaged onto one shared grid, so dates line up pixel for pixel.",
             "Open water: HH backscatter below a per-pass Otsu threshold, kept between -24 and -14 dB.",
             f"Likely flooded vegetation: HH at least 3 dB brighter than on the driest pass ({reference.isoformat()}) and brighter than -8 dB.",
             "Areas are true areas, corrected for map-projection stretch.",
         ],
-        "legend": [
-            {"id": "open_water", "label": "Open water", "color": "#%02x%02x%02x" % WATER_RGBA[:3]},
-            {"id": "flooded_veg", "label": "Likely flooded vegetation", "color": "#%02x%02x%02x" % VEG_RGBA[:3]},
-        ],
-        "dates": dates,
-    }
-    (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
-    update_index(spot["id"], "water", synthetic)
-    print(f"Wrote {len(dates)} dates to {out.relative_to(ROOT)}")
-    return manifest
-
-
-def update_index(spot_id, module, synthetic):
-    """data/layers/index.json tells the site which places have layers, without guessing URLs."""
-    path = DATA / "layers" / "index.json"
-    index = json.loads(path.read_text()) if path.exists() else {"layers": {}}
-    index["layers"][spot_id] = {"module": module, "synthetic": synthetic, "updated": date.today().isoformat()}
-    path.write_text(json.dumps(index, indent=2) + "\n")
+        "frames": frames,
+    })
 
 
 def cmd_process(args):

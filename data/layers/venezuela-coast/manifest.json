@@ -1,0 +1,194 @@
+{
+  "hotspot": "venezuela-coast",
+  "created": "2026-09-28",
+  "module": "ground",
+  "title": "Caracas and La Guaira coast: the earthquake",
+  "headline": "Across the Jun 24, 2026 earthquakes, the ground moved up to 54 cm toward or away from the radar.",
+  "synthetic": true,
+  "product": "NISAR L2 GUNW (geocoded unwrapped interferograms), HH polarisation",
+  "bounds": [
+    [
+      -68.6,
+      10.9
+    ],
+    [
+      -66.599003,
+      10.9
+    ],
+    [
+      -66.599003,
+      10.099761
+    ],
+    [
+      -68.6,
+      10.099761
+    ]
+  ],
+  "event": "2026-06-24",
+  "frame_noun": "pairs",
+  "sides": [
+    "Earlier pair",
+    "Later pair"
+  ],
+  "side_stat": {
+    "id": "max_abs_cm",
+    "label": "Largest movement",
+    "unit": "cm"
+  },
+  "compare": [
+    0,
+    1
+  ],
+  "layers": [
+    {
+      "id": "displacement",
+      "label": "Movement",
+      "opacity": 0.85,
+      "ramp": {
+        "colors": [
+          "#67001f",
+          "#e58368",
+          "#f6f6f6",
+          "#68aacf",
+          "#053061"
+        ],
+        "min": -55.0,
+        "max": 55.0,
+        "unit": "cm",
+        "low": "Away from the radar",
+        "high": "Toward the radar"
+      },
+      "note": "Movement along the radar's line of sight, which mixes up-down and sideways motion."
+    },
+    {
+      "id": "fringes",
+      "label": "Fringes",
+      "opacity": 0.8,
+      "ramp": {
+        "colors": [
+          "#ff0000",
+          "#fbf500",
+          "#07ff00",
+          "#00fff5",
+          "#000fff",
+          "#ee00ff",
+          "#ff0017"
+        ],
+        "min": 0,
+        "max": 11.9,
+        "unit": "cm",
+        "low": "One colour cycle",
+        "high": "= 12 cm of movement"
+      },
+      "note": "Tightly packed rainbow bands mean the ground moved a lot over a short distance."
+    },
+    {
+      "id": "coherence",
+      "label": "Data quality",
+      "opacity": 0.85,
+      "ramp": {
+        "colors": [
+          "#000000",
+          "#404040",
+          "#808080",
+          "#c0c0c0",
+          "#ffffff"
+        ],
+        "min": 0,
+        "max": 1,
+        "unit": "",
+        "low": "Unreliable",
+        "high": "Reliable"
+      },
+      "note": "Pixels below 0.3 coherence are left out of the movement map."
+    }
+  ],
+  "stats": [
+    {
+      "id": "max_toward_cm",
+      "label": "Largest toward",
+      "unit": "cm"
+    },
+    {
+      "id": "max_away_cm",
+      "label": "Largest away",
+      "unit": "cm"
+    },
+    {
+      "id": "moved_km2",
+      "label": "Moved over 10 cm",
+      "unit": "km\u00b2"
+    }
+  ],
+  "chart": {
+    "area": "max_abs_cm",
+    "line": null,
+    "label": "Largest movement, cm"
+  },
+  "method": [
+    "Each interferogram compares two passes 12 days apart; the phase change becomes centimetres along the line of sight.",
+    "Pixels with coherence below 0.3, or that the unwrapper could not connect, are left out.",
+    "The ionospheric phase screen shipped with each product is subtracted.",
+    "Movement is measured relative to the median of the scene's outer edge, far from the fault.",
+    "One fringe (colour cycle) equals half the radar wavelength: about 12 cm."
+  ],
+  "frames": [
+    {
+      "date": "2026-06-30",
+      "start": "2026-06-18",
+      "label": "Jun 18 to Jun 30, 2026",
+      "files": {
+        "displacement": "move_2026-06-18_2026-06-30.png",
+        "fringes": "fringes_2026-06-18_2026-06-30.png",
+        "coherence": "quality_2026-06-18_2026-06-30.webp"
+      },
+      "stats": {
+        "max_toward_cm": 48.3,
+        "max_away_cm": 54.1,
+        "max_abs_cm": 54.1,
+        "moved_km2": 9389.1
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260618T101500_20260618T101540_20260630T101500_20260630T101540_DEMO.h5"
+      ]
+    },
+    {
+      "date": "2026-07-12",
+      "start": "2026-06-30",
+      "label": "Jun 30 to Jul 12, 2026",
+      "files": {
+        "displacement": "move_2026-06-30_2026-07-12.png",
+        "fringes": "fringes_2026-06-30_2026-07-12.png",
+        "coherence": "quality_2026-06-30_2026-07-12.webp"
+      },
+      "stats": {
+        "max_toward_cm": 2.1,
+        "max_away_cm": 2.6,
+        "max_abs_cm": 2.6,
+        "moved_km2": 0.0
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260630T101500_20260630T101540_20260712T101500_20260712T101540_DEMO.h5"
+      ]
+    },
+    {
+      "date": "2026-07-24",
+      "start": "2026-07-12",
+      "label": "Jul 12 to Jul 24, 2026",
+      "files": {
+        "displacement": "move_2026-07-12_2026-07-24.png",
+        "fringes": "fringes_2026-07-12_2026-07-24.png",
+        "coherence": "quality_2026-07-12_2026-07-24.webp"
+      },
+      "stats": {
+        "max_toward_cm": 1.9,
+        "max_away_cm": 1.7,
+        "max_abs_cm": 1.9,
+        "moved_km2": 0.0
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260712T101500_20260712T101540_20260724T101500_20260724T101540_DEMO.h5"
+      ]
+    }
+  ]
+}

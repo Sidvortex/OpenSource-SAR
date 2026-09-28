@@ -13,9 +13,9 @@ SARabande grows in ten parts. Every part ends with a working public site.
 | Part | What ships | Status |
 | --- | --- | --- |
 | 1 | Globe and atlas: 19 hotspots, dance legend, place cards, weekly NISAR coverage check, automatic deploys | Done |
-| 2 | Water dance: Tonle Sap water extent from GCOV, time slider and chart, and the 3D before/after showcase | **This version** |
-| 3 | Earthquake: the Venezuela GUNW pair, fringes and displacement, in the 3D showcase too | Next |
-| 4 | Point inspector and the dance classifier | |
+| 2 | Water dance: Tonle Sap water extent from GCOV, time slider and chart, and the 3D before/after showcase | Done |
+| 3 | Earthquake: Venezuela GUNW pairs as fringes, movement and data quality, compared in the 3D showcase | **This version** |
+| 4 | Point inspector and the dance classifier | Next |
 | 5 | Ground-motion time series, MintPy, GNSS validation | |
 | 6 | Explanations at three reading levels, story mode, "How radar sees" | |
 | 7 | Fire, farming and ice modules, event markers | |
@@ -78,6 +78,27 @@ If a real file's layout differs from what the reader expects, it stops with a cl
 
 **The 3D before/after showcase:** on any place with layers, press "See before and after in 3D". Two 3D maps stay locked together, with a divider you can drag (or move with the arrow keys). "Play reveal" sweeps the later pass across the landscape while the camera circles, which makes a good shot for the demo video. The elevation comes from the free AWS Terrain Tiles. If they can't load, the view drops to flat and keeps working.
 
+## Part 3: the earthquake
+
+An interferogram compares the radar phase of two passes 12 days apart. One full colour cycle ("fringe") is half the radar wavelength, about 12 cm of movement toward or away from the satellite. Venezuela ships with a **synthetic demo**, labelled as such everywhere, built from a textbook strike-slip fault model along the coast:
+
+```bash
+python pipeline/quake.py demo --hotspot venezuela-coast
+```
+
+For real NISAR interferograms (free Earthdata login, as in Part 2):
+
+```bash
+python pipeline/quake.py download --hotspot venezuela-coast
+python pipeline/quake.py process --hotspot venezuela-coast
+```
+
+`process` masks pixels with coherence below 0.3 or that the unwrapper could not connect. It subtracts the ionospheric phase screen shipped with each product (`--no-iono` to skip) and measures movement relative to the scene's outer edge. It writes three layers per pair: movement in centimetres, rainbow fringes and data quality. Pairs spanning the event are found automatically, and the 3D showcase opens on the pair across the quake next to a quiet pair.
+
+**Check before publishing real results:** the code uses movement = -wavelength / (4 pi) x phase, with positive meaning toward the radar. Confirm this against the NISAR GUNW product specification, and add `--flip-sign` if it's the other way round.
+
+Every module now writes the same general `manifest.json` (frames, layers with plain-words legends, statistics), so later parts add pipelines without new front-end code for the basics.
+
 ## Put it online for free
 
 1. Push this folder to a **public** GitHub repository.
@@ -103,7 +124,8 @@ If the basemap cannot load, the globe falls back to public-domain Natural Earth 
 
 ```
 data/          Shared data: hotspots.json, coverage.json, basemap/, layers/<place>/ (web layers + manifest)
-pipeline/      Python: coverage checks, nisar_io.py (HDF5 reader), water.py and water_dance.py (Part 2)
+pipeline/      Python: coverage checks, nisar_io.py (HDF5 reader), layers.py (shared output),
+               water.py and water_dance.py (Part 2), quake.py (Part 3)
 web/           React, TypeScript and Vite app with a MapLibre globe
 .github/       Free GitHub Actions: deploy to Pages, weekly coverage check
 ```

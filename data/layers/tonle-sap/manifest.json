@@ -1,16 +1,11 @@
 {
   "hotspot": "tonle-sap",
+  "created": "2026-09-28",
   "module": "water",
   "title": "Tonle Sap: the water dance",
+  "headline": "Open water grew from 2,750 km\u00b2 to 7,550 km\u00b2 between the first and last pass.",
   "synthetic": true,
-  "created": "2026-09-28",
   "product": "NISAR L2 GCOV (terrain-corrected backscatter), HH polarisation",
-  "grid": {
-    "crs": "EPSG:3857",
-    "resolution_m": 150.0,
-    "width": 1262,
-    "height": 1370
-  },
   "bounds": [
     [
       103.3,
@@ -29,110 +24,211 @@
       11.899919
     ]
   ],
-  "reference_date": "2026-06-19",
+  "event": null,
+  "frame_noun": "passes",
+  "sides": [
+    "Before",
+    "After"
+  ],
+  "side_stat": {
+    "id": "open_water_km2",
+    "label": "Open water",
+    "unit": "km\u00b2"
+  },
+  "layers": [
+    {
+      "id": "water",
+      "label": "Water map",
+      "opacity": 0.85,
+      "legend": [
+        {
+          "label": "Open water",
+          "color": "#1f8fd1"
+        },
+        {
+          "label": "Likely flooded vegetation",
+          "color": "#37c2b0"
+        }
+      ]
+    },
+    {
+      "id": "radar",
+      "label": "Radar image",
+      "opacity": 0.9,
+      "ramp": {
+        "colors": [
+          "#000000",
+          "#404040",
+          "#808080",
+          "#c0c0c0",
+          "#ffffff"
+        ],
+        "min": -25.0,
+        "max": 0.0,
+        "unit": "dB",
+        "low": "Dark: smooth water",
+        "high": "Bright: rough ground or flooded forest"
+      }
+    }
+  ],
+  "stats": [
+    {
+      "id": "open_water_km2",
+      "label": "Open water",
+      "unit": "km\u00b2",
+      "color": "#1f8fd1"
+    },
+    {
+      "id": "flooded_veg_km2",
+      "label": "Flooded vegetation",
+      "unit": "km\u00b2",
+      "color": "#37c2b0"
+    }
+  ],
+  "chart": {
+    "area": "water_total_km2",
+    "line": "open_water_km2",
+    "label": "Water, km\u00b2"
+  },
   "method": [
     "Each pass is averaged onto one shared grid, so dates line up pixel for pixel.",
     "Open water: HH backscatter below a per-pass Otsu threshold, kept between -24 and -14 dB.",
     "Likely flooded vegetation: HH at least 3 dB brighter than on the driest pass (2026-06-19) and brighter than -8 dB.",
     "Areas are true areas, corrected for map-projection stretch."
   ],
-  "legend": [
-    {
-      "id": "open_water",
-      "label": "Open water",
-      "color": "#1f8fd1"
-    },
-    {
-      "id": "flooded_veg",
-      "label": "Likely flooded vegetation",
-      "color": "#37c2b0"
-    }
-  ],
-  "dates": [
+  "frames": [
     {
       "date": "2026-06-19",
-      "water": "water_2026-06-19.png",
-      "radar": "radar_2026-06-19.webp",
-      "open_water_km2": 2749.8,
-      "flooded_veg_km2": 0.0,
-      "threshold_db": -15.2,
+      "label": "2026-06-19",
+      "files": {
+        "water": "water_2026-06-19.png",
+        "radar": "radar_2026-06-19.webp"
+      },
+      "stats": {
+        "open_water_km2": 2749.8,
+        "flooded_veg_km2": 0.0,
+        "water_total_km2": 2749.8,
+        "threshold_db": -15.2
+      },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260619T221500_20260619T221540_DEMO.h5"
       ]
     },
     {
       "date": "2026-07-01",
-      "water": "water_2026-07-01.png",
-      "radar": "radar_2026-07-01.webp",
-      "open_water_km2": 2841.4,
-      "flooded_veg_km2": 1114.0,
-      "threshold_db": -15.1,
+      "label": "2026-07-01",
+      "files": {
+        "water": "water_2026-07-01.png",
+        "radar": "radar_2026-07-01.webp"
+      },
+      "stats": {
+        "open_water_km2": 2841.4,
+        "flooded_veg_km2": 1114.0,
+        "water_total_km2": 3955.4,
+        "threshold_db": -15.1
+      },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260701T221500_20260701T221540_DEMO.h5"
       ]
     },
     {
       "date": "2026-07-13",
-      "water": "water_2026-07-13.png",
-      "radar": "radar_2026-07-13.webp",
-      "open_water_km2": 3117.9,
-      "flooded_veg_km2": 1217.4,
-      "threshold_db": -15.1,
+      "label": "2026-07-13",
+      "files": {
+        "water": "water_2026-07-13.png",
+        "radar": "radar_2026-07-13.webp"
+      },
+      "stats": {
+        "open_water_km2": 3117.9,
+        "flooded_veg_km2": 1217.4,
+        "water_total_km2": 4335.3,
+        "threshold_db": -15.1
+      },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260713T221500_20260713T221540_DEMO.h5"
       ]
     },
     {
       "date": "2026-07-25",
-      "water": "water_2026-07-25.png",
-      "radar": "radar_2026-07-25.webp",
-      "open_water_km2": 3707.4,
-      "flooded_veg_km2": 1238.8,
-      "threshold_db": -15.1,
+      "label": "2026-07-25",
+      "files": {
+        "water": "water_2026-07-25.png",
+        "radar": "radar_2026-07-25.webp"
+      },
+      "stats": {
+        "open_water_km2": 3707.4,
+        "flooded_veg_km2": 1238.8,
+        "water_total_km2": 4946.2,
+        "threshold_db": -15.1
+      },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260725T221500_20260725T221540_DEMO.h5"
       ]
     },
     {
       "date": "2026-08-18",
-      "water": "water_2026-08-18.png",
-      "radar": "radar_2026-08-18.webp",
-      "open_water_km2": 5225.9,
-      "flooded_veg_km2": 1392.1,
-      "threshold_db": -15.0,
+      "label": "2026-08-18",
+      "files": {
+        "water": "water_2026-08-18.png",
+        "radar": "radar_2026-08-18.webp"
+      },
+      "stats": {
+        "open_water_km2": 5225.9,
+        "flooded_veg_km2": 1392.1,
+        "water_total_km2": 6618.0,
+        "threshold_db": -15.0
+      },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260818T221500_20260818T221540_DEMO.h5"
       ]
     },
     {
       "date": "2026-08-30",
-      "water": "water_2026-08-30.png",
-      "radar": "radar_2026-08-30.webp",
-      "open_water_km2": 6040.1,
-      "flooded_veg_km2": 1475.0,
-      "threshold_db": -15.0,
+      "label": "2026-08-30",
+      "files": {
+        "water": "water_2026-08-30.png",
+        "radar": "radar_2026-08-30.webp"
+      },
+      "stats": {
+        "open_water_km2": 6040.1,
+        "flooded_veg_km2": 1475.0,
+        "water_total_km2": 7515.1,
+        "threshold_db": -15.0
+      },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260830T221500_20260830T221540_DEMO.h5"
       ]
     },
     {
       "date": "2026-09-11",
-      "water": "water_2026-09-11.png",
-      "radar": "radar_2026-09-11.webp",
-      "open_water_km2": 6874.4,
-      "flooded_veg_km2": 1534.0,
-      "threshold_db": -15.0,
+      "label": "2026-09-11",
+      "files": {
+        "water": "water_2026-09-11.png",
+        "radar": "radar_2026-09-11.webp"
+      },
+      "stats": {
+        "open_water_km2": 6874.4,
+        "flooded_veg_km2": 1534.0,
+        "water_total_km2": 8408.4,
+        "threshold_db": -15.0
+      },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260911T221500_20260911T221540_DEMO.h5"
       ]
     },
     {
       "date": "2026-09-23",
-      "water": "water_2026-09-23.png",
-      "radar": "radar_2026-09-23.webp",
-      "open_water_km2": 7550.1,
-      "flooded_veg_km2": 1550.3,
-      "threshold_db": -15.0,
+      "label": "2026-09-23",
+      "files": {
+        "water": "water_2026-09-23.png",
+        "radar": "radar_2026-09-23.webp"
+      },
+      "stats": {
+        "open_water_km2": 7550.1,
+        "flooded_veg_km2": 1550.3,
+        "water_total_km2": 9100.4,
+        "threshold_db": -15.0
+      },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260923T221500_20260923T221540_DEMO.h5"
       ]

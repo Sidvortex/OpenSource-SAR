@@ -46,13 +46,37 @@ export interface Coverage {
   hotspots: Record<string, CoverageEntry>;
 }
 
-export interface LayerDate {
+export interface Ramp {
+  colors: string[];
+  min: number;
+  max: number;
+  unit: string;
+  low: string;
+  high: string;
+}
+
+export interface LayerDef {
+  id: string;
+  label: string;
+  opacity: number;
+  legend?: { label: string; color: string }[];
+  ramp?: Ramp;
+  note?: string;
+}
+
+export interface StatDef {
+  id: string;
+  label: string;
+  unit: string;
+  color?: string;
+}
+
+export interface Frame {
   date: string;
-  water: string;
-  radar: string;
-  open_water_km2: number;
-  flooded_veg_km2: number;
-  threshold_db: number;
+  start?: string;
+  label: string;
+  files: Record<string, string>;
+  stats: Record<string, number>;
   sources: string[];
 }
 
@@ -60,18 +84,32 @@ export interface LayerManifest {
   hotspot: string;
   module: ModuleId;
   title: string;
+  headline: string;
   synthetic: boolean;
   created: string;
   product: string;
   bounds: [[number, number], [number, number], [number, number], [number, number]];
-  reference_date: string;
+  event: string | null;
+  frame_noun: string;
+  sides?: [string, string];
+  side_stat?: StatDef;
+  compare?: [number, number];
+  layers: LayerDef[];
+  stats: StatDef[];
+  chart: { area: string; line: string | null; label: string };
   method: string[];
-  legend: { id: string; label: string; color: string }[];
-  dates: LayerDate[];
+  frames: Frame[];
 }
 
 export interface LayerIndex {
   layers: Record<string, { module: ModuleId; synthetic: boolean; updated: string }>;
 }
 
-export type LayerKind = 'water' | 'radar';
+/** The frame to show first: the one spanning the event, or the latest. */
+export function startFrame(m: LayerManifest): number {
+  if (m.event) {
+    const i = m.frames.findIndex((f) => f.start !== undefined && f.start < m.event! && m.event! < f.date);
+    if (i >= 0) return i;
+  }
+  return m.frames.length - 1;
+}

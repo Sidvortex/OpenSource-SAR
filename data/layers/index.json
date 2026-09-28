@@ -4,6 +4,11 @@
       "module": "water",
       "synthetic": true,
       "updated": "2026-09-28"
+    },
+    "venezuela-coast": {
+      "module": "ground",
+      "synthetic": true,
+      "updated": "2026-09-28"
     }
   }
 }

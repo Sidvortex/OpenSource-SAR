@@ -157,7 +157,6 @@ code { font-size: 0.9em; background: rgba(26, 34, 51, 0.06); padding: 0 0.25em; 
 .now-date { margin: 0; font-weight: 750; font-stretch: 110%; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
 .now-stats { margin: 0; font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .key { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin: 0 5px 0 0; }
-.key + * , .now-stats .key:not(:first-child) { margin-left: 10px; }
 .segmented { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; background: #fff; }
 .segmented button { border: 0; background: none; padding: 5px 11px; border-radius: 999px; cursor: pointer; font-size: 0.85rem; }
 .segmented button[aria-pressed='true'] { background: var(--ink); color: #fff; }
@@ -213,6 +212,21 @@ code { font-size: 0.9em; background: rgba(26, 34, 51, 0.06); padding: 0 0.25em; 
 .segmented-dark { background: #26314a; border-color: #45536c; }
 .segmented-dark button { color: #eef2f7; }
 .segmented-dark button[aria-pressed='true'] { background: #fff; color: var(--ink); }
+
+.now-stats .stat { display: inline-flex; align-items: center; margin-right: 12px; }
+.legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 6px 0 0; font-size: 0.8rem; }
+.legend-item { display: inline-flex; align-items: center; }
+.legend-ramp { display: grid; grid-template-columns: auto minmax(90px, 1fr) auto; gap: 8px; }
+.ramp-bar { height: 10px; border-radius: 5px; border: 1px solid rgba(26, 34, 51, 0.15); }
+.ramp-end { color: var(--muted); }
+.ramp-range { grid-column: 1 / -1; color: var(--muted); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+.chart-event line { stroke: #c0392b; stroke-width: 1.5; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
+.chart-event text { font-size: 10px; fill: #c0392b; font-family: var(--ui); }
+.stage-legend {
+  position: absolute; left: 14px; bottom: 14px; max-width: min(420px, 60%); padding: 8px 12px;
+  border-radius: 10px; background: rgba(243, 245, 248, 0.92); color: var(--ink); pointer-events: none;
+}
+.stage-legend .legend { margin: 0; }
 
 /* ---------- Markers: each place pulses in its dance's rhythm ---------- */
 .marker {

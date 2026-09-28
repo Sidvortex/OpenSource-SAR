@@ -7,7 +7,9 @@ import { TimeBar } from './components/TimeBar';
 import { MODULE_ORDER } from './catalog';
 import { siteUrl } from './mapStyle';
 import type { Overlay } from './mapStyle';
-import type { Coverage, DanceId, Hotspot, LayerIndex, LayerKind, LayerManifest, ModuleId } from './types';
+import { startFrame } from './types';
+import type { Coverage, DanceId, Hotspot, LayerIndex, LayerManifest, ModuleId } from './types';
+import { overlayFor } from './components/Showcase3D';
 
 const STEP_MS = 1200;
 
@@ -37,7 +39,7 @@ export default function App() {
   const [manifest, setManifest] = useState<LayerManifest | null>(null);
   const [dateIndex, setDateIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [kind, setKind] = useState<LayerKind>('water');
+  const [kind, setKind] = useState<string>('water');
   const [showcase, setShowcase] = useState(false);
 
   useEffect(() => {
@@ -63,9 +65,10 @@ export default function App() {
       .then((m) => {
         if (cancelled) return;
         setManifest(m);
-        setDateIndex(m.dates.length - 1);
+        setDateIndex(startFrame(m));
+        setKind(m.layers[0].id);
         // Warm the cache so playback doesn't flicker.
-        for (const d of m.dates) for (const f of [d.water, d.radar]) new Image().src = siteUrl(`data/layers/${m.hotspot}/${f}`);
+        for (const f of m.frames) for (const file of Object.values(f.files)) new Image().src = siteUrl(`data/layers/${m.hotspot}/${file}`);
       })
       .catch(() => setManifest(null));
     return () => { cancelled = true; };
@@ -74,18 +77,13 @@ export default function App() {
   // Playback steps through the passes and loops.
   useEffect(() => {
     if (!playing || !manifest) return;
-    const timer = window.setInterval(() => setDateIndex((i) => (i + 1) % manifest.dates.length), STEP_MS);
+    const timer = window.setInterval(() => setDateIndex((i) => (i + 1) % manifest.frames.length), STEP_MS);
     return () => window.clearInterval(timer);
   }, [playing, manifest]);
 
   const overlay = useMemo<Overlay | null>(() => {
     if (!manifest || showcase) return null;
-    const d = manifest.dates[Math.min(dateIndex, manifest.dates.length - 1)];
-    return {
-      url: siteUrl(`data/layers/${manifest.hotspot}/${kind === 'water' ? d.water : d.radar}`),
-      coordinates: manifest.bounds,
-      opacity: kind === 'water' ? 0.85 : 0.9,
-    };
+    return overlayFor(manifest, Math.min(dateIndex, manifest.frames.length - 1), kind);
   }, [manifest, dateIndex, kind, showcase]);
 
   // Keep the selected place in the URL so any view can be shared as a link.
@@ -150,7 +148,7 @@ export default function App() {
           onClose={() => setSelectedId(null)} />
       )}
       {manifest && !showcase && (
-        <TimeBar manifest={manifest} index={Math.min(dateIndex, manifest.dates.length - 1)} onIndex={setDateIndex}
+        <TimeBar manifest={manifest} index={Math.min(dateIndex, manifest.frames.length - 1)} onIndex={setDateIndex}
           playing={playing} onPlaying={setPlaying} kind={kind} onKind={setKind} />
       )}
       {manifest && selected && showcase && (
