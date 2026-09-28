@@ -1,0 +1,215 @@
+/* SARabande design tokens.
+   Colours come from radar false-colour imagery: violet, radar blue, ember,
+   chartreuse and glacier teal, set on a cool mist rather than cream or black. */
+:root {
+  --ink: #1a2233;
+  --muted: #566174;
+  --mist: #f3f5f8;
+  --mist-glass: rgba(243, 245, 248, 0.94);
+  --line: #d3dae3;
+  --focus: #1f8fd1;
+  --pass: #2f7d4f;
+  --fail: #9a4a14;
+  --ui: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
+  --prose: 'Source Serif 4 Variable', 'Source Serif 4', Georgia, serif;
+  --panel-w: 360px;
+  --card-w: 380px;
+  color: var(--ink);
+  font-family: var(--ui);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body { background: #1c2536; }
+button, input { font: inherit; color: inherit; }
+a { color: var(--ink); text-underline-offset: 2px; }
+code { font-size: 0.9em; background: rgba(26, 34, 51, 0.06); padding: 0 0.25em; border-radius: 3px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+.app { position: fixed; inset: 0; }
+/* Higher specificity than MapLibre's own .maplibregl-map { position: relative } rule. */
+.app > .globe { position: absolute; inset: 0; width: 100%; height: 100%; background: #1c2536; }
+.loading, .fatal { display: grid; place-content: center; height: 100%; padding: 24px; text-align: center; }
+
+/* ---------- Panel ---------- */
+.panel {
+  position: absolute; top: 16px; left: 16px; bottom: 16px; width: var(--panel-w);
+  display: flex; flex-direction: column;
+  background: var(--mist-glass); border: 1px solid var(--line); border-radius: 14px;
+  backdrop-filter: blur(6px); overflow: hidden;
+}
+.panel-head { padding: 22px 22px 14px; border-bottom: 1px solid var(--line); }
+.wordmark {
+  margin: 0; font-family: var(--ui); font-weight: 800; font-stretch: 125%;
+  font-size: 2rem; line-height: 1; letter-spacing: -0.01em;
+}
+.tagline { margin: 8px 0 0; color: var(--muted); max-width: 30ch; }
+.sheet-toggle { display: none; }
+.panel-body { overflow-y: auto; padding: 14px 22px 18px; display: grid; gap: 18px; align-content: start; }
+
+.search input {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff;
+}
+.group { border: 0; margin: 0; padding: 0; min-width: 0; }
+.group legend, .group-title {
+  padding: 0; margin: 0 0 8px; font-size: 0.8rem; font-weight: 600; color: var(--muted);
+}
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px 6px 9px;
+  border: 1px solid var(--line); border-radius: 999px; background: #fff; cursor: pointer;
+}
+.chip[aria-pressed='false'] { background: transparent; color: var(--muted); }
+.chip[aria-pressed='false'] .swatch { background: transparent; }
+.swatch {
+  width: 10px; height: 10px; flex: none; border-radius: 50%;
+  background: var(--c); border: 2px solid var(--c);
+}
+
+.dances, .places { list-style: none; margin: 0; padding: 0; }
+.dance-row {
+  width: 100%; display: grid; grid-template-columns: 30px 5.5rem 1fr; align-items: center; gap: 6px;
+  padding: 5px 6px; border: 0; border-radius: 8px; background: none; text-align: left; cursor: pointer;
+}
+.dance-row:hover { background: rgba(26, 34, 51, 0.05); }
+.dance-row[aria-pressed='true'] { background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
+.dance-name { font-weight: 650; }
+.dance-pattern { color: var(--muted); font-size: 0.87rem; }
+
+.place-row {
+  width: 100%; display: grid; grid-template-columns: 14px 1fr auto; align-items: baseline; gap: 8px;
+  padding: 7px 6px; border: 0; border-bottom: 1px solid var(--line); background: none; text-align: left; cursor: pointer;
+}
+.place-row:hover { background: rgba(26, 34, 51, 0.04); }
+.place-row[aria-current='true'] { font-weight: 650; }
+.place-row .swatch { align-self: center; }
+.place-country { color: var(--muted); font-size: 0.85rem; }
+.empty { margin: 0; color: var(--muted); }
+.panel-foot { font-size: 0.8rem; color: var(--muted); }
+.panel-foot p { margin: 0 0 4px; }
+
+/* ---------- Place card ---------- */
+.card {
+  position: absolute; top: 16px; right: 16px; width: var(--card-w); max-height: calc(100% - 32px);
+  overflow-y: auto; padding: 22px 24px 20px;
+  background: var(--mist-glass); border: 1px solid var(--line); border-top: 4px solid var(--c);
+  border-radius: 14px; backdrop-filter: blur(6px);
+}
+.card-close {
+  position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; display: grid; place-items: center;
+  border: 0; border-radius: 8px; background: none; cursor: pointer;
+}
+.card-close svg { width: 14px; height: 14px; stroke: var(--ink); stroke-width: 2; }
+.card-close:hover { background: rgba(26, 34, 51, 0.06); }
+.card-module { display: flex; align-items: center; gap: 7px; margin: 0; font-size: 0.85rem; color: var(--muted); }
+.card-title { margin: 6px 0 0; font-size: 1.55rem; line-height: 1.15; font-weight: 750; font-stretch: 110%; padding-right: 28px; }
+.card-country { margin: 2px 0 0; color: var(--muted); }
+.card-why { font-family: var(--prose); font-size: 1.06rem; line-height: 1.6; margin: 14px 0 0; max-width: 60ch; }
+.card-note {
+  margin: 10px 0 0; padding: 8px 10px; border-left: 3px solid var(--c);
+  background: rgba(255, 255, 255, 0.7); font-size: 0.9rem;
+}
+.card-section { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.card-subtitle { margin: 0 0 6px; font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+.card-dance { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 6px; margin: 0 0 4px; }
+.status { margin: 0; }
+.status-pass { color: var(--pass); }
+.status-fail, .status-error { color: var(--fail); }
+.status-unknown { color: var(--muted); }
+.products { margin: 8px 0 0; padding-left: 18px; font-size: 0.9rem; }
+.checked, .fineprint { margin: 8px 0 0; font-size: 0.8rem; color: var(--muted); }
+.card-links { margin: 10px 0 0; }
+
+/* ---------- Markers: each place pulses in its dance's rhythm ---------- */
+.marker {
+  --c: var(--ink);
+  position: relative; width: 30px; height: 30px; padding: 0; border: 0; background: none; cursor: pointer;
+}
+.marker[hidden] { display: none; }
+.marker-dot {
+  position: absolute; inset: 9px; border-radius: 50%; background: var(--c);
+  box-shadow: 0 0 0 2px #fff;
+}
+.marker.is-hero .marker-dot { inset: 7px; }
+.marker-ring {
+  position: absolute; inset: 7px; border-radius: 50%; border: 2px solid var(--c); opacity: 0;
+  animation-iteration-count: infinite; animation-timing-function: ease-out;
+}
+.marker.is-selected .marker-dot { box-shadow: 0 0 0 2px #fff, 0 0 0 5px var(--ink); }
+.marker-demo { cursor: inherit; width: 28px; height: 28px; }
+
+/* Waltz: one strong beat and two light ones, in three-four time. */
+.dance-waltz .marker-ring { animation-name: waltz; animation-duration: 2.1s; }
+@keyframes waltz {
+  0% { transform: scale(1); opacity: 0.9; }
+  22% { transform: scale(2.3); opacity: 0; }
+  33.3% { transform: scale(1); opacity: 0.55; }
+  52% { transform: scale(1.7); opacity: 0; }
+  66.6% { transform: scale(1); opacity: 0.55; }
+  86% { transform: scale(1.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+/* March: even, steady beats. */
+.dance-march .marker-ring { animation-name: march; animation-duration: 1.4s; animation-timing-function: linear; }
+@keyframes march {
+  0% { transform: scale(1); opacity: 0.8; }
+  45% { transform: scale(2); opacity: 0; }
+  50% { transform: scale(1); opacity: 0.8; }
+  95% { transform: scale(2); opacity: 0; }
+  100% { opacity: 0; }
+}
+/* Tango: quick, quick, then a long held pause. */
+.dance-tango .marker-ring { animation-name: tango; animation-duration: 1.9s; }
+@keyframes tango {
+  0% { transform: scale(1); opacity: 0.95; }
+  9% { transform: scale(2.4); opacity: 0; }
+  18% { transform: scale(1); opacity: 0.95; }
+  27% { transform: scale(2.4); opacity: 0; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+/* Crescendo: beats that come faster and faster. */
+.dance-crescendo .marker-ring { animation-name: crescendo; animation-duration: 2.6s; animation-timing-function: linear; }
+@keyframes crescendo {
+  0% { transform: scale(1); opacity: 0.8; }
+  30% { transform: scale(2); opacity: 0; }
+  40% { transform: scale(1); opacity: 0.8; }
+  60% { transform: scale(2); opacity: 0; }
+  65% { transform: scale(1); opacity: 0.8; }
+  78% { transform: scale(2); opacity: 0; }
+  82% { transform: scale(1); opacity: 0.8; }
+  90% { transform: scale(2); opacity: 0; }
+  93% { transform: scale(1); opacity: 0.8; }
+  99% { transform: scale(2); opacity: 0; }
+  100% { opacity: 0; }
+}
+/* Still: a quiet ring that never moves. */
+.dance-still .marker-ring { opacity: 0.45; transform: scale(1.4); }
+
+@media (prefers-reduced-motion: reduce) {
+  .marker-ring { animation: none !important; opacity: 0.45; transform: scale(1.4); }
+}
+
+/* ---------- Phones: the panel becomes a bottom sheet ---------- */
+@media (max-width: 900px) {
+  :root { --panel-w: auto; --card-w: auto; }
+  .panel { top: auto; left: 8px; right: 8px; bottom: 8px; max-height: 46vh; }
+  .panel:not(.is-open) .panel-body { display: none; }
+  .panel-head { padding: 14px 16px 12px; border-bottom: 0; }
+  .wordmark { font-size: 1.5rem; }
+  .tagline { display: none; }
+  .sheet-toggle {
+    display: block; margin-top: 10px; width: 100%; padding: 9px; border: 1px solid var(--line);
+    border-radius: 10px; background: #fff; cursor: pointer;
+  }
+  .panel.is-open .panel-head { border-bottom: 1px solid var(--line); }
+  .card { top: auto; left: 8px; right: 8px; bottom: 8px; max-height: 62vh; }
+  /* Pinch-zoom covers this on phones, and the buttons would sit on the bottom sheet. */
+  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group { display: none; }
+}
