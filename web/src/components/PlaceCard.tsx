@@ -1,10 +1,12 @@
 import type { CSSProperties } from 'react';
 import { DANCES, MODULES, formatDate, vertexUrl } from '../catalog';
-import type { Coverage, Hotspot } from '../types';
+import type { Coverage, Hotspot, LayerManifest } from '../types';
 
 interface Props {
   spot: Hotspot;
   coverage: Coverage | null;
+  manifest: LayerManifest | null;
+  onOpen3D: () => void;
   onClose: () => void;
 }
 
@@ -41,7 +43,7 @@ function CoverageStatus({ spot, coverage }: { spot: Hotspot; coverage: Coverage 
   );
 }
 
-export function PlaceCard({ spot, coverage, onClose }: Props) {
+export function PlaceCard({ spot, coverage, manifest, onOpen3D, onClose }: Props) {
   const module = MODULES[spot.module];
   return (
     <article className="card" aria-labelledby="card-title" style={{ '--c': module.color } as CSSProperties}>
@@ -53,6 +55,9 @@ export function PlaceCard({ spot, coverage, onClose }: Props) {
       <p className="card-country">{spot.country}</p>
 
       <p className="card-why">{spot.why}</p>
+      {manifest && (
+        <button type="button" className="cta" onClick={onOpen3D}>See before and after in 3D</button>
+      )}
       {spot.sensitive && <p className="card-note">{spot.sensitive}</p>}
       {spot.caution && <p className="card-note">{spot.caution}</p>}
 
@@ -74,7 +79,15 @@ export function PlaceCard({ spot, coverage, onClose }: Props) {
         </p>
       </section>
 
-      <p className="fineprint">Radar layers for this place arrive in Part {spot.layerPart} of the build, from {module.product}.</p>
+      {manifest ? (
+        <details className="card-section method">
+          <summary>How this layer is made</summary>
+          <ul>{manifest.method.map((line) => <li key={line}>{line}</li>)}</ul>
+          <p className="fineprint">{manifest.product}. Built {formatDate(manifest.created)}.</p>
+        </details>
+      ) : (
+        <p className="fineprint">Radar layers for this place arrive in Part {spot.layerPart} of the build, from {module.product}.</p>
+      )}
     </article>
   );
 }

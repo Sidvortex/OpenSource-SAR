@@ -1,28 +1,11 @@
 import { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
-import type { StyleSpecification } from 'maplibre-gl';
 import type { FeatureCollection } from 'geojson';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { DANCES, MODULES } from '../catalog';
 import type { Hotspot } from '../types';
-
-// Free, open basemap with no API key. Override with VITE_BASEMAP_STYLE, for example
-// a self-hosted Protomaps style, if you want to be independent of any tile service.
-const STYLE_URL: string =
-  import.meta.env.VITE_BASEMAP_STYLE ?? 'https://tiles.openfreemap.org/styles/positron';
-
-// Used when the basemap cannot load (offline demo, blocked network): public-domain
-// Natural Earth land outlines shipped with the site, so the globe never goes blank.
-const LAND_URL = new URL(`${import.meta.env.BASE_URL}data/basemap/land.geojson`, window.location.href).href;
-const OFFLINE_STYLE: StyleSpecification = {
-  version: 8,
-  sources: { land: { type: 'geojson', data: LAND_URL } },
-  layers: [
-    { id: 'ocean', type: 'background', paint: { 'background-color': '#dfe6ee' } },
-    { id: 'land', type: 'fill', source: 'land', paint: { 'fill-color': '#b9c5d3' } },
-    { id: 'coast', type: 'line', source: 'land', paint: { 'line-color': '#9fb0c3', 'line-width': 0.6 } },
-  ],
-};
+import { STYLE_URL, applyOverlay, useOfflineFallback } from '../mapStyle';
+import type { Overlay } from '../mapStyle';
 
 const EMPTY: FeatureCollection = { type: 'FeatureCollection', features: [] };
 
@@ -31,6 +14,7 @@ interface Props {
   visibleIds: Set<string>;
   selectedId: string | null;
   onSelect: (id: string) => void;
+  overlay: Overlay | null;
 }
 
 function areaOutline(spot: Hotspot | undefined): FeatureCollection {
@@ -53,7 +37,7 @@ function addAreaLayer(map: maplibregl.Map) {
   map.addLayer({ id: 'area-line', type: 'line', source: 'area', paint: { 'line-color': '#1A2233', 'line-width': 1.5, 'line-dasharray': [2, 2] } });
 }
 
-export function Globe({ hotspots, visibleIds, selectedId, onSelect }: Props) {
+export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markers = useRef(new Map<string, HTMLButtonElement>());
@@ -63,6 +47,8 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect }: Props) {
   spotsRef.current = hotspots;
   const selectedRef = useRef(selectedId);
   selectedRef.current = selectedId;
+  const overlayRef = useRef(overlay);
+  overlayRef.current = overlay;
 
   // Create the map and the markers once per hotspot list.
   useEffect(() => {
@@ -80,18 +66,13 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect }: Props) {
     if (wide) map.easeTo({ center: map.getCenter(), offset: [180, 0], duration: 0 });
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
 
-    let fellBack = false;
-    map.on('error', () => {
-      if (!fellBack && !map.isStyleLoaded()) {
-        fellBack = true;
-        map.setStyle(OFFLINE_STYLE);
-      }
-    });
+    useOfflineFallback(map);
     map.on('style.load', () => {
       map.setProjection({ type: 'globe' });
       addAreaLayer(map);
       const current = spotsRef.current.find((h) => h.id === selectedRef.current);
       (map.getSource('area') as maplibregl.GeoJSONSource).setData(areaOutline(current));
+      applyOverlay(map, overlayRef.current, 'area-fill');
     });
 
     for (const spot of hotspots) {
@@ -109,7 +90,7 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect }: Props) {
         event.stopPropagation();
         onSelectRef.current(spot.id);
       });
-      new maplibregl.Marker({ element: el }).setLngLat([spot.lon, spot.lat]).addTo(map);
+      new maplibregl.Marker({ element: el, opacityWhenCovered: '0' }).setLngLat([spot.lon, spot.lat]).addTo(map);
       markers.current.set(spot.id, el);
     }
 
@@ -140,12 +121,18 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect }: Props) {
     const [w, s, e, n] = spot.bbox;
     map.fitBounds([[w, s], [e, n]], {
       padding: wide
-        ? { top: 80, bottom: 80, left: 400, right: 440 }
+        ? { top: 60, bottom: 280, left: 400, right: 440 }
         : { top: 40, bottom: window.innerHeight * 0.5, left: 30, right: 30 },
       maxZoom: 9,
       duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 2200,
     });
   }, [selectedId, hotspots]);
+
+  // The radar layer for the current date and layer choice.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map) applyOverlay(map, overlay, 'area-fill');
+  }, [overlay]);
 
   return <div ref={container} className="globe" aria-label="Globe of NISAR hotspots" role="region" />;
 }

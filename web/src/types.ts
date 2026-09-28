@@ -45,3 +45,33 @@ export interface Coverage {
   note?: string;
   hotspots: Record<string, CoverageEntry>;
 }
+
+export interface LayerDate {
+  date: string;
+  water: string;
+  radar: string;
+  open_water_km2: number;
+  flooded_veg_km2: number;
+  threshold_db: number;
+  sources: string[];
+}
+
+export interface LayerManifest {
+  hotspot: string;
+  module: ModuleId;
+  title: string;
+  synthetic: boolean;
+  created: string;
+  product: string;
+  bounds: [[number, number], [number, number], [number, number], [number, number]];
+  reference_date: string;
+  method: string[];
+  legend: { id: string; label: string; color: string }[];
+  dates: LayerDate[];
+}
+
+export interface LayerIndex {
+  layers: Record<string, { module: ModuleId; synthetic: boolean; updated: string }>;
+}
+
+export type LayerKind = 'water' | 'radar';

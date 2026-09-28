@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Globe } from './components/Globe';
 import { PlaceCard } from './components/PlaceCard';
+import { Showcase3D } from './components/Showcase3D';
 import { Sidebar } from './components/Sidebar';
+import { TimeBar } from './components/TimeBar';
 import { MODULE_ORDER } from './catalog';
-import type { Coverage, DanceId, Hotspot, ModuleId } from './types';
+import { siteUrl } from './mapStyle';
+import type { Overlay } from './mapStyle';
+import type { Coverage, DanceId, Hotspot, LayerIndex, LayerKind, LayerManifest, ModuleId } from './types';
+
+const STEP_MS = 1200;
 
 const BASE = import.meta.env.BASE_URL;
 
@@ -27,6 +33,12 @@ export default function App() {
   const [dance, setDance] = useState<DanceId | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(placeFromHash);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [layerIndex, setLayerIndex] = useState<LayerIndex>({ layers: {} });
+  const [manifest, setManifest] = useState<LayerManifest | null>(null);
+  const [dateIndex, setDateIndex] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const [kind, setKind] = useState<LayerKind>('water');
+  const [showcase, setShowcase] = useState(false);
 
   useEffect(() => {
     loadJson<{ hotspots: Hotspot[] }>('data/hotspots.json')
@@ -35,7 +47,46 @@ export default function App() {
     loadJson<Coverage>('data/coverage.json')
       .then(setCoverage)
       .catch(() => setCoverage(null));
+    loadJson<LayerIndex>('data/layers/index.json')
+      .then(setLayerIndex)
+      .catch(() => setLayerIndex({ layers: {} }));
   }, []);
+
+  // Load the selected place's layers, if the pipeline has built any.
+  useEffect(() => {
+    setManifest(null);
+    setPlaying(false);
+    setShowcase(false);
+    if (!selectedId || !layerIndex.layers[selectedId]) return;
+    let cancelled = false;
+    loadJson<LayerManifest>(`data/layers/${selectedId}/manifest.json`)
+      .then((m) => {
+        if (cancelled) return;
+        setManifest(m);
+        setDateIndex(m.dates.length - 1);
+        // Warm the cache so playback doesn't flicker.
+        for (const d of m.dates) for (const f of [d.water, d.radar]) new Image().src = siteUrl(`data/layers/${m.hotspot}/${f}`);
+      })
+      .catch(() => setManifest(null));
+    return () => { cancelled = true; };
+  }, [selectedId, layerIndex]);
+
+  // Playback steps through the passes and loops.
+  useEffect(() => {
+    if (!playing || !manifest) return;
+    const timer = window.setInterval(() => setDateIndex((i) => (i + 1) % manifest.dates.length), STEP_MS);
+    return () => window.clearInterval(timer);
+  }, [playing, manifest]);
+
+  const overlay = useMemo<Overlay | null>(() => {
+    if (!manifest || showcase) return null;
+    const d = manifest.dates[Math.min(dateIndex, manifest.dates.length - 1)];
+    return {
+      url: siteUrl(`data/layers/${manifest.hotspot}/${kind === 'water' ? d.water : d.radar}`),
+      coordinates: manifest.bounds,
+      opacity: kind === 'water' ? 0.85 : 0.9,
+    };
+  }, [manifest, dateIndex, kind, showcase]);
 
   // Keep the selected place in the URL so any view can be shared as a link.
   useEffect(() => {
@@ -85,7 +136,7 @@ export default function App() {
   const selected = hotspots.find((h) => h.id === selectedId) ?? null;
   return (
     <main className="app">
-      <Globe hotspots={hotspots} visibleIds={visibleIds} selectedId={selectedId} onSelect={select} />
+      <Globe hotspots={hotspots} visibleIds={visibleIds} selectedId={selectedId} onSelect={select} overlay={overlay} />
       <Sidebar
         query={query} onQuery={setQuery}
         modules={modules} onToggleModule={toggleModule}
@@ -93,7 +144,18 @@ export default function App() {
         places={visible} selectedId={selectedId} onSelect={select}
         open={sheetOpen} onToggleOpen={() => setSheetOpen((o) => !o)}
       />
-      {selected && <PlaceCard spot={selected} coverage={coverage} onClose={() => setSelectedId(null)} />}
+      {selected && (
+        <PlaceCard spot={selected} coverage={coverage} manifest={manifest}
+          onOpen3D={() => { setPlaying(false); setShowcase(true); }}
+          onClose={() => setSelectedId(null)} />
+      )}
+      {manifest && !showcase && (
+        <TimeBar manifest={manifest} index={Math.min(dateIndex, manifest.dates.length - 1)} onIndex={setDateIndex}
+          playing={playing} onPlaying={setPlaying} kind={kind} onKind={setKind} />
+      )}
+      {manifest && selected && showcase && (
+        <Showcase3D spot={selected} manifest={manifest} kind={kind} onClose={() => setShowcase(false)} />
+      )}
     </main>
   );
 }

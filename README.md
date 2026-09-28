@@ -12,9 +12,9 @@ SARabande grows in ten parts. Every part ends with a working public site.
 
 | Part | What ships | Status |
 | --- | --- | --- |
-| 1 | Globe and atlas: 19 hotspots, dance legend, place cards, weekly NISAR coverage check, automatic deploys | **This version** |
-| 2 | Water dance: Tonle Sap water extent from GCOV, the Place view and time slider | Next |
-| 3 | Earthquake: the Venezuela GUNW pair, fringes and displacement, before/after swipe | |
+| 1 | Globe and atlas: 19 hotspots, dance legend, place cards, weekly NISAR coverage check, automatic deploys | Done |
+| 2 | Water dance: Tonle Sap water extent from GCOV, time slider and chart, and the 3D before/after showcase | **This version** |
+| 3 | Earthquake: the Venezuela GUNW pair, fringes and displacement, in the 3D showcase too | Next |
 | 4 | Point inspector and the dance classifier | |
 | 5 | Ground-motion time series, MintPy, GNSS validation | |
 | 6 | Explanations at three reading levels, story mode, "How radar sees" | |
@@ -56,6 +56,28 @@ python pipeline/coverage_check.py --name jakarta --products GUNW GCOV \
 
 Downloading NISAR files (from Part 2 on) needs a free NASA Earthdata login.
 
+## Part 2: the water dance
+
+The site ships with a **synthetic demo** for Tonle Sap so every screen works before any download. It grows the real lake outline (Natural Earth, public domain) through a pretend monsoon, and the app labels it "Synthetic demo data, not NISAR measurements" everywhere it appears. Rebuild it with:
+
+```bash
+python pipeline/water_dance.py demo --hotspot tonle-sap
+```
+
+To replace it with real NISAR measurements, get a free Earthdata login at urs.earthdata.nasa.gov, then:
+
+```bash
+export EARTHDATA_USERNAME=you EARTHDATA_PASSWORD=secret     # or EARTHDATA_TOKEN=...
+python pipeline/water_dance.py download --hotspot tonle-sap --max 12
+python pipeline/water_dance.py process --hotspot tonle-sap
+```
+
+`download` picks the track and frame with the most passes. GCOV files are large (several GB each), so check your disk space, or run it in ASF OpenSARLab next to the archive. `process` reads only the part of each file that covers the lake. It maps open water (dark to radar) and likely flooded vegetation (bright from double bounce), then writes small PNG layers and a `manifest.json` to `data/layers/tonle-sap/`. Commit those and the site updates.
+
+If a real file's layout differs from what the reader expects, it stops with a clear message. Run `python pipeline/water_dance.py inspect FILE.h5` to see the layout, and add the dataset name to the candidate lists at the top of `pipeline/nisar_io.py`.
+
+**The 3D before/after showcase:** on any place with layers, press "See before and after in 3D". Two 3D maps stay locked together, with a divider you can drag (or move with the arrow keys). "Play reveal" sweeps the later pass across the landscape while the camera circles, which makes a good shot for the demo video. The elevation comes from the free AWS Terrain Tiles. If they can't load, the view drops to flat and keeps working.
+
 ## Put it online for free
 
 1. Push this folder to a **public** GitHub repository.
@@ -72,6 +94,7 @@ Create `web/.env` to change these (both optional):
 ```
 VITE_REPO_URL=https://github.com/your-team/sarabande
 VITE_BASEMAP_STYLE=https://tiles.openfreemap.org/styles/positron
+VITE_TERRAIN_TILES=https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png
 ```
 
 If the basemap cannot load, the globe falls back to public-domain Natural Earth outlines shipped with the site, so the demo still works offline.
@@ -79,8 +102,8 @@ If the basemap cannot load, the globe falls back to public-domain Natural Earth 
 ## How the repository is laid out
 
 ```
-data/          Shared data: hotspots.json, coverage.json, basemap/land.geojson
-pipeline/      Python: coverage_check.py and update_coverage.py (later: processing)
+data/          Shared data: hotspots.json, coverage.json, basemap/, layers/<place>/ (web layers + manifest)
+pipeline/      Python: coverage checks, nisar_io.py (HDF5 reader), water.py and water_dance.py (Part 2)
 web/           React, TypeScript and Vite app with a MapLibre globe
 .github/       Free GitHub Actions: deploy to Pages, weekly coverage check
 ```
@@ -97,12 +120,16 @@ web/           React, TypeScript and Vite app with a MapLibre globe
 | Archivo and Source Serif 4 fonts (via Fontsource) | SIL Open Font License |
 | asf_search | BSD-3-Clause |
 | matplotlib | PSF-based, BSD-compatible |
+| NumPy, SciPy, h5py | BSD-3-Clause |
+| rasterio (bundles GDAL, MIT) | BSD-3-Clause |
+| Pillow | MIT-CMU |
 
 ## Data and credits
 
 - NISAR L-band data: NASA/JPL and ISRO, distributed free by the Alaska Satellite Facility DAAC.
 - Basemap: OpenFreeMap, with map data from OpenStreetMap contributors (ODbL).
-- Offline land outlines: Natural Earth (public domain).
+- Offline land outlines and the Tonle Sap lake outline: Natural Earth (public domain).
+- Elevation for the 3D view: Terrain Tiles from the AWS Open Data programme (SRTM, GMTED and other public sources).
 - Hotspot areas are approximate boxes. Tighten them after looking at real scenes.
 
 SARabande is informational. It is not an official warning system.
