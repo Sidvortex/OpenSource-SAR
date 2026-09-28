@@ -1,0 +1,11 @@
+node_modules/
+web/dist/
+web/public/data/
+coverage_out/
+__pycache__/
+*.pyc
+.venv/
+.env
+# Raw NISAR products are gigabytes each: never commit them.
+*.h5
+pipeline/work/
