@@ -72,6 +72,21 @@ export function classify(tIn: number[], yIn: number[], sigmaIn?: number | number
   if (Math.abs(jump) > 4 * noise && rssStep < 0.35 * Math.max(rssLin, floor) && rssStep < 0.5 * Math.max(rssQuad, floor)) {
     return { dance: 'tango', confidence, reason: `A sudden change of ${fmt(jump, unit)} between ${labels[bestK - 1]} and ${labels[bestK]}.` };
   }
+  // A rise then a fall (or the reverse): two straight segments meeting at a turning point.
+  let best: [number, number, number, number] | null = null;
+  for (let k = 2; k < n - 2; k++) {
+    const xl = x.slice(0, k + 1), yl = y.slice(0, k + 1), xr = x.slice(k), yr = y.slice(k);
+    const left = polyfit(xl, yl, 1), right = polyfit(xr, yr, 1);
+    const rssH = rss(left, xl, yl) + rss(right, xr, yr);
+    if (!best || rssH < best[0]) best = [rssH, k, left[1], right[1]];
+  }
+  if (best) {
+    const [rssH, k, sl, sr] = best;
+    const rise = sl * (x[k] - x[0]), fall = sr * (x[n - 1] - x[k]);
+    if (sl * sr < 0 && Math.abs(rise) > 3 * noise && Math.abs(fall) > 3 * noise && rssH < 0.5 * Math.max(rssLin, floor)) {
+      return { dance: 'waltz', confidence, reason: `It ${sl > 0 ? 'rose until' : 'fell until'} ${labels[k]} and ${sl > 0 ? 'then fell' : 'then rose'}, like a seasonal cycle.` };
+    }
+  }
   const [, c1, c2] = quad;
   if (rssQuad < 0.6 * Math.max(rssLin, floor) && Math.abs(c2) * 0.25 > 1.5 * noise) {
     const vertex = c2 ? -c1 / (2 * c2) : -1;

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Part 3: the earthquake. Turns NISAR GUNW interferograms into movement maps.
+Parts 3 and 5: ground motion from NISAR GUNW interferograms, for earthquakes and sinking ground.
 
-    python pipeline/quake.py demo --hotspot venezuela-coast       # synthetic, labelled, no download
+    python pipeline/quake.py demo --hotspot venezuela-coast       # synthetic earthquake, labelled
+    python pipeline/quake.py demo --hotspot mexico-city           # synthetic sinking city + GNSS, labelled
     python pipeline/quake.py download --hotspot venezuela-coast   # needs a free Earthdata login
     python pipeline/quake.py process --hotspot venezuela-coast
     python pipeline/quake.py inspect path/to/GUNW.h5
@@ -36,191 +37,7 @@ import water
 from layers import ROOT, WORK, load_spot
 from water_dance import earthdata_session
 
-MIN_COHERENCE = 0.3
-MOVED_CM = 10.0
-
-
-def pretty(d):
-    return f"{d:%b} {d.day}, {d.year}"
-
-
-def reference_ring(values, frac=0.08):
-    """Median of the scene's outer ring: far from most faults, so a fair zero point."""
-    h, w = values.shape
-    ring = np.ones_like(values, dtype=bool)
-    ring[int(h * frac):h - int(h * frac), int(w * frac):w - int(w * frac)] = False
-    sample = values[ring & np.isfinite(values)]
-    return float(np.median(sample)) if sample.size else 0.0
-
-
-def movement_cm(pair, iono=True, flip=False):
-    """Masked line-of-sight movement in cm (positive = toward the radar), plus coherence."""
-    phase = pair.phase.astype("float64")
-    valid = np.isfinite(phase)
-    if pair.coherence is not None:
-        valid &= pair.coherence >= MIN_COHERENCE
-    if pair.components is not None:
-        valid &= pair.components > 0            # 0 = pixels the unwrapper could not connect
-    if iono and pair.ionosphere is not None:
-        phase = phase - pair.ionosphere
-    los = -pair.wavelength / (4 * np.pi) * phase * 100.0
-    if flip:
-        los = -los
-    los[~valid] = np.nan
-    return los.astype("float32")
-
-
-def build_layers(spot, files, synthetic, res, iono=True, flip=False):
-    target = water.target_grid(spot["bbox"], res=res)
-    pairs = []
-    wavelength = None
-    for path in sorted(files):
-        pair = nisar_io.read_gunw_crop(path, spot["bbox"])
-        if pair is None:
-            print(f"  skipped (outside the area): {Path(path).name}")
-            continue
-        wavelength = pair.wavelength
-        bands = {"LOS": movement_cm(pair, iono, flip)}
-        if pair.coherence is not None:
-            bands["COH"] = pair.coherence
-        grid = nisar_io.Grid(acquired=pair.reference, epsg=pair.epsg, x=pair.x, y=pair.y, bands=bands, source=str(path))
-        pairs.append((pair.reference, pair.secondary, water.to_target(grid, target), Path(path).name))
-        print(f"  read {pair.reference} to {pair.secondary}  {Path(path).name}")
-    if not pairs:
-        sys.exit("No interferograms cover this area.")
-
-    # Pairs over the same dates (adjacent frames) are averaged into one map.
-    merged = defaultdict(list)
-    for ref, sec, bands, name in pairs:
-        merged[(ref, sec)].append((bands, name))
-    maps = {}
-    for key, items in sorted(merged.items()):
-        with np.errstate(invalid="ignore"), warnings.catch_warnings():
-            warnings.simplefilter("ignore", RuntimeWarning)   # all-NaN pixels (sea) stay NaN
-            los = np.nanmean(np.stack([b["LOS"] for b, _ in items]), axis=0)
-            coh = np.nanmean(np.stack([b["COH"] for b, _ in items]), axis=0) if "COH" in items[0][0] else None
-        los -= reference_ring(los)
-        maps[key] = (los, coh, [n for _, n in items])
-
-    # One shared colour range, so every pair is judged on the same scale.
-    extreme = max(np.nanpercentile(np.abs(los), 99.5) for los, _, _ in maps.values())
-    vmax = float(max(5.0, np.ceil(extreme / 5.0) * 5.0))
-    half_wave_cm = (wavelength or 0.2385) / 2 * 100
-    out = layers.layer_folder(spot["id"])
-    frames = []
-    for (ref, sec), (los, coh, sources) in maps.items():
-        stamp = f"{ref.isoformat()}_{sec.isoformat()}"
-        files = {"displacement": f"move_{stamp}.png", "fringes": f"fringes_{stamp}.png"}
-        layers.save_ramp(los, -vmax, vmax, "RdBu", out / files["displacement"])
-        layers.save_cyclic(los, half_wave_cm, "hsv", out / files["fringes"])
-        if coh is not None:
-            files["coherence"] = f"quality_{stamp}.webp"
-            layers.save_ramp(coh, 0.0, 1.0, "gray", out / files["coherence"], webp=True)
-        toward = np.nanpercentile(los, 99.5)
-        away = np.nanpercentile(los, 0.5)
-        moved = np.isfinite(los) & (np.abs(los) > MOVED_CM)
-        frames.append({
-            "date": sec.isoformat(),
-            "start": ref.isoformat(),
-            "label": f"{ref:%b} {ref.day} to {pretty(sec)}",
-            "files": files,
-            "stats": {"max_toward_cm": round(max(float(toward), 0.0), 1), "max_away_cm": round(max(float(-away), 0.0), 1),
-                      "max_abs_cm": round(max(float(toward), float(-away), 0.0), 1),
-                      "moved_km2": round(water.area_km2(moved, target), 1)},
-            "sources": sources,
-        })
-
-    # Part 4: each pixel's cumulative movement, its 1-sigma uncertainty from coherence,
-    # and the place's dance measured at the spot that moved most.
-    keys = list(maps)
-    chained = all(keys[i][1] == keys[i + 1][0] for i in range(len(keys) - 1))
-    factor = layers.series_factor(target.height, target.width)
-    reduced = [layers.reduce_grid(maps[k][0], factor) for k in keys]
-    sig_pairs = []
-    for k in keys:
-        coh = maps[k][1]
-        if coh is None:
-            sig_pairs.append(np.full_like(reduced[0], 1.0))
-            continue
-        g = np.clip(layers.reduce_grid(coh, factor), 0.05, 0.999)
-        sigma_phase = np.sqrt(1 - g ** 2) / (g * np.sqrt(2 * 10))          # about 10 looks
-        sig_pairs.append((wavelength or 0.2385) / (4 * np.pi) * sigma_phase * 100)
-    if chained:
-        dates = [keys[0][0].isoformat()] + [k[1].isoformat() for k in keys]
-        values = [np.zeros_like(reduced[0])] + list(np.cumsum(np.stack(reduced), axis=0))
-        sigmas = [np.full_like(reduced[0], 0.1)] + list(np.sqrt(np.cumsum(np.stack(sig_pairs) ** 2, axis=0)))
-        label = "Total movement since the first pass"
-    else:
-        dates = [k[1].isoformat() for k in keys]
-        values, sigmas, label = reduced, sig_pairs, "Movement in each pair"
-    count, h, w = layers.write_series(out, "series.bin", values)
-    layers.write_series(out, "sigma.bin", sigmas)
-    final = np.abs(values[-1])
-    if np.isfinite(final).any():
-        r, c = np.unravel_index(np.nanargmax(final), final.shape)
-        t_days = [(date.fromisoformat(d) - date.fromisoformat(dates[0])).days for d in dates]
-        place_dance = dance.classify(t_days, [float(v[r, c]) for v in values], [float(s[r, c]) for s in sigmas],
-                                     unit="cm", when=[pretty(date.fromisoformat(d)).rsplit(',', 1)[0] for d in dates])
-    else:
-        place_dance = {"dance": "still", "confidence": "low", "reason": "No reliable pixels."}
-    place_dance["basis"] = "the spot that moved most"
-    series = {"file": "series.bin", "sigma_file": "sigma.bin", "count": count, "width": w, "height": h, "factor": factor,
-              "full_width": target.width, "full_height": target.height, "dates": dates, "label": label, "unit": "cm"}
-
-    event = spot.get("event")
-    across = [f for f in frames if event and f["start"] < event < f["date"]]
-    if across:
-        e = date.fromisoformat(event)
-        headline = (f"Across the {pretty(e)} earthquakes, the ground moved up to "
-                    f"{across[0]['stats']['max_abs_cm']:.0f} cm toward or away from the radar.")
-    else:
-        headline = f"The largest movement in these pairs was {max(f['stats']['max_abs_cm'] for f in frames):.0f} cm."
-    default_right = frames.index(across[0]) if across else len(frames) - 1
-    manifest_layers = [
-        {"id": "displacement", "label": "Movement", "opacity": 0.85,
-         "ramp": {"colors": layers.ramp_colours("RdBu"), "min": -vmax, "max": vmax, "unit": "cm",
-                  "low": "Away from the radar", "high": "Toward the radar"},
-         "note": "Movement along the radar's line of sight, which mixes up-down and sideways motion."},
-        {"id": "fringes", "label": "Fringes", "opacity": 0.8,
-         "ramp": {"colors": layers.ramp_colours("hsv", 7), "min": 0, "max": round(half_wave_cm, 1), "unit": "cm",
-                  "low": "One colour cycle", "high": f"= {half_wave_cm:.0f} cm of movement"},
-         "note": "Tightly packed rainbow bands mean the ground moved a lot over a short distance."},
-    ]
-    if any("coherence" in f["files"] for f in frames):
-        manifest_layers.append({"id": "coherence", "label": "Data quality", "opacity": 0.85,
-                                "ramp": {"colors": layers.ramp_colours("gray"), "min": 0, "max": 1, "unit": "",
-                                         "low": "Unreliable", "high": "Reliable"},
-                                "note": f"Pixels below {MIN_COHERENCE} coherence are left out of the movement map."})
-    return layers.write_manifest(spot, out, {
-        "module": "ground",
-        "title": f"{spot['name']}: the earthquake",
-        "headline": headline,
-        "synthetic": synthetic,
-        "product": "NISAR L2 GUNW (geocoded unwrapped interferograms), HH polarisation",
-        "bounds": target.corners_lonlat(),
-        "event": event,
-        "frame_noun": "pairs",
-        "sides": ["Earlier pair", "Later pair"],
-        "side_stat": {"id": "max_abs_cm", "label": "Largest movement", "unit": "cm"},
-        "compare": [max(default_right - 1, 0), default_right] if default_right > 0 else [0, min(1, len(frames) - 1)],
-        "layers": manifest_layers,
-        "stats": [
-            {"id": "max_toward_cm", "label": "Largest toward", "unit": "cm"},
-            {"id": "max_away_cm", "label": "Largest away", "unit": "cm"},
-            {"id": "moved_km2", "label": f"Moved over {MOVED_CM:.0f} cm", "unit": "km²"},
-        ],
-        "chart": {"area": "max_abs_cm", "line": None, "label": "Largest movement, cm"},
-        "series": series,
-        "dance": place_dance,
-        "method": [
-            "Each interferogram compares two passes 12 days apart; the phase change becomes centimetres along the line of sight.",
-            f"Pixels with coherence below {MIN_COHERENCE}, or that the unwrapper could not connect, are left out.",
-            "The ionospheric phase screen shipped with each product is subtracted." if iono else "No ionospheric correction was applied.",
-            "Movement is measured relative to the median of the scene's outer edge, far from the fault.",
-            f"One fringe (colour cycle) equals half the radar wavelength: about {half_wave_cm:.0f} cm.",
-        ],
-        "frames": frames,
-    })
+from ground import MIN_COHERENCE, build_layers, make_subsidence_pairs, pretty  # noqa: F401
 
 
 # ---------------------------------------------------------------- synthetic demo
@@ -323,14 +140,20 @@ def cmd_process(args):
     files = sorted(folder.glob("*.h5"))
     if not files:
         sys.exit(f"No .h5 files in {folder}. Run the download command first.")
-    build_layers(spot, files, any(f.name.startswith("SYNTHETIC_") for f in files), args.res, not args.no_iono, args.flip_sign)
+    gnss_dir = ROOT / "data" / "gnss" / spot["id"]
+    build_layers(spot, files, any(f.name.startswith("SYNTHETIC_") for f in files), args.res, not args.no_iono, args.flip_sign,
+                 gnss_dir=gnss_dir if gnss_dir.exists() else None)
 
 
 def cmd_demo(args):
     spot = load_spot(args.hotspot)
     print("Writing SYNTHETIC demo interferograms (not NISAR measurements)...")
-    files = make_demo_pairs(spot, WORK / f"demo-{spot['id']}")
-    build_layers(spot, files, synthetic=True, res=args.res)
+    if spot.get("event"):
+        files = make_demo_pairs(spot, WORK / f"demo-{spot['id']}")
+        build_layers(spot, files, synthetic=True, res=args.res)
+    else:
+        files, stations = make_subsidence_pairs(spot, WORK / f"demo-{spot['id']}")
+        build_layers(spot, files, synthetic=True, res=args.res, gnss_dir=stations)
 
 
 def main():

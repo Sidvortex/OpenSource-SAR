@@ -1,0 +1,382 @@
+{
+  "hotspot": "mexico-city",
+  "created": "2026-09-29",
+  "module": "ground",
+  "title": "Mexico City: the ground on the move",
+  "headline": "The fastest-moving ground here moves about 25 cm a year along the radar's line of sight, roughly 32 cm a year if it is all sinking.",
+  "synthetic": true,
+  "product": "NISAR L2 GUNW (geocoded unwrapped interferograms), HH polarisation",
+  "bounds": [
+    [
+      -99.35,
+      19.65
+    ],
+    [
+      -98.84874,
+      19.65
+    ],
+    [
+      -98.84874,
+      19.14924
+    ],
+    [
+      -99.35,
+      19.14924
+    ]
+  ],
+  "event": null,
+  "frame_noun": "pairs",
+  "sides": [
+    "First pair",
+    "Latest pair"
+  ],
+  "side_stat": {
+    "id": "max_total_cm",
+    "label": "Total so far, up to",
+    "unit": "cm"
+  },
+  "compare": [
+    0,
+    5
+  ],
+  "layers": [
+    {
+      "id": "total",
+      "label": "Total so far",
+      "opacity": 0.85,
+      "ramp": {
+        "colors": [
+          "#67001f",
+          "#e58368",
+          "#f6f6f6",
+          "#68aacf",
+          "#053061"
+        ],
+        "min": -6.0,
+        "max": 6.0,
+        "unit": "cm",
+        "low": "Away from the radar (mostly sinking)",
+        "high": "Toward the radar"
+      },
+      "note": "Total line-of-sight movement since the first pass. Press play to watch it build up."
+    },
+    {
+      "id": "velocity",
+      "label": "Speed per year",
+      "opacity": 0.85,
+      "ramp": {
+        "colors": [
+          "#67001f",
+          "#e58368",
+          "#f6f6f6",
+          "#68aacf",
+          "#053061"
+        ],
+        "min": -25.0,
+        "max": 25.0,
+        "unit": "cm",
+        "low": "Moving away each year",
+        "high": "Moving toward each year"
+      },
+      "note": "Average rate in cm per year from every pair. Purely vertical sinking would be about 1.3 times this."
+    },
+    {
+      "id": "displacement",
+      "label": "Each pair",
+      "opacity": 0.85,
+      "ramp": {
+        "colors": [
+          "#67001f",
+          "#e58368",
+          "#f6f6f6",
+          "#68aacf",
+          "#053061"
+        ],
+        "min": -2.0,
+        "max": 2.0,
+        "unit": "cm",
+        "low": "Away from the radar",
+        "high": "Toward the radar"
+      },
+      "note": "Movement along the radar's line of sight, which mixes up-down and sideways motion."
+    },
+    {
+      "id": "fringes",
+      "label": "Fringes",
+      "opacity": 0.8,
+      "ramp": {
+        "colors": [
+          "#ff0000",
+          "#fbf500",
+          "#07ff00",
+          "#00fff5",
+          "#000fff",
+          "#ee00ff",
+          "#ff0017"
+        ],
+        "min": 0,
+        "max": 11.9,
+        "unit": "cm",
+        "low": "One colour cycle",
+        "high": "= 12 cm of movement"
+      },
+      "note": "Tightly packed rainbow bands mean the ground moved a lot over a short distance."
+    },
+    {
+      "id": "coherence",
+      "label": "Data quality",
+      "opacity": 0.85,
+      "ramp": {
+        "colors": [
+          "#000000",
+          "#404040",
+          "#808080",
+          "#c0c0c0",
+          "#ffffff"
+        ],
+        "min": 0,
+        "max": 1,
+        "unit": "",
+        "low": "Unreliable",
+        "high": "Reliable"
+      },
+      "note": "Pixels below 0.3 coherence are left out of the movement maps."
+    }
+  ],
+  "stats": [
+    {
+      "id": "max_total_cm",
+      "label": "Total so far, up to",
+      "unit": "cm"
+    },
+    {
+      "id": "max_toward_cm",
+      "label": "Largest toward",
+      "unit": "cm"
+    },
+    {
+      "id": "max_away_cm",
+      "label": "Largest away",
+      "unit": "cm"
+    },
+    {
+      "id": "moved_km2",
+      "label": "Moved over 10 cm",
+      "unit": "km\u00b2"
+    }
+  ],
+  "chart": {
+    "area": "max_total_cm",
+    "line": null,
+    "label": "Total movement so far, cm"
+  },
+  "series": {
+    "file": "series.bin",
+    "sigma_file": "sigma.bin",
+    "count": 8,
+    "width": 124,
+    "height": 132,
+    "factor": 3,
+    "full_width": 372,
+    "full_height": 394,
+    "dates": [
+      "2026-06-19",
+      "2026-07-01",
+      "2026-07-13",
+      "2026-07-25",
+      "2026-08-18",
+      "2026-08-30",
+      "2026-09-11",
+      "2026-09-23"
+    ],
+    "label": "Total movement since the first pass (gaps bridged with the average rate)",
+    "unit": "cm"
+  },
+  "dance": {
+    "dance": "march",
+    "confidence": "medium",
+    "reason": "A steady trend of about -0.8 cm every 12 days.",
+    "rate_per_12_days": -0.7542373279730479,
+    "basis": "the spot that moved most"
+  },
+  "validation": {
+    "source": "GNSS stations, Nevada Geodetic Laboratory format",
+    "synthetic": true,
+    "assumption": "GNSS vertical rates projected onto the line of sight with cos(40\u00b0), assuming purely vertical motion.",
+    "stations": [
+      {
+        "id": "SYN1",
+        "lon": -99.11,
+        "lat": 19.4,
+        "gnss_cm_yr": -22.7,
+        "insar_cm_yr": -20.5,
+        "difference_cm_yr": 2.2
+      },
+      {
+        "id": "SYN2",
+        "lon": -99.21,
+        "lat": 19.48,
+        "gnss_cm_yr": -1.2,
+        "insar_cm_yr": -0.8,
+        "difference_cm_yr": 0.4
+      },
+      {
+        "id": "SYN3",
+        "lon": -99.0,
+        "lat": 19.33,
+        "gnss_cm_yr": -10.6,
+        "insar_cm_yr": -10.7,
+        "difference_cm_yr": -0.1
+      }
+    ],
+    "rms_cm_yr": 1.3
+  },
+  "bridged": [
+    [
+      "2026-07-25",
+      "2026-08-18"
+    ]
+  ],
+  "method": [
+    "Each interferogram compares two passes 12 days apart; the phase change becomes centimetres along the line of sight.",
+    "Pixels with coherence below 0.3, or that the unwrapper could not connect, are left out.",
+    "The ionospheric phase screen shipped with each product is subtracted.",
+    "Movement is measured relative to the median of the scene's outer edge.",
+    "One fringe (colour cycle) equals half the radar wavelength: about 12 cm.",
+    "Gaps in the 12-day chain (such as NISAR's instrument gap) are bridged with each pixel's average rate; the uncertainty band grows across them."
+  ],
+  "frames": [
+    {
+      "date": "2026-07-01",
+      "start": "2026-06-19",
+      "label": "Jun 19 to Jul 1, 2026",
+      "files": {
+        "displacement": "move_2026-06-19_2026-07-01.png",
+        "fringes": "fringes_2026-06-19_2026-07-01.png",
+        "coherence": "quality_2026-06-19_2026-07-01.webp",
+        "total": "total_2026-07-01.png",
+        "velocity": "velocity.png"
+      },
+      "stats": {
+        "max_toward_cm": 0.3,
+        "max_away_cm": 0.7,
+        "max_abs_cm": 0.7,
+        "moved_km2": 0.0,
+        "max_total_cm": 0.7
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260619T010000_20260619T010040_20260701T010000_20260701T010040_DEMO.h5"
+      ]
+    },
+    {
+      "date": "2026-07-13",
+      "start": "2026-07-01",
+      "label": "Jul 1 to Jul 13, 2026",
+      "files": {
+        "displacement": "move_2026-07-01_2026-07-13.png",
+        "fringes": "fringes_2026-07-01_2026-07-13.png",
+        "coherence": "quality_2026-07-01_2026-07-13.webp",
+        "total": "total_2026-07-13.png",
+        "velocity": "velocity.png"
+      },
+      "stats": {
+        "max_toward_cm": 0.3,
+        "max_away_cm": 0.7,
+        "max_abs_cm": 0.7,
+        "moved_km2": 0.0,
+        "max_total_cm": 1.4
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260701T010000_20260701T010040_20260713T010000_20260713T010040_DEMO.h5"
+      ]
+    },
+    {
+      "date": "2026-07-25",
+      "start": "2026-07-13",
+      "label": "Jul 13 to Jul 25, 2026",
+      "files": {
+        "displacement": "move_2026-07-13_2026-07-25.png",
+        "fringes": "fringes_2026-07-13_2026-07-25.png",
+        "coherence": "quality_2026-07-13_2026-07-25.webp",
+        "total": "total_2026-07-25.png",
+        "velocity": "velocity.png"
+      },
+      "stats": {
+        "max_toward_cm": 0.3,
+        "max_away_cm": 0.6,
+        "max_abs_cm": 0.6,
+        "moved_km2": 0.0,
+        "max_total_cm": 2.0
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260713T010000_20260713T010040_20260725T010000_20260725T010040_DEMO.h5"
+      ]
+    },
+    {
+      "date": "2026-08-30",
+      "start": "2026-08-18",
+      "label": "Aug 18 to Aug 30, 2026",
+      "files": {
+        "displacement": "move_2026-08-18_2026-08-30.png",
+        "fringes": "fringes_2026-08-18_2026-08-30.png",
+        "coherence": "quality_2026-08-18_2026-08-30.webp",
+        "total": "total_2026-08-30.png",
+        "velocity": "velocity.png"
+      },
+      "stats": {
+        "max_toward_cm": 0.3,
+        "max_away_cm": 0.7,
+        "max_abs_cm": 0.7,
+        "moved_km2": 0.0,
+        "max_total_cm": 4.0
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260818T010000_20260818T010040_20260830T010000_20260830T010040_DEMO.h5"
+      ]
+    },
+    {
+      "date": "2026-09-11",
+      "start": "2026-08-30",
+      "label": "Aug 30 to Sep 11, 2026",
+      "files": {
+        "displacement": "move_2026-08-30_2026-09-11.png",
+        "fringes": "fringes_2026-08-30_2026-09-11.png",
+        "coherence": "quality_2026-08-30_2026-09-11.webp",
+        "total": "total_2026-09-11.png",
+        "velocity": "velocity.png"
+      },
+      "stats": {
+        "max_toward_cm": 0.3,
+        "max_away_cm": 0.7,
+        "max_abs_cm": 0.7,
+        "moved_km2": 0.0,
+        "max_total_cm": 4.6
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260830T010000_20260830T010040_20260911T010000_20260911T010040_DEMO.h5"
+      ]
+    },
+    {
+      "date": "2026-09-23",
+      "start": "2026-09-11",
+      "label": "Sep 11 to Sep 23, 2026",
+      "files": {
+        "displacement": "move_2026-09-11_2026-09-23.png",
+        "fringes": "fringes_2026-09-11_2026-09-23.png",
+        "coherence": "quality_2026-09-11_2026-09-23.webp",
+        "total": "total_2026-09-23.png",
+        "velocity": "velocity.png"
+      },
+      "stats": {
+        "max_toward_cm": 0.3,
+        "max_away_cm": 0.8,
+        "max_abs_cm": 0.8,
+        "moved_km2": 0.0,
+        "max_total_cm": 5.4
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260911T010000_20260911T010040_20260923T010000_20260923T010040_DEMO.h5"
+      ]
+    }
+  ]
+}

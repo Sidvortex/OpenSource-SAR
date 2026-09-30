@@ -44,9 +44,10 @@ interface Props {
   onPlaying: (p: boolean) => void;
   kind: string;
   onKind: (k: string) => void;
+  onSnapshot?: () => void;
 }
 
-export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, onKind }: Props) {
+export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, onKind, onSnapshot }: Props) {
   const frames = manifest.frames;
   const current = frames[index];
   const layer = manifest.layers.find((l) => l.id === kind) ?? manifest.layers[0];
@@ -149,6 +150,7 @@ export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, on
       <p className="timebar-foot">
         {frames.length} {manifest.frame_noun}, {frameLabel(frames[0])} to {frameLabel(frames[frames.length - 1])}. Chart: {manifest.chart.label}.
         {chart.gap ? " The grey band is NISAR's instrument gap." : ''}
+        {onSnapshot && <> <button type="button" className="linkish" onClick={onSnapshot}>Save this view as an image</button></>}
       </p>
     </section>
   );

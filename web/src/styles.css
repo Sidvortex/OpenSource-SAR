@@ -242,6 +242,63 @@ code { font-size: 0.9em; background: rgba(26, 34, 51, 0.06); padding: 0 0.25em; 
 .inspector-chart .event-line { stroke: #c0392b; stroke-width: 1.2; stroke-dasharray: 3 3; }
 .card-dance.measured { margin-top: 8px; }
 
+/* ---------- Parts 6 to 10 ---------- */
+.panel-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.story-row { grid-template-columns: 1fr auto; }
+.place-row .marker-demo { width: 16px; height: 16px; align-self: center; }
+.place-row .marker-demo .marker-dot { inset: 4px; }
+.place-row .marker-demo .marker-ring { inset: 3px; }
+.place-row:has(.marker-demo) { grid-template-columns: 16px 1fr auto; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.explain-controls { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.explain-controls select { padding: 4px 6px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.explain .segmented { flex-wrap: wrap; }
+.explain-text { font-family: var(--prose); font-size: 1.02rem; line-height: 1.6; margin: 10px 0 0; }
+.gnss { width: 100%; border-collapse: collapse; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.gnss th, .gnss td { text-align: right; padding: 4px 6px; border-bottom: 1px solid var(--line); }
+.gnss th:first-child { text-align: left; }
+.inspector-actions { display: flex; gap: 6px; margin: 8px 0 0; }
+.linkish { border: 0; padding: 0; background: none; color: var(--ink); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; font-size: inherit; }
+.story {
+  position: absolute; top: 16px; left: calc(var(--panel-w) + 32px); width: min(420px, calc(100% - var(--panel-w) - var(--card-w) - 64px));
+  padding: 16px 18px 14px; background: var(--ink); color: #eef2f7; border-radius: 14px; z-index: 5;
+}
+.story-kicker { margin: 0; font-size: 0.78rem; color: #b8c3d3; }
+.story-title { margin: 2px 0 0; font-size: 1.25rem; font-weight: 800; font-stretch: 115%; }
+.story-text { margin: 8px 0 0; font-family: var(--prose); font-size: 1.02rem; line-height: 1.55; }
+.story-controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
+.story-controls button { padding: 7px 12px; border-radius: 9px; border: 1px solid #45536c; background: none; color: #eef2f7; cursor: pointer; }
+.story-controls button:disabled { opacity: 0.4; cursor: default; }
+.story-controls .primary-light { background: #fff; color: var(--ink); border-color: #fff; font-weight: 700; }
+.story-dots { display: flex; gap: 5px; }
+.story-dots span { width: 7px; height: 7px; border-radius: 50%; background: #45536c; }
+.story-dots span.on { background: #fff; }
+.story-exit { position: absolute; top: 10px; right: 12px; border: 0; background: none; color: #b8c3d3; cursor: pointer; font-size: 0.8rem; text-decoration: underline; }
+.modal { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; background: rgba(28, 37, 54, 0.72); padding: 16px; }
+.modal-body { width: min(720px, 100%); max-height: 100%; overflow-y: auto; background: #1c2536; color: #eef2f7; border-radius: 16px; padding: 18px 22px 22px; }
+.modal-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.lesson { margin-top: 18px; padding-top: 14px; border-top: 1px solid #33405a; }
+.lesson h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.lesson p { margin: 6px 0 0; font-family: var(--prose); line-height: 1.55; color: #d6deea; }
+.lesson-control { display: grid; gap: 6px; font-size: 0.9rem; color: #b8c3d3; }
+.lesson-control input { accent-color: #fff; }
+.lesson-art { width: 100%; max-width: 420px; margin-top: 8px; background: #dfe6ee; border-radius: 10px; }
+.fringe-bar { height: 26px; border-radius: 8px; margin-top: 10px; }
+.quiz { border: 0; padding: 0; margin: 12px 0 0; }
+.quiz legend { font-weight: 650; margin-bottom: 6px; }
+.quiz button { margin: 0 6px 6px 0; padding: 6px 10px; border-radius: 9px; border: 1px solid #45536c; background: #26314a; color: #eef2f7; cursor: pointer; }
+.quiz button.right { background: #2f7d4f; border-color: #2f7d4f; }
+.quiz button.wrong { background: #7a2e14; border-color: #7a2e14; }
+.areacheck {
+  position: absolute; top: 16px; right: 16px; width: var(--card-w); padding: 16px 18px;
+  background: var(--mist-glass); border: 1px solid var(--line); border-top: 4px solid #e0552b; border-radius: 14px;
+}
+.area-row { margin: 8px 0 0; }
+@media (max-width: 900px) {
+  .story { left: 8px; right: 8px; width: auto; top: 8px; }
+  .areacheck { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; }
+}
+
 /* ---------- Markers: each place pulses in its dance's rhythm ---------- */
 .marker {
   --c: var(--ink);

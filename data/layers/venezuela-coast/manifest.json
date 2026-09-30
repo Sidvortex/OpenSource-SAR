@@ -1,6 +1,6 @@
 {
   "hotspot": "venezuela-coast",
-  "created": "2026-09-28",
+  "created": "2026-09-29",
   "module": "ground",
   "title": "Caracas and La Guaira coast: the earthquake",
   "headline": "Across the Jun 24, 2026 earthquakes, the ground moved up to 54 cm toward or away from the radar.",
@@ -100,7 +100,7 @@
         "low": "Unreliable",
         "high": "Reliable"
       },
-      "note": "Pixels below 0.3 coherence are left out of the movement map."
+      "note": "Pixels below 0.3 coherence are left out of the movement maps."
     }
   ],
   "stats": [
@@ -147,18 +147,20 @@
     "dance": "tango",
     "confidence": "high",
     "reason": "A sudden change of -56 cm between Jun 18 and Jun 30.",
-    "jump": -55.66901779174805,
+    "jump": -55.66901707649231,
     "at": [
       0.0,
       12.0
     ],
     "basis": "the spot that moved most"
   },
+  "validation": null,
+  "bridged": [],
   "method": [
     "Each interferogram compares two passes 12 days apart; the phase change becomes centimetres along the line of sight.",
     "Pixels with coherence below 0.3, or that the unwrapper could not connect, are left out.",
     "The ionospheric phase screen shipped with each product is subtracted.",
-    "Movement is measured relative to the median of the scene's outer edge, far from the fault.",
+    "Movement is measured relative to the median of the scene's outer edge.",
     "One fringe (colour cycle) equals half the radar wavelength: about 12 cm."
   ],
   "frames": [

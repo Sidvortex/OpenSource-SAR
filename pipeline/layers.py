@@ -69,16 +69,19 @@ def ramp_colours(cmap, n=5):
 def write_manifest(spot, out, manifest):
     manifest = {"hotspot": spot["id"], "created": date.today().isoformat(), **manifest}
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
-    update_index(spot["id"], manifest["module"], manifest["synthetic"])
+    update_index(spot["id"], manifest)
     print(f"Wrote {len(manifest['frames'])} frames to {out.relative_to(ROOT)}")
     return manifest
 
 
-def update_index(spot_id, module, synthetic):
-    """data/layers/index.json tells the site which places have layers, without guessing URLs."""
+def update_index(spot_id, manifest):
+    """data/layers/index.json tells the site which places have layers, and feeds 'what's moving now'."""
     path = DATA / "layers" / "index.json"
     index = json.loads(path.read_text()) if path.exists() else {"layers": {}}
-    index["layers"][spot_id] = {"module": module, "synthetic": synthetic, "updated": date.today().isoformat()}
+    index["layers"][spot_id] = {"module": manifest["module"], "synthetic": manifest["synthetic"],
+                                "updated": date.today().isoformat(), "headline": manifest.get("headline"),
+                                "dance": (manifest.get("dance") or {}).get("dance"),
+                                "latest": manifest["frames"][-1]["date"] if manifest.get("frames") else None}
     path.write_text(json.dumps(index, indent=2) + "\n")
 
 

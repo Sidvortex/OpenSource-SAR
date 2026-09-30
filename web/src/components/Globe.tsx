@@ -17,6 +17,8 @@ interface Props {
   overlay: Overlay | null;
   onMapClick?: (lng: number, lat: number) => void;
   pick?: [number, number] | null;
+  drawBox?: [number, number, number, number] | null;
+  onReady?: (map: maplibregl.Map) => void;
 }
 
 function areaOutline(spot: Hotspot | undefined): FeatureCollection {
@@ -43,7 +45,7 @@ function addAreaLayer(map: maplibregl.Map) {
   map.addLayer({ id: 'area-line', type: 'line', source: 'area', paint: { 'line-color': '#1A2233', 'line-width': 1.5, 'line-dasharray': [2, 2] } });
 }
 
-export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay, onMapClick, pick = null }: Props) {
+export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay, onMapClick, pick = null, drawBox = null, onReady }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markers = useRef(new Map<string, HTMLButtonElement>());
@@ -70,7 +72,9 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay, onM
       center: [30, 20],
       zoom: wide ? 1.85 : 1.1,
       attributionControl: { compact: true },
+      canvasContextAttributes: { preserveDrawingBuffer: true },   // lets 'Save this view' read the canvas
     });
+    onReady?.(map);
     mapRef.current = map;
     // Centre the globe in the space beside the panel rather than behind it.
     if (wide) map.easeTo({ center: map.getCenter(), offset: [180, 0], duration: 0 });
@@ -85,6 +89,8 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay, onM
       applyOverlay(map, overlayRef.current, 'area-fill');
       if (!map.getSource('pick')) {
         map.addSource('pick', { type: 'geojson', data: pickPoint(pickRef.current) });
+        map.addSource('draw', { type: 'geojson', data: EMPTY });
+        map.addLayer({ id: 'draw', type: 'line', source: 'draw', paint: { 'line-color': '#e0552b', 'line-width': 2, 'line-dasharray': [3, 2] } });
         map.addLayer({ id: 'pick', type: 'circle', source: 'pick', paint: { 'circle-radius': 7, 'circle-color': '#1a2233', 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 2.5 } });
       }
     });
@@ -146,6 +152,14 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay, onM
   useEffect(() => {
     (mapRef.current?.getSource('pick') as maplibregl.GeoJSONSource | undefined)?.setData(pickPoint(pick));
   }, [pick]);
+
+  useEffect(() => {
+    const src = mapRef.current?.getSource('draw') as maplibregl.GeoJSONSource | undefined;
+    if (!src) return;
+    if (!drawBox) { src.setData(EMPTY); return; }
+    const [w, s, e, n] = drawBox;
+    src.setData({ type: 'FeatureCollection', features: [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [[w, s], [e, s], [e, n], [w, n], [w, s]] } }] });
+  }, [drawBox]);
 
   // The radar layer for the current date and layer choice.
   useEffect(() => {

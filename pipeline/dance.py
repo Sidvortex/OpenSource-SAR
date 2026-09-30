@@ -61,6 +61,21 @@ def classify(t, y, sigma=None, unit="", when=None):
         return {"dance": "tango", "confidence": confidence,
                 "reason": f"A sudden change of {_num(jump, unit)} between {labels[best_k - 1]} and {labels[best_k]}.",
                 "jump": jump, "at": [float(t[best_k - 1]), float(t[best_k])]}
+    # A rise then a fall (or the reverse): two straight segments meeting at a turning point.
+    best = None
+    for k in range(2, n - 2):
+        left, right = np.polyfit(x[:k + 1], y[:k + 1], 1), np.polyfit(x[k:], y[k:], 1)
+        rss_h = float(np.sum((np.polyval(left, x[:k + 1]) - y[:k + 1]) ** 2) + np.sum((np.polyval(right, x[k:]) - y[k:]) ** 2))
+        if best is None or rss_h < best[0]:
+            best = (rss_h, k, float(left[0]), float(right[0]))
+    if best:
+        rss_h, k, sl, sr = best
+        rise, fall = sl * (x[k] - x[0]), sr * (x[-1] - x[k])
+        if sl * sr < 0 and abs(rise) > 3 * noise and abs(fall) > 3 * noise and rss_h < 0.5 * max(rss_lin, floor):
+            shape = "rose until" if sl > 0 else "fell until"
+            turn = "then fell" if sl > 0 else "then rose"
+            return {"dance": "waltz", "confidence": confidence,
+                    "reason": f"It {shape} {labels[k]} and {turn}, like a seasonal cycle."}
     c2, c1 = float(quad[0]), float(quad[1])
     if rss_quad < 0.6 * max(rss_lin, floor) and abs(c2) * 0.25 > 1.5 * noise:
         vertex = -c1 / (2 * c2) if c2 else -1.0

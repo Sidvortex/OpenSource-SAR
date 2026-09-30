@@ -1,0 +1,92 @@
+{
+  "note": "Explanation templates. Add a language by adding its code everywhere below. {placeholders} are filled from the data; never type numbers here.",
+  "languages": {"en": "English", "hi": "हिन्दी", "es": "Español"},
+  "levels": {
+    "en": {"kid": "Like I'm 10", "citizen": "Everyday", "expert": "Expert"},
+    "hi": {"kid": "बच्चों के लिए", "citizen": "आम भाषा", "expert": "विशेषज्ञ"},
+    "es": {"kid": "Como si tuviera 10", "citizen": "Cotidiano", "expert": "Experto"}
+  },
+  "danceNames": {
+    "en": {"waltz": "Waltz", "march": "March", "tango": "Tango", "crescendo": "Crescendo", "still": "Still"},
+    "hi": {"waltz": "वॉल्ट्ज़", "march": "मार्च", "tango": "टैंगो", "crescendo": "क्रेसेंडो", "still": "स्थिर"},
+    "es": {"waltz": "Vals", "march": "Marcha", "tango": "Tango", "crescendo": "Crescendo", "still": "Quieto"}
+  },
+  "danceLine": {"en": "Its measured dance: {dance}.", "hi": "मापा गया नृत्य: {dance}।", "es": "Su baile medido: {dance}."},
+  "caveatTitle": {"en": "What this can't tell you", "hi": "यह क्या नहीं बता सकता", "es": "Lo que esto no puede decir"},
+  "templates": {
+    "water": {
+      "en": {"kid": "In {place}, the lake grows like a balloon in the rainy season. The radar saw {first} square kilometres of water at the start and {last} at the end.",
+             "citizen": "Radar measured open water at {place} growing from {first} km² on {firstDate} to {last} km² on {lastDate}, {ratio} times larger. It sees water even under monsoon clouds.",
+             "expert": "Open water was mapped from GCOV HH backscatter with per-pass Otsu thresholds ({first} to {last} km², {firstDate} to {lastDate}); likely flooded vegetation comes from double-bounce brightening."},
+      "hi": {"kid": "{place} में बारिश के मौसम में झील गुब्बारे की तरह फैलती है। रडार ने शुरुआत में {first} वर्ग किलोमीटर और आख़िर में {last} वर्ग किलोमीटर पानी देखा।",
+             "citizen": "रडार के अनुसार {place} में खुला पानी {firstDate} को {first} वर्ग किमी से बढ़कर {lastDate} को {last} वर्ग किमी हो गया, यानी {ratio} गुना। रडार मानसून के बादलों के पार भी पानी देख लेता है।",
+             "expert": "खुले पानी का नक़्शा GCOV HH बैकस्कैटर पर हर पास के Otsu थ्रेशहोल्ड से बना ({first} से {last} वर्ग किमी); पानी में डूबी वनस्पति की पहचान डबल-बाउंस चमक से हुई।"},
+      "es": {"kid": "En {place}, el lago crece como un globo en la temporada de lluvias. El radar vio {first} kilómetros cuadrados de agua al principio y {last} al final.",
+             "citizen": "El radar midió que el agua abierta en {place} pasó de {first} km² el {firstDate} a {last} km² el {lastDate}: {ratio} veces más. Ve el agua incluso bajo las nubes del monzón.",
+             "expert": "El agua abierta se cartografió con retrodispersión HH de GCOV y umbrales de Otsu por pasada ({first} a {last} km²); la vegetación inundada probable se detecta por el brillo de doble rebote."}
+    },
+    "quake": {
+      "en": {"kid": "The ground at {place} jumped during the earthquakes on {event}. Some places moved up to {max} centimetres.",
+             "citizen": "Comparing radar passes from before and after the {event} earthquakes shows the ground near {place} shifted by up to {max} cm toward or away from the satellite.",
+             "expert": "A 12-day GUNW pair spanning {event} shows up to {max} cm of line-of-sight displacement after ionospheric correction and coherence masking; each fringe is about 12 cm."},
+      "hi": {"kid": "{event} के भूकंप में {place} की ज़मीन हिल गई। कुछ जगहें {max} सेंटीमीटर तक खिसक गईं।",
+             "citizen": "{event} के भूकंपों से पहले और बाद के रडार पासों की तुलना बताती है कि {place} के पास ज़मीन उपग्रह की ओर या उससे दूर {max} सेमी तक खिसकी।",
+             "expert": "{event} को पार करता 12-दिन का GUNW जोड़ा, आयनमंडल सुधार और कोहेरेंस मास्किंग के बाद, {max} सेमी तक लाइन-ऑफ़-साइट विस्थापन दिखाता है; हर फ्रिंज लगभग 12 सेमी है।"},
+      "es": {"kid": "El suelo de {place} saltó durante los terremotos del {event}. Algunos lugares se movieron hasta {max} centímetros.",
+             "citizen": "Al comparar pasadas de radar de antes y después de los terremotos del {event}, el suelo cerca de {place} se desplazó hasta {max} cm hacia el satélite o alejándose de él.",
+             "expert": "Un par GUNW de 12 días que abarca el {event} muestra hasta {max} cm de desplazamiento en la línea de visión, tras corregir la ionosfera y enmascarar por coherencia; cada franja equivale a unos 12 cm."}
+    },
+    "subsidence": {
+      "en": {"kid": "{place} is slowly sinking, a little every day. The fastest parts sink about {vert} centimetres every year.",
+             "citizen": "Radar shows parts of {place} moving about {rate} cm a year along its line of sight. For sinking ground, that is roughly {vert} cm a year downward.",
+             "expert": "Averaging {pairs} chained 12-day GUNW pairs gives peak line-of-sight rates near {rate} cm/yr ({vert} cm/yr if purely vertical); GNSS agreement: {rms} cm/yr RMS."},
+      "hi": {"kid": "{place} धीरे-धीरे, हर दिन थोड़ा-थोड़ा धँस रहा है। सबसे तेज़ हिस्से हर साल लगभग {vert} सेंटीमीटर धँसते हैं।",
+             "citizen": "रडार के अनुसार {place} के कुछ हिस्से उसकी दृष्टि-रेखा में हर साल लगभग {rate} सेमी खिसक रहे हैं। धँसती ज़मीन के लिए यह लगभग {vert} सेमी प्रति वर्ष नीचे की ओर है।",
+             "expert": "{pairs} जुड़े हुए 12-दिन के GUNW जोड़ों का औसत लगभग {rate} सेमी/वर्ष की अधिकतम लाइन-ऑफ़-साइट दर देता है (पूरी तरह ऊर्ध्वाधर मानें तो {vert} सेमी/वर्ष); GNSS से अंतर: {rms} सेमी/वर्ष RMS।"},
+      "es": {"kid": "{place} se hunde poco a poco, un poquito cada día. Las partes que más rápido se hunden bajan unos {vert} centímetros cada año.",
+             "citizen": "El radar muestra partes de {place} moviéndose unos {rate} cm al año en su línea de visión. Si el suelo se hunde, son unos {vert} cm al año hacia abajo.",
+             "expert": "Promediando {pairs} pares GUNW encadenados de 12 días se obtienen tasas máximas en línea de visión cercanas a {rate} cm/año ({vert} cm/año si es puramente vertical); acuerdo con GNSS: {rms} cm/año RMS."}
+    },
+    "fire": {
+      "en": {"kid": "Fires and clearing took trees away in {place}. The radar found {burned} square kilometres of newly bare ground, even through the smoke.",
+             "citizen": "By comparing each pass with the forest's earlier brightness, radar mapped about {burned} km² of burn scars and clearings in {place}, seeing through clouds and smoke.",
+             "expert": "Burned or cleared area ({burned} km²) is where HV backscatter fell at least 3 dB below its two-pass baseline on two consecutive passes."},
+      "hi": {"kid": "{place} में आग और कटाई ने पेड़ छीन लिए। रडार ने धुएँ के पार भी {burned} वर्ग किलोमीटर नई खाली ज़मीन खोजी।",
+             "citizen": "हर पास की तुलना जंगल की पहले की चमक से करके रडार ने {place} में लगभग {burned} वर्ग किमी जले और साफ़ किए गए इलाक़े का नक़्शा बनाया, बादलों और धुएँ के पार देखकर।",
+             "expert": "जला या साफ़ किया गया क्षेत्र ({burned} वर्ग किमी) वह है जहाँ HV बैकस्कैटर लगातार दो पासों में अपने आधार से कम से कम 3 dB गिरा।"},
+      "es": {"kid": "Los incendios y la tala se llevaron árboles en {place}. El radar encontró {burned} kilómetros cuadrados de suelo recién despejado, incluso a través del humo.",
+             "citizen": "Comparando cada pasada con el brillo anterior del bosque, el radar cartografió unos {burned} km² de cicatrices de fuego y claros en {place}, viendo a través de nubes y humo.",
+             "expert": "El área quemada o talada ({burned} km²) es donde la retrodispersión HV cayó al menos 3 dB bajo su línea base en dos pasadas consecutivas."}
+    },
+    "farming": {
+      "en": {"kid": "In {place}, crops grow tall and then get harvested. At the busiest time, {peak}% of the land was covered in thick crops.",
+             "citizen": "Radar tracked the growing season in {place}: on {peakDate}, {peak}% of the land showed a full crop canopy, before the harvest.",
+             "expert": "Canopy development is HV backscatter above each pixel's seasonal minimum; {peak}% of pixels exceeded 4 dB on {peakDate}."},
+      "hi": {"kid": "{place} में फ़सलें ऊँची होती हैं और फिर काटी जाती हैं। सबसे व्यस्त समय पर {peak}% ज़मीन घनी फ़सलों से ढकी थी।",
+             "citizen": "रडार ने {place} में फ़सल के मौसम पर नज़र रखी: {peakDate} को, कटाई से पहले, {peak}% ज़मीन पर पूरी फ़सल छाई हुई थी।",
+             "expert": "फ़सल की बढ़त हर पिक्सेल के मौसमी न्यूनतम से ऊपर HV बैकस्कैटर है; {peakDate} को {peak}% पिक्सेल 4 dB से ऊपर थे।"},
+      "es": {"kid": "En {place}, los cultivos crecen y luego se cosechan. En el momento de más actividad, el {peak}% de la tierra estaba cubierta de cultivos densos.",
+             "citizen": "El radar siguió la temporada en {place}: el {peakDate}, el {peak}% de la tierra mostraba un dosel de cultivo completo, antes de la cosecha.",
+             "expert": "El desarrollo del dosel es la retrodispersión HV sobre el mínimo estacional de cada píxel; el {peak}% superó 4 dB el {peakDate}."}
+    },
+    "ice": {
+      "en": {"kid": "Glaciers are rivers of ice. The fastest ice at {place} moved {last} metres a day, up from {first} metres a day.",
+             "citizen": "Tracking patterns in the radar images shows the ice at {place} speeding up from {first} to {last} metres a day, which can be a sign of a surge.",
+             "expert": "GOFF pixel offsets over 12-day pairs give peak surface speeds rising from {first} to {last} m/day."},
+      "hi": {"kid": "ग्लेशियर बर्फ़ की नदियाँ हैं। {place} की सबसे तेज़ बर्फ़ पहले {first} मीटर प्रतिदिन चलती थी, अब {last} मीटर प्रतिदिन।",
+             "citizen": "रडार तस्वीरों में पैटर्न का पीछा करने से पता चलता है कि {place} की बर्फ़ {first} से {last} मीटर प्रतिदिन तक तेज़ हुई, जो सर्ज (अचानक तेज़ी) का संकेत हो सकता है।",
+             "expert": "12-दिन के जोड़ों पर GOFF पिक्सेल ऑफ़सेट से अधिकतम सतही गति {first} से बढ़कर {last} मीटर/दिन मिलती है।"},
+      "es": {"kid": "Los glaciares son ríos de hielo. El hielo más rápido de {place} avanzaba {first} metros al día y ahora {last}.",
+             "citizen": "Siguiendo patrones en las imágenes de radar se ve que el hielo de {place} acelera de {first} a {last} metros al día, lo que puede indicar un surge (avance brusco).",
+             "expert": "Los desplazamientos de píxeles GOFF en pares de 12 días dan velocidades superficiales máximas que suben de {first} a {last} m/día."}
+    }
+  },
+  "caveats": {
+    "water": {"en": "Wind-roughened water can look like land, and steep slopes can hide water from the radar.", "hi": "हवा से खुरदरा पानी ज़मीन जैसा दिख सकता है, और खड़ी ढलानें पानी को रडार से छिपा सकती हैं।", "es": "El agua agitada por el viento puede parecer tierra, y las laderas empinadas pueden ocultar agua al radar."},
+    "quake": {"en": "Radar measures movement along its line of sight, which mixes up-down and sideways motion.", "hi": "रडार अपनी दृष्टि-रेखा में गति मापता है, जिसमें ऊपर-नीचे और बग़ल की गति मिली होती है।", "es": "El radar mide el movimiento en su línea de visión, que mezcla desplazamientos verticales y laterales."},
+    "subsidence": {"en": "Only a few months of passes so far, so rates will sharpen with time. Line-of-sight motion also mixes in any sideways movement.", "hi": "अभी कुछ ही महीनों के पास हैं, इसलिए समय के साथ दरें और सटीक होंगी। दृष्टि-रेखा की गति में बग़ल की गति भी मिली होती है।", "es": "Solo hay unos meses de pasadas, así que las tasas mejorarán con el tiempo. El movimiento en línea de visión también incluye desplazamiento lateral."},
+    "fire": {"en": "Radar shows where forest structure was lost, not whether fire or felling caused it.", "hi": "रडार बताता है कि जंगल कहाँ से मिटा, यह नहीं कि आग से या कटाई से।", "es": "El radar muestra dónde se perdió la estructura del bosque, no si fue por fuego o por tala."},
+    "farming": {"en": "Rain and soil moisture also change radar brightness, so a single date can mislead.", "hi": "बारिश और मिट्टी की नमी भी रडार की चमक बदलती है, इसलिए एक तारीख़ भ्रम पैदा कर सकती है।", "es": "La lluvia y la humedad del suelo también cambian el brillo del radar, así que una sola fecha puede engañar."},
+    "ice": {"en": "Offsets are hardest to measure in fast, crevassed ice and at high latitudes.", "hi": "तेज़ और दरारों वाली बर्फ़ में तथा ऊँचे अक्षांशों पर ऑफ़सेट मापना सबसे कठिन है।", "es": "Los desplazamientos son más difíciles de medir en hielo rápido y agrietado y en latitudes altas."}
+  }
+}

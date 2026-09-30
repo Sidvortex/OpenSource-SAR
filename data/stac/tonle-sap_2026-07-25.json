@@ -1,0 +1,80 @@
+{
+ "type": "Feature",
+ "stac_version": "1.0.0",
+ "id": "tonle-sap_2026-07-25",
+ "bbox": [
+  103.3,
+  11.899919,
+  105.000511,
+  13.7
+ ],
+ "geometry": {
+  "type": "Polygon",
+  "coordinates": [
+   [
+    [
+     103.3,
+     11.899919
+    ],
+    [
+     105.000511,
+     11.899919
+    ],
+    [
+     105.000511,
+     13.7
+    ],
+    [
+     103.3,
+     13.7
+    ],
+    [
+     103.3,
+     11.899919
+    ]
+   ]
+  ]
+ },
+ "properties": {
+  "datetime": "2026-07-25T00:00:00Z",
+  "start_datetime": "2026-07-25T00:00:00Z",
+  "end_datetime": "2026-07-25T00:00:00Z",
+  "sarabande:module": "water",
+  "sarabande:synthetic": true,
+  "sarabande:stats": {
+   "open_water_km2": 3707.4,
+   "flooded_veg_km2": 1238.8,
+   "water_total_km2": 4946.2,
+   "threshold_db": -15.1
+  },
+  "sarabande:sources": [
+   "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260725T221500_20260725T221540_DEMO.h5"
+  ]
+ },
+ "assets": {
+  "water": {
+   "href": "../layers/tonle-sap/water_2026-07-25.png",
+   "type": "image/png",
+   "roles": [
+    "visual"
+   ]
+  },
+  "radar": {
+   "href": "../layers/tonle-sap/radar_2026-07-25.webp",
+   "type": "image/webp",
+   "roles": [
+    "visual"
+   ]
+  }
+ },
+ "links": [
+  {
+   "rel": "root",
+   "href": "./catalog.json"
+  },
+  {
+   "rel": "parent",
+   "href": "./catalog.json"
+  }
+ ]
+}

@@ -1,12 +1,16 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { DANCES, MODULES, formatDate, vertexUrl } from '../catalog';
 import type { Coverage, Hotspot, LayerManifest } from '../types';
+import type { ExplainData } from '../explain';
+import { Explain } from './Explain';
+import { REPO_URL } from './Sidebar';
 
 interface Props {
   spot: Hotspot;
   coverage: Coverage | null;
   manifest: LayerManifest | null;
   canInspect?: boolean;
+  explainData?: ExplainData | null;
   inspector?: ReactNode;
   onOpen3D: () => void;
   onClose: () => void;
@@ -45,7 +49,7 @@ function CoverageStatus({ spot, coverage }: { spot: Hotspot; coverage: Coverage 
   );
 }
 
-export function PlaceCard({ spot, coverage, manifest, canInspect, inspector, onOpen3D, onClose }: Props) {
+export function PlaceCard({ spot, coverage, manifest, canInspect, explainData, inspector, onOpen3D, onClose }: Props) {
   const module = MODULES[spot.module];
   return (
     <article className="card" aria-labelledby="card-title" style={{ '--c': module.color } as CSSProperties}>
@@ -61,6 +65,7 @@ export function PlaceCard({ spot, coverage, manifest, canInspect, inspector, onO
         <button type="button" className="cta" onClick={onOpen3D}>See before and after in 3D</button>
       )}
       {inspector ?? (canInspect && <p className="hint">Click anywhere on the layer to see that spot's history and its own dance.</p>)}
+      {manifest && explainData && <Explain data={explainData} manifest={manifest} spot={spot} />}
       {spot.sensitive && <p className="card-note">{spot.sensitive}</p>}
       {spot.caution && <p className="card-note">{spot.caution}</p>}
 
@@ -81,11 +86,27 @@ export function PlaceCard({ spot, coverage, manifest, canInspect, inspector, onO
         )}
       </section>
 
+      {manifest?.validation && (
+        <section className="card-section" aria-labelledby="gnss-title">
+          <h3 id="gnss-title" className="card-subtitle">Checked against GNSS stations{manifest.validation.synthetic ? ' (synthetic stations)' : ''}</h3>
+          <table className="gnss">
+            <thead><tr><th scope="col">Station</th><th scope="col">GNSS</th><th scope="col">Radar</th><th scope="col">Difference</th></tr></thead>
+            <tbody>{manifest.validation.stations.map((s) => (
+              <tr key={s.id}><th scope="row">{s.id}</th><td>{s.gnss_cm_yr}</td><td>{s.insar_cm_yr ?? 'none'}</td><td>{s.difference_cm_yr ?? 'none'}</td></tr>
+            ))}</tbody>
+          </table>
+          <p className="fineprint">Rates in cm per year along the radar's line of sight. Typical difference {manifest.validation.rms_cm_yr ?? 'unknown'} cm per year. {manifest.validation.assumption}</p>
+        </section>
+      )}
+
       <section className="card-section" aria-labelledby="coverage-title">
         <h3 id="coverage-title" className="card-subtitle">NISAR coverage</h3>
         <CoverageStatus spot={spot} coverage={coverage} />
         <p className="card-links">
           <a href={vertexUrl(spot.bbox)} target="_blank" rel="noreferrer">Browse this area in ASF Vertex</a>
+          {REPO_URL && (
+            <> <a href={`${REPO_URL}/issues/new?template=ground-report.yml&title=${encodeURIComponent(`Ground report: ${spot.name}`)}`} target="_blank" rel="noreferrer">Report what you see on the ground</a></>
+          )}
         </p>
       </section>
 
@@ -93,7 +114,7 @@ export function PlaceCard({ spot, coverage, manifest, canInspect, inspector, onO
         <details className="card-section method">
           <summary>How this layer is made</summary>
           <ul>{manifest.method.map((line) => <li key={line}>{line}</li>)}</ul>
-          <p className="fineprint">{manifest.product}. Built {formatDate(manifest.created)}.</p>
+          <p className="fineprint">{manifest.product}. Built {formatDate(manifest.created)} from {manifest.frames.reduce((n, f) => n + f.sources.length, 0)} source products{manifest.frames[0]?.sources[0] ? `, for example ${manifest.frames[0].sources[0]}` : ''}.</p>
         </details>
       ) : (
         <p className="fineprint">Radar layers for this place arrive in Part {spot.layerPart} of the build, from {module.product}.</p>

@@ -1,0 +1,78 @@
+{
+ "type": "Feature",
+ "stac_version": "1.0.0",
+ "id": "punjab-haryana_2026-08-30",
+ "bbox": [
+  74.5,
+  29.498556,
+  77.00091,
+  31.5
+ ],
+ "geometry": {
+  "type": "Polygon",
+  "coordinates": [
+   [
+    [
+     74.5,
+     29.498556
+    ],
+    [
+     77.00091,
+     29.498556
+    ],
+    [
+     77.00091,
+     31.5
+    ],
+    [
+     74.5,
+     31.5
+    ],
+    [
+     74.5,
+     29.498556
+    ]
+   ]
+  ]
+ },
+ "properties": {
+  "datetime": "2026-08-30T00:00:00Z",
+  "start_datetime": "2026-08-30T00:00:00Z",
+  "end_datetime": "2026-08-30T00:00:00Z",
+  "sarabande:module": "farming",
+  "sarabande:synthetic": true,
+  "sarabande:stats": {
+   "growing_pct": 68.0,
+   "median_hv_db": -21.2
+  },
+  "sarabande:sources": [
+   "SYNTHETIC demo, not a NISAR product"
+  ]
+ },
+ "assets": {
+  "growth": {
+   "href": "../layers/punjab-haryana/growth_2026-08-30.webp",
+   "type": "image/webp",
+   "roles": [
+    "visual"
+   ]
+  },
+  "radar": {
+   "href": "../layers/punjab-haryana/radar_2026-08-30.webp",
+   "type": "image/webp",
+   "roles": [
+    "visual"
+   ]
+  }
+ },
+ "links": [
+  {
+   "rel": "root",
+   "href": "./catalog.json"
+  },
+  {
+   "rel": "parent",
+   "href": "./catalog.json"
+  }
+ ]
+}

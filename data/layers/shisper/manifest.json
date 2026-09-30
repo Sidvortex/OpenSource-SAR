@@ -1,0 +1,205 @@
+{
+  "hotspot": "shisper",
+  "created": "2026-09-29",
+  "module": "ice",
+  "title": "Shisper Glacier: the flowing ice",
+  "headline": "The fastest ice moved about 6.8 m a day in the latest pair, up from 1.3 m a day in the first.",
+  "synthetic": true,
+  "product": "NISAR L2 GOFF (geocoded pixel offsets)",
+  "bounds": [
+    [
+      74.45,
+      36.5
+    ],
+    [
+      74.750217,
+      36.5
+    ],
+    [
+      74.750217,
+      36.279586
+    ],
+    [
+      74.45,
+      36.279586
+    ]
+  ],
+  "event": null,
+  "frame_noun": "pairs",
+  "sides": [
+    "Earlier pair",
+    "Later pair"
+  ],
+  "side_stat": {
+    "id": "max_speed_m_day",
+    "label": "Top speed",
+    "unit": "m/day"
+  },
+  "compare": [
+    0,
+    5
+  ],
+  "layers": [
+    {
+      "id": "speed",
+      "label": "Ice speed",
+      "opacity": 0.9,
+      "ramp": {
+        "colors": [
+          "#000003",
+          "#50127b",
+          "#b63679",
+          "#fb8861",
+          "#fbfcbf"
+        ],
+        "min": 0,
+        "max": 7.0,
+        "unit": "m/day",
+        "low": "Still",
+        "high": "7 m a day"
+      },
+      "note": "How far the ice surface moved per day between two passes."
+    }
+  ],
+  "stats": [
+    {
+      "id": "max_speed_m_day",
+      "label": "Top speed",
+      "unit": "m/day"
+    },
+    {
+      "id": "fast_km2",
+      "label": "Faster than 1 m/day",
+      "unit": "km\u00b2"
+    }
+  ],
+  "chart": {
+    "area": "max_speed_m_day",
+    "line": null,
+    "label": "Top speed, m/day"
+  },
+  "series": {
+    "file": "series.bin",
+    "count": 6,
+    "width": 140,
+    "height": 127,
+    "factor": 4,
+    "full_width": 557,
+    "full_height": 508,
+    "dates": [
+      "2026-07-01",
+      "2026-07-13",
+      "2026-07-25",
+      "2026-08-30",
+      "2026-09-11",
+      "2026-09-23"
+    ],
+    "label": "Ice speed",
+    "unit": "m/day",
+    "sigma": 0.08
+  },
+  "dance": {
+    "dance": "crescendo",
+    "confidence": "high",
+    "reason": "The change keeps getting faster.",
+    "basis": "the glacier's top speed"
+  },
+  "method": [
+    "Pixel offsets track how far surface patterns moved between two passes 12 days apart.",
+    "Slant-range offsets are converted to ground range using a 40\u00b0 incidence angle.",
+    "Compare with NASA ITS_LIVE velocities for the long-term baseline.",
+    "At high latitudes the ionosphere can bias offsets; treat those results with care."
+  ],
+  "frames": [
+    {
+      "date": "2026-07-01",
+      "start": "2026-06-19",
+      "label": "Jun 19 to Jul 1, 2026",
+      "files": {
+        "speed": "speed_2026-06-19_2026-07-01.png"
+      },
+      "stats": {
+        "max_speed_m_day": 1.31,
+        "fast_km2": 8.7
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GOFF_DEMO_20260619T005000_20260619T005040_20260701T005000_20260701T005040_DEMO.h5"
+      ]
+    },
+    {
+      "date": "2026-07-13",
+      "start": "2026-07-01",
+      "label": "Jul 1 to Jul 13, 2026",
+      "files": {
+        "speed": "speed_2026-07-01_2026-07-13.png"
+      },
+      "stats": {
+        "max_speed_m_day": 1.46,
+        "fast_km2": 10.7
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GOFF_DEMO_20260701T005000_20260701T005040_20260713T005000_20260713T005040_DEMO.h5"
+      ]
+    },
+    {
+      "date": "2026-07-25",
+      "start": "2026-07-13",
+      "label": "Jul 13 to Jul 25, 2026",
+      "files": {
+        "speed": "speed_2026-07-13_2026-07-25.png"
+      },
+      "stats": {
+        "max_speed_m_day": 1.92,
+        "fast_km2": 15.2
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GOFF_DEMO_20260713T005000_20260713T005040_20260725T005000_20260725T005040_DEMO.h5"
+      ]
+    },
+    {
+      "date": "2026-08-30",
+      "start": "2026-08-18",
+      "label": "Aug 18 to Aug 30, 2026",
+      "files": {
+        "speed": "speed_2026-08-18_2026-08-30.png"
+      },
+      "stats": {
+        "max_speed_m_day": 3.75,
+        "fast_km2": 24.3
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GOFF_DEMO_20260818T005000_20260818T005040_20260830T005000_20260830T005040_DEMO.h5"
+      ]
+    },
+    {
+      "date": "2026-09-11",
+      "start": "2026-08-30",
+      "label": "Aug 30 to Sep 11, 2026",
+      "files": {
+        "speed": "speed_2026-08-30_2026-09-11.png"
+      },
+      "stats": {
+        "max_speed_m_day": 5.12,
+        "fast_km2": 28.3
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GOFF_DEMO_20260830T005000_20260830T005040_20260911T005000_20260911T005040_DEMO.h5"
+      ]
+    },
+    {
+      "date": "2026-09-23",
+      "start": "2026-09-11",
+      "label": "Sep 11 to Sep 23, 2026",
+      "files": {
+        "speed": "speed_2026-09-11_2026-09-23.png"
+      },
+      "stats": {
+        "max_speed_m_day": 6.81,
+        "fast_km2": 30.6
+      },
+      "sources": [
+        "SYNTHETIC_NISAR_L2_PR_GOFF_DEMO_20260911T005000_20260911T005040_20260923T005000_20260923T005040_DEMO.h5"
+      ]
+    }
+  ]
+}

@@ -12,6 +12,35 @@ const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`) / 864e5;
 const short = (iso: string) => formatDate(iso).replace(/, \d{4}$/, '');
 const coord = (v: number, pos: string, neg: string) => `${Math.abs(v).toFixed(3)}°${v >= 0 ? pos : neg}`;
 
+/** Part 10: hear the spot's history. Higher pitch = higher value; one note per pass. */
+function sonify(values: number[]) {
+  const finite = values.filter(Number.isFinite);
+  if (!finite.length) return;
+  const lo = Math.min(...finite), hi = Math.max(...finite);
+  const ctx = new AudioContext();
+  values.forEach((v, i) => {
+    if (!Number.isFinite(v)) return;
+    const osc = ctx.createOscillator(), gain = ctx.createGain(), t = ctx.currentTime + i * 0.35;
+    osc.type = 'triangle';
+    osc.frequency.value = 220 + (hi > lo ? (v - lo) / (hi - lo) : 0.5) * 660;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t); osc.stop(t + 0.32);
+  });
+  window.setTimeout(() => ctx.close(), values.length * 350 + 500);
+}
+
+function downloadCsv(name: string, dates: string[], values: number[], sigma: number[], unit: string) {
+  const rows = [`date,value_${unit.replace(/\W+/g, '')},uncertainty`, ...dates.map((d, i) => `${d},${Number.isFinite(values[i]) ? values[i].toFixed(3) : ''},${Number.isFinite(sigma[i]) ? sigma[i].toFixed(3) : ''}`)];
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(new Blob([rows.join('\n')], { type: 'text/csv' }));
+  link.download = name;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
 interface Props {
   manifest: LayerManifest;
   data: SeriesData;
@@ -80,6 +109,10 @@ export function Inspector({ manifest, data, pick, onClose }: Props) {
           <p className="fineprint">
             {s.label}, {s.unit}. The shaded band is the measurement uncertainty{typical !== null ? ` (about ±${typical.toFixed(1)} ${s.unit})` : ''}.
             {s.threshold_label ? ` ${s.threshold_label}.` : ''}
+          </p>
+          <p className="inspector-actions">
+            <button type="button" className="chip" onClick={() => sonify(values)}>Hear it</button>
+            <button type="button" className="chip" onClick={() => downloadCsv(`sarabande-${manifest.hotspot}-${pick.lat.toFixed(3)}-${pick.lng.toFixed(3)}.csv`, s.dates, values, sigma, s.unit)}>Download CSV</button>
           </p>
           {measured && (
             <p className="card-dance measured">

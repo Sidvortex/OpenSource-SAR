@@ -1,0 +1,20 @@
+{
+  "note": "Guided stories. Each step picks a place, a layer and a frame ('first', 'last', 'event' or a number).",
+  "stories": [
+    {"id": "coast", "title": "The coast that jumped", "steps": [
+      {"place": "venezuela-coast", "layer": "displacement", "frame": "event", "text": "On June 24, 2026, two large earthquakes struck near Venezuela's coast. NISAR passed overhead before and after, 12 days apart."},
+      {"place": "venezuela-coast", "layer": "fringes", "frame": "event", "text": "Each rainbow band is about 12 cm of ground movement. Where bands crowd together, the ground shifted most over a short distance."},
+      {"place": "venezuela-coast", "layer": "displacement", "frame": "last", "text": "Twelve days later the ground was almost still. One sudden jump, then quiet: this place dances the Tango."}]},
+    {"id": "city", "title": "A city that sinks", "steps": [
+      {"place": "mexico-city", "layer": "total", "frame": "first", "text": "Mexico City sits on old lake clay. Pumping groundwater squeezes the clay, and the city slowly sinks."},
+      {"place": "mexico-city", "layer": "total", "frame": "last", "text": "Watch the bowl deepen pass after pass. A steady trend in one direction: this place dances the March."},
+      {"place": "mexico-city", "layer": "velocity", "frame": "last", "text": "The speed map shows where sinking is fastest. GNSS stations on the ground check the radar's numbers."}]},
+    {"id": "lake", "title": "The lake that breathes", "steps": [
+      {"place": "tonle-sap", "layer": "water", "frame": "first", "text": "In the dry season, Tonle Sap is a modest lake in the middle of Cambodia."},
+      {"place": "tonle-sap", "layer": "water", "frame": "last", "text": "Monsoon rains push the Mekong so high that the river flows backwards and the lake swells several times over."},
+      {"place": "tonle-sap", "layer": "radar", "frame": "last", "text": "This is what the radar actually sees: calm water is dark, and flooded forest glows bright from double bounce. Clouds make no difference."}]},
+    {"id": "glacier", "title": "A glacier in a hurry", "steps": [
+      {"place": "shisper", "layer": "speed", "frame": "first", "text": "Shisper Glacier in Pakistan's Karakoram has surged before, damming a lake and setting off floods."},
+      {"place": "shisper", "layer": "speed", "frame": "last", "text": "Pair after pair, the ice moves faster: a Crescendo. Tracking that speed-up gives people downstream time to prepare."}]}
+  ]
+}

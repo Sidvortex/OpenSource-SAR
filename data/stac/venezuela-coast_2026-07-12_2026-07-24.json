@@ -1,0 +1,87 @@
+{
+ "type": "Feature",
+ "stac_version": "1.0.0",
+ "id": "venezuela-coast_2026-07-12_2026-07-24",
+ "bbox": [
+  -68.6,
+  10.099761,
+  -66.599003,
+  10.9
+ ],
+ "geometry": {
+  "type": "Polygon",
+  "coordinates": [
+   [
+    [
+     -68.6,
+     10.099761
+    ],
+    [
+     -66.599003,
+     10.099761
+    ],
+    [
+     -66.599003,
+     10.9
+    ],
+    [
+     -68.6,
+     10.9
+    ],
+    [
+     -68.6,
+     10.099761
+    ]
+   ]
+  ]
+ },
+ "properties": {
+  "datetime": "2026-07-24T00:00:00Z",
+  "start_datetime": "2026-07-12T00:00:00Z",
+  "end_datetime": "2026-07-24T00:00:00Z",
+  "sarabande:module": "ground",
+  "sarabande:synthetic": true,
+  "sarabande:stats": {
+   "max_toward_cm": 1.9,
+   "max_away_cm": 1.7,
+   "max_abs_cm": 1.9,
+   "moved_km2": 0.0
+  },
+  "sarabande:sources": [
+   "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260712T101500_20260712T101540_20260724T101500_20260724T101540_DEMO.h5"
+  ]
+ },
+ "assets": {
+  "displacement": {
+   "href": "../layers/venezuela-coast/move_2026-07-12_2026-07-24.png",
+   "type": "image/png",
+   "roles": [
+    "visual"
+   ]
+  },
+  "fringes": {
+   "href": "../layers/venezuela-coast/fringes_2026-07-12_2026-07-24.png",
+   "type": "image/png",
+   "roles": [
+    "visual"
+   ]
+  },
+  "coherence": {
+   "href": "../layers/venezuela-coast/quality_2026-07-12_2026-07-24.webp",
+   "type": "image/webp",
+   "roles": [
+    "visual"
+   ]
+  }
+ },
+ "links": [
+  {
+   "rel": "root",
+   "href": "./catalog.json"
+  },
+  {
+   "rel": "parent",
+   "href": "./catalog.json"
+  }
+ ]
+}

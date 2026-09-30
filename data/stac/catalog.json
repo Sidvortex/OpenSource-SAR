@@ -1,0 +1,208 @@
+{
+ "type": "Catalog",
+ "stac_version": "1.0.0",
+ "id": "sarabande",
+ "description": "SARabande web layers derived from NISAR. Check each item's 'synthetic' flag.",
+ "links": [
+  {
+   "rel": "root",
+   "href": "./catalog.json",
+   "type": "application/json"
+  },
+  {
+   "rel": "item",
+   "href": "./amazon-arc_2026-06-19.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./amazon-arc_2026-07-01.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./amazon-arc_2026-07-13.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./amazon-arc_2026-07-25.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./amazon-arc_2026-08-18.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./amazon-arc_2026-08-30.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./amazon-arc_2026-09-11.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./amazon-arc_2026-09-23.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./mexico-city_2026-06-19_2026-07-01.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./mexico-city_2026-07-01_2026-07-13.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./mexico-city_2026-07-13_2026-07-25.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./mexico-city_2026-08-18_2026-08-30.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./mexico-city_2026-08-30_2026-09-11.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./mexico-city_2026-09-11_2026-09-23.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./punjab-haryana_2026-06-19.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./punjab-haryana_2026-07-01.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./punjab-haryana_2026-07-13.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./punjab-haryana_2026-07-25.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./punjab-haryana_2026-08-18.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./punjab-haryana_2026-08-30.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./punjab-haryana_2026-09-11.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./punjab-haryana_2026-09-23.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./shisper_2026-06-19_2026-07-01.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./shisper_2026-07-01_2026-07-13.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./shisper_2026-07-13_2026-07-25.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./shisper_2026-08-18_2026-08-30.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./shisper_2026-08-30_2026-09-11.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./shisper_2026-09-11_2026-09-23.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./tonle-sap_2026-06-19.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./tonle-sap_2026-07-01.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./tonle-sap_2026-07-13.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./tonle-sap_2026-07-25.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./tonle-sap_2026-08-18.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./tonle-sap_2026-08-30.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./tonle-sap_2026-09-11.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./tonle-sap_2026-09-23.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./venezuela-coast_2026-06-18_2026-06-30.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./venezuela-coast_2026-06-30_2026-07-12.json",
+   "type": "application/geo+json"
+  },
+  {
+   "rel": "item",
+   "href": "./venezuela-coast_2026-07-12_2026-07-24.json",
+   "type": "application/geo+json"
+  }
+ ]
+}

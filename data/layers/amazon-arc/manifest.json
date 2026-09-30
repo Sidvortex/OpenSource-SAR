@@ -1,0 +1,252 @@
+{
+  "hotspot": "amazon-arc",
+  "created": "2026-09-29",
+  "module": "fire",
+  "title": "Amazon arc of deforestation: fire and forest loss",
+  "headline": "Radar mapped about 290 km\u00b2 of new burn scars and clearings, seen through cloud and smoke.",
+  "synthetic": true,
+  "product": "NISAR L2 GCOV (terrain-corrected backscatter), HV polarisation",
+  "bounds": [
+    [
+      -56.5,
+      -6.0
+    ],
+    [
+      -53.99909,
+      -6.0
+    ],
+    [
+      -53.99909,
+      -8.502091
+    ],
+    [
+      -56.5,
+      -8.502091
+    ]
+  ],
+  "event": null,
+  "frame_noun": "passes",
+  "sides": [
+    "Before",
+    "After"
+  ],
+  "side_stat": {
+    "id": "burned_km2",
+    "label": "Burned or cleared",
+    "unit": "km\u00b2"
+  },
+  "layers": [
+    {
+      "id": "burn",
+      "label": "Burn scars",
+      "opacity": 0.9,
+      "legend": [
+        {
+          "label": "New this pass",
+          "color": "#e0552b"
+        },
+        {
+          "label": "Earlier",
+          "color": "#7a1e12"
+        }
+      ]
+    },
+    {
+      "id": "radar",
+      "label": "Radar image",
+      "opacity": 0.9,
+      "ramp": {
+        "colors": [
+          "#000000",
+          "#404040",
+          "#808080",
+          "#c0c0c0",
+          "#ffffff"
+        ],
+        "min": -30,
+        "max": -8,
+        "unit": "dB",
+        "low": "Dark: bare or burned",
+        "high": "Bright: standing forest"
+      }
+    }
+  ],
+  "stats": [
+    {
+      "id": "burned_km2",
+      "label": "Burned or cleared",
+      "unit": "km\u00b2",
+      "color": "#e0552b"
+    },
+    {
+      "id": "new_km2",
+      "label": "New this pass",
+      "unit": "km\u00b2"
+    }
+  ],
+  "chart": {
+    "area": "burned_km2",
+    "line": null,
+    "label": "Burned or cleared, km\u00b2"
+  },
+  "series": {
+    "file": "series.bin",
+    "count": 8,
+    "width": 155,
+    "height": 156,
+    "factor": 6,
+    "full_width": 928,
+    "full_height": 936,
+    "dates": [
+      "2026-06-19",
+      "2026-07-01",
+      "2026-07-13",
+      "2026-07-25",
+      "2026-08-18",
+      "2026-08-30",
+      "2026-09-11",
+      "2026-09-23"
+    ],
+    "label": "Cross-polarised (HV) radar brightness",
+    "unit": "dB",
+    "sigma": 0.7
+  },
+  "dance": {
+    "dance": "tango",
+    "confidence": "high",
+    "reason": "A sudden change of +269 km\u00b2 between Aug 30 and Sep 11.",
+    "jump": 269.15939616202974,
+    "at": [
+      72.0,
+      84.0
+    ],
+    "basis": "total burned area"
+  },
+  "method": [
+    "Baseline: the median HV brightness of the first two passes.",
+    "A pixel counts as burned or cleared when HV falls 3 dB or more below its baseline on two passes in a row, so one wet day can't fake a fire.",
+    "Cross-check with NASA FIRMS active-fire detections (Part 7 event markers)."
+  ],
+  "frames": [
+    {
+      "date": "2026-06-19",
+      "label": "2026-06-19",
+      "files": {
+        "burn": "burn_2026-06-19.png",
+        "radar": "radar_2026-06-19.webp"
+      },
+      "stats": {
+        "burned_km2": 0.0,
+        "new_km2": 0.0
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-07-01",
+      "label": "2026-07-01",
+      "files": {
+        "burn": "burn_2026-07-01.png",
+        "radar": "radar_2026-07-01.webp"
+      },
+      "stats": {
+        "burned_km2": 0.0,
+        "new_km2": 0.0
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-07-13",
+      "label": "2026-07-13",
+      "files": {
+        "burn": "burn_2026-07-13.png",
+        "radar": "radar_2026-07-13.webp"
+      },
+      "stats": {
+        "burned_km2": 0.0,
+        "new_km2": 0.0
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-07-25",
+      "label": "2026-07-25",
+      "files": {
+        "burn": "burn_2026-07-25.png",
+        "radar": "radar_2026-07-25.webp"
+      },
+      "stats": {
+        "burned_km2": 0.0,
+        "new_km2": 0.0
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-08-18",
+      "label": "2026-08-18",
+      "files": {
+        "burn": "burn_2026-08-18.png",
+        "radar": "radar_2026-08-18.webp"
+      },
+      "stats": {
+        "burned_km2": 61.1,
+        "new_km2": 61.1
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-08-30",
+      "label": "2026-08-30",
+      "files": {
+        "burn": "burn_2026-08-30.png",
+        "radar": "radar_2026-08-30.webp"
+      },
+      "stats": {
+        "burned_km2": 61.1,
+        "new_km2": 0.0
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-09-11",
+      "label": "2026-09-11",
+      "files": {
+        "burn": "burn_2026-09-11.png",
+        "radar": "radar_2026-09-11.webp"
+      },
+      "stats": {
+        "burned_km2": 289.5,
+        "new_km2": 228.4
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-09-23",
+      "label": "2026-09-23",
+      "files": {
+        "burn": "burn_2026-09-23.png",
+        "radar": "radar_2026-09-23.webp"
+      },
+      "stats": {
+        "burned_km2": 289.5,
+        "new_km2": 0.0
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    }
+  ]
+}

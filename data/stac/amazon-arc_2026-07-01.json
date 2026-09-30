@@ -1,0 +1,78 @@
+{
+ "type": "Feature",
+ "stac_version": "1.0.0",
+ "id": "amazon-arc_2026-07-01",
+ "bbox": [
+  -56.5,
+  -8.502091,
+  -53.99909,
+  -6.0
+ ],
+ "geometry": {
+  "type": "Polygon",
+  "coordinates": [
+   [
+    [
+     -56.5,
+     -8.502091
+    ],
+    [
+     -53.99909,
+     -8.502091
+    ],
+    [
+     -53.99909,
+     -6.0
+    ],
+    [
+     -56.5,
+     -6.0
+    ],
+    [
+     -56.5,
+     -8.502091
+    ]
+   ]
+  ]
+ },
+ "properties": {
+  "datetime": "2026-07-01T00:00:00Z",
+  "start_datetime": "2026-07-01T00:00:00Z",
+  "end_datetime": "2026-07-01T00:00:00Z",
+  "sarabande:module": "fire",
+  "sarabande:synthetic": true,
+  "sarabande:stats": {
+   "burned_km2": 0.0,
+   "new_km2": 0.0
+  },
+  "sarabande:sources": [
+   "SYNTHETIC demo, not a NISAR product"
+  ]
+ },
+ "assets": {
+  "burn": {
+   "href": "../layers/amazon-arc/burn_2026-07-01.png",
+   "type": "image/png",
+   "roles": [
+    "visual"
+   ]
+  },
+  "radar": {
+   "href": "../layers/amazon-arc/radar_2026-07-01.webp",
+   "type": "image/webp",
+   "roles": [
+    "visual"
+   ]
+  }
+ },
+ "links": [
+  {
+   "rel": "root",
+   "href": "./catalog.json"
+  },
+  {
+   "rel": "parent",
+   "href": "./catalog.json"
+  }
+ ]
+}

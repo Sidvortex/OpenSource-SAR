@@ -1,0 +1,251 @@
+{
+  "hotspot": "punjab-haryana",
+  "created": "2026-09-29",
+  "module": "farming",
+  "title": "Punjab and Haryana: the farming season",
+  "headline": "At the season's peak (2026-08-18), 80% of the land showed a full crop canopy.",
+  "synthetic": true,
+  "product": "NISAR L2 GCOV (terrain-corrected backscatter), HV polarisation",
+  "bounds": [
+    [
+      74.5,
+      31.5
+    ],
+    [
+      77.00091,
+      31.5
+    ],
+    [
+      77.00091,
+      29.498556
+    ],
+    [
+      74.5,
+      29.498556
+    ]
+  ],
+  "event": null,
+  "frame_noun": "passes",
+  "sides": [
+    "Before",
+    "After"
+  ],
+  "side_stat": {
+    "id": "growing_pct",
+    "label": "Full canopy",
+    "unit": "%"
+  },
+  "layers": [
+    {
+      "id": "growth",
+      "label": "Crop growth",
+      "opacity": 0.85,
+      "ramp": {
+        "colors": [
+          "#ffffe5",
+          "#d8efa2",
+          "#77c578",
+          "#228342",
+          "#004529"
+        ],
+        "min": 0,
+        "max": 9,
+        "unit": "dB",
+        "low": "Bare soil",
+        "high": "Full canopy"
+      },
+      "note": "How much brighter each spot is than its own barest moment this season."
+    },
+    {
+      "id": "radar",
+      "label": "Radar image",
+      "opacity": 0.9,
+      "ramp": {
+        "colors": [
+          "#000000",
+          "#404040",
+          "#808080",
+          "#c0c0c0",
+          "#ffffff"
+        ],
+        "min": -28,
+        "max": -10,
+        "unit": "dB",
+        "low": "Dark: bare or flooded",
+        "high": "Bright: dense crops"
+      }
+    }
+  ],
+  "stats": [
+    {
+      "id": "growing_pct",
+      "label": "Full canopy",
+      "unit": "%"
+    },
+    {
+      "id": "median_hv_db",
+      "label": "Median HV",
+      "unit": "dB"
+    }
+  ],
+  "chart": {
+    "area": "growing_pct",
+    "line": null,
+    "label": "Share of land in full canopy, %"
+  },
+  "series": {
+    "file": "series.bin",
+    "count": 8,
+    "width": 155,
+    "height": 144,
+    "factor": 6,
+    "full_width": 928,
+    "full_height": 862,
+    "dates": [
+      "2026-06-19",
+      "2026-07-01",
+      "2026-07-13",
+      "2026-07-25",
+      "2026-08-18",
+      "2026-08-30",
+      "2026-09-11",
+      "2026-09-23"
+    ],
+    "label": "Cross-polarised (HV) radar brightness",
+    "unit": "dB",
+    "sigma": 0.7
+  },
+  "dance": {
+    "dance": "waltz",
+    "confidence": "high",
+    "reason": "It rose until Aug 18 and then fell, like a seasonal cycle.",
+    "basis": "the median field"
+  },
+  "method": [
+    "Crop growth: HV brightness above each pixel's own minimum this season.",
+    "'Full canopy' means more than 4 dB above that minimum.",
+    "Rice paddies show a dark dip when flooded for planting, then a steady rise."
+  ],
+  "frames": [
+    {
+      "date": "2026-06-19",
+      "label": "2026-06-19",
+      "files": {
+        "growth": "growth_2026-06-19.webp",
+        "radar": "radar_2026-06-19.webp"
+      },
+      "stats": {
+        "growing_pct": 10.0,
+        "median_hv_db": -24.0
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-07-01",
+      "label": "2026-07-01",
+      "files": {
+        "growth": "growth_2026-07-01.webp",
+        "radar": "radar_2026-07-01.webp"
+      },
+      "stats": {
+        "growing_pct": 4.5,
+        "median_hv_db": -24.5
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-07-13",
+      "label": "2026-07-13",
+      "files": {
+        "growth": "growth_2026-07-13.webp",
+        "radar": "radar_2026-07-13.webp"
+      },
+      "stats": {
+        "growing_pct": 8.1,
+        "median_hv_db": -25.5
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-07-25",
+      "label": "2026-07-25",
+      "files": {
+        "growth": "growth_2026-07-25.webp",
+        "radar": "radar_2026-07-25.webp"
+      },
+      "stats": {
+        "growing_pct": 65.1,
+        "median_hv_db": -21.3
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-08-18",
+      "label": "2026-08-18",
+      "files": {
+        "growth": "growth_2026-08-18.webp",
+        "radar": "radar_2026-08-18.webp"
+      },
+      "stats": {
+        "growing_pct": 80.3,
+        "median_hv_db": -17.6
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-08-30",
+      "label": "2026-08-30",
+      "files": {
+        "growth": "growth_2026-08-30.webp",
+        "radar": "radar_2026-08-30.webp"
+      },
+      "stats": {
+        "growing_pct": 68.0,
+        "median_hv_db": -21.2
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-09-11",
+      "label": "2026-09-11",
+      "files": {
+        "growth": "growth_2026-09-11.webp",
+        "radar": "radar_2026-09-11.webp"
+      },
+      "stats": {
+        "growing_pct": 28.3,
+        "median_hv_db": -23.3
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    },
+    {
+      "date": "2026-09-23",
+      "label": "2026-09-23",
+      "files": {
+        "growth": "growth_2026-09-23.webp",
+        "radar": "radar_2026-09-23.webp"
+      },
+      "stats": {
+        "growing_pct": 11.5,
+        "median_hv_db": -23.9
+      },
+      "sources": [
+        "SYNTHETIC demo, not a NISAR product"
+      ]
+    }
+  ]
+}

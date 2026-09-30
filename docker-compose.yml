@@ -1,0 +1,17 @@
+# Fully self-hosted SARabande: the API on :8000 and the built site on :8080. Free and open source.
+#   cd web && npm ci && npm run build && cd ..
+#   docker compose up
+services:
+  api:
+    build: {context: ., dockerfile: server/Dockerfile}
+    ports: ["127.0.0.1:8000:8000"]
+    environment:
+      - EARTHDATA_TOKEN=${EARTHDATA_TOKEN:-}
+    volumes:
+      - ./data:/app/data
+      - ./pipeline/work:/app/pipeline/work
+  web:
+    image: nginx:alpine
+    ports: ["127.0.0.1:8080:80"]
+    volumes:
+      - ./web/dist:/usr/share/nginx/html:ro

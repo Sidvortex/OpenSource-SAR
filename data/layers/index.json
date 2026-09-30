@@ -3,12 +3,50 @@
     "tonle-sap": {
       "module": "water",
       "synthetic": true,
-      "updated": "2026-09-28"
+      "updated": "2026-09-29",
+      "headline": "Open water grew from 2,750 km\u00b2 to 7,550 km\u00b2 between the first and last pass.",
+      "dance": "march",
+      "latest": "2026-09-23"
     },
     "venezuela-coast": {
       "module": "ground",
       "synthetic": true,
-      "updated": "2026-09-28"
+      "updated": "2026-09-29",
+      "headline": "Across the Jun 24, 2026 earthquakes, the ground moved up to 54 cm toward or away from the radar.",
+      "dance": "tango",
+      "latest": "2026-07-24"
+    },
+    "mexico-city": {
+      "module": "ground",
+      "synthetic": true,
+      "updated": "2026-09-29",
+      "headline": "The fastest-moving ground here moves about 25 cm a year along the radar's line of sight, roughly 32 cm a year if it is all sinking.",
+      "dance": "march",
+      "latest": "2026-09-23"
+    },
+    "amazon-arc": {
+      "module": "fire",
+      "synthetic": true,
+      "updated": "2026-09-29",
+      "headline": "Radar mapped about 290 km\u00b2 of new burn scars and clearings, seen through cloud and smoke.",
+      "dance": "tango",
+      "latest": "2026-09-23"
+    },
+    "punjab-haryana": {
+      "module": "farming",
+      "synthetic": true,
+      "updated": "2026-09-29",
+      "headline": "At the season's peak (2026-08-18), 80% of the land showed a full crop canopy.",
+      "dance": "waltz",
+      "latest": "2026-09-23"
+    },
+    "shisper": {
+      "module": "ice",
+      "synthetic": true,
+      "updated": "2026-09-29",
+      "headline": "The fastest ice moved about 6.8 m a day in the latest pair, up from 1.3 m a day in the first.",
+      "dance": "crescendo",
+      "latest": "2026-09-23"
     }
   }
 }

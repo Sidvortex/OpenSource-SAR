@@ -1,0 +1,102 @@
+{
+ "type": "Feature",
+ "stac_version": "1.0.0",
+ "id": "mexico-city_2026-08-18_2026-08-30",
+ "bbox": [
+  -99.35,
+  19.14924,
+  -98.84874,
+  19.65
+ ],
+ "geometry": {
+  "type": "Polygon",
+  "coordinates": [
+   [
+    [
+     -99.35,
+     19.14924
+    ],
+    [
+     -98.84874,
+     19.14924
+    ],
+    [
+     -98.84874,
+     19.65
+    ],
+    [
+     -99.35,
+     19.65
+    ],
+    [
+     -99.35,
+     19.14924
+    ]
+   ]
+  ]
+ },
+ "properties": {
+  "datetime": "2026-08-30T00:00:00Z",
+  "start_datetime": "2026-08-18T00:00:00Z",
+  "end_datetime": "2026-08-30T00:00:00Z",
+  "sarabande:module": "ground",
+  "sarabande:synthetic": true,
+  "sarabande:stats": {
+   "max_toward_cm": 0.3,
+   "max_away_cm": 0.7,
+   "max_abs_cm": 0.7,
+   "moved_km2": 0.0,
+   "max_total_cm": 4.0
+  },
+  "sarabande:sources": [
+   "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260818T010000_20260818T010040_20260830T010000_20260830T010040_DEMO.h5"
+  ]
+ },
+ "assets": {
+  "displacement": {
+   "href": "../layers/mexico-city/move_2026-08-18_2026-08-30.png",
+   "type": "image/png",
+   "roles": [
+    "visual"
+   ]
+  },
+  "fringes": {
+   "href": "../layers/mexico-city/fringes_2026-08-18_2026-08-30.png",
+   "type": "image/png",
+   "roles": [
+    "visual"
+   ]
+  },
+  "coherence": {
+   "href": "../layers/mexico-city/quality_2026-08-18_2026-08-30.webp",
+   "type": "image/webp",
+   "roles": [
+    "visual"
+   ]
+  },
+  "total": {
+   "href": "../layers/mexico-city/total_2026-08-30.png",
+   "type": "image/png",
+   "roles": [
+    "visual"
+   ]
+  },
+  "velocity": {
+   "href": "../layers/mexico-city/velocity.png",
+   "type": "image/png",
+   "roles": [
+    "visual"
+   ]
+  }
+ },
+ "links": [
+  {
+   "rel": "root",
+   "href": "./catalog.json"
+  },
+  {
+   "rel": "parent",
+   "href": "./catalog.json"
+  }
+ ]
+}

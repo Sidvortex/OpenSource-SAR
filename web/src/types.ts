@@ -101,6 +101,14 @@ export interface LayerManifest {
   frames: Frame[];
   series?: SeriesDef;
   dance?: MeasuredDance;
+  validation?: {
+    source: string;
+    synthetic: boolean;
+    assumption: string;
+    rms_cm_yr: number | null;
+    stations: { id: string; lon: number; lat: number; gnss_cm_yr: number; insar_cm_yr: number | null; difference_cm_yr: number | null }[];
+  } | null;
+  bridged?: string[][];
 }
 
 export interface SeriesDef {
@@ -128,7 +136,7 @@ export interface MeasuredDance {
 }
 
 export interface LayerIndex {
-  layers: Record<string, { module: ModuleId; synthetic: boolean; updated: string }>;
+  layers: Record<string, { module: ModuleId; synthetic: boolean; updated: string; headline?: string; dance?: DanceId | null; latest?: string | null }>;
 }
 
 /** The frame to show first: the one spanning the event, or the latest. */

@@ -6,6 +6,7 @@ Uses NASA's free, public ASF search (no login, no key). Run it by hand or let
 the weekly GitHub Action do it:  python pipeline/update_coverage.py
 """
 import json
+import os
 import sys
 from datetime import date
 from pathlib import Path
@@ -63,8 +64,43 @@ def summarise(area, stacks):
     return products
 
 
+FEED = ROOT / "data" / "feed.xml"
+ALERTS = ROOT / "data" / "alerts.json"
+SITE_URL = os.environ.get("SITE_URL", "https://example.github.io/sarabande/")
+
+
+def new_passes(previous, current, spots):
+    """Products whose latest date moved forward since the last check."""
+    names = {s["id"]: s["name"] for s in spots}
+    alerts = []
+    for spot_id, entry in current["hotspots"].items():
+        before = (previous.get("hotspots", {}).get(spot_id) or {}).get("products", {})
+        for product, info in entry["products"].items():
+            old, new = (before.get(product) or {}).get("last"), info.get("last")
+            if new and new != old:
+                alerts.append({"hotspot": spot_id, "name": names.get(spot_id, spot_id), "product": product, "last": new})
+    return alerts
+
+
+def write_feed(alerts, checked):
+    """RSS 2.0 feed of new NISAR passes over the hotspots (newest 50 kept)."""
+    from xml.sax.saxutils import escape
+    old_items = []
+    if FEED.exists():
+        text = FEED.read_text()
+        old_items = [chunk.split("</item>")[0] for chunk in text.split("<item>")[1:]]
+    items = [f"<title>{escape(a['name'])}: new NISAR {a['product']} pass ({a['last']})</title>"
+             f"<link>{escape(SITE_URL)}#place={a['hotspot']}</link><guid isPermaLink=\"false\">{a['hotspot']}-{a['product']}-{a['last']}</guid>"
+             f"<pubDate>{checked}</pubDate><description>Informational only, not an official warning.</description>" for a in alerts]
+    body = "".join(f"<item>{i}</item>" for i in (items + old_items)[:50])
+    FEED.write_text('<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>SARabande: new NISAR passes</title>'
+                    f"<link>{escape(SITE_URL)}</link><description>New radar passes over SARabande hotspots. Not an official warning system.</description>"
+                    f"{body}</channel></rss>\n")
+
+
 def main():
     spots = json.loads(HOTSPOTS.read_text())["hotspots"]
+    previous = json.loads(OUT.read_text()) if OUT.exists() else {"hotspots": {}}
     result = {"checked": date.today().isoformat(), "maturity": MATURITY, "hotspots": {}}
     failures = 0
     for spot in spots:
@@ -90,6 +126,11 @@ def main():
         }
         print(f"{spot['name']:<40} {verdict or 'error':<6} {score} ({area['rule']['meaning']})")
     OUT.write_text(json.dumps(result, indent=2) + "\n")
+    alerts = new_passes(previous, result, spots)
+    ALERTS.write_text(json.dumps({"checked": result["checked"], "alerts": alerts}, indent=2) + "\n")
+    if alerts:
+        write_feed(alerts, result["checked"])
+    print(f"{len(alerts)} new passes since the last check.")
     print(f"\nWrote {OUT.relative_to(ROOT)}; {len(spots) - failures} of {len(spots)} hotspots pass.")
 
 
