@@ -1,0 +1,13 @@
+{
+  "note": "Shared test cases: pipeline/dance.py and web/src/dance.ts must both pass every one.",
+  "cases": [
+    {"name": "flat noise", "t": [0, 12, 24, 36, 48, 60], "y": [0.1, -0.2, 0.15, 0, -0.1, 0.05], "sigma": 0.3, "expected": "still"},
+    {"name": "trend inside the noise", "t": [0, 12, 24, 36, 48, 60], "y": [0, 0.1, 0.2, 0.3, 0.4, 0.5], "sigma": 1.0, "expected": "still"},
+    {"name": "too short", "t": [0, 12], "y": [0, 5], "sigma": 0.3, "expected": "still"},
+    {"name": "steady sinking", "t": [0, 12, 24, 36, 48, 60, 72], "y": [0, -1.6, -2.9, -4.6, -6.1, -7.4, -9.1], "sigma": 0.3, "expected": "march"},
+    {"name": "sudden jump", "t": [0, 12, 24, 36, 48, 60], "y": [0, 0.1, -0.1, 5, 5.1, 4.9], "sigma": 0.3, "expected": "tango"},
+    {"name": "earthquake, cumulative", "t": [0, 12, 24, 36], "y": [0, 54, 56, 58], "sigma": [0.5, 2, 2.5, 3], "expected": "tango"},
+    {"name": "speeding up", "t": [0, 12, 24, 36, 48, 60, 72, 84], "y": [0, 0.2, 0.8, 1.8, 3.2, 5.0, 7.2, 9.8], "sigma": 0.2, "expected": "crescendo"},
+    {"name": "rise and fall", "t": [0, 12, 24, 36, 48, 60, 72, 84], "y": [0, 2.2, 3.9, 4.9, 4.9, 3.9, 2.2, 0], "sigma": 0.3, "expected": "waltz"}
+  ]
+}

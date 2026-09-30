@@ -20,6 +20,7 @@ from pathlib import Path
 import numpy as np
 
 import coverage_check as cc
+import dance
 import layers
 import nisar_io
 import water
@@ -113,6 +114,16 @@ def build_layers(spot, files, synthetic, res):
             "sources": sources[day],
         })
     first, last = frames[0], frames[-1]
+    # Part 4: every pixel's history for the inspector, and the place's measured dance.
+    days = sorted(masks)
+    factor = layers.series_factor(target.height, target.width)
+    count, h, w = layers.write_series(out, "series.bin", [layers.reduce_grid(hh_db[d], factor) for d in days])
+    thresholds = [masks[d][2] for d in days]
+    totals = [f["stats"]["water_total_km2"] for f in frames]
+    t_days = [(d - days[0]).days for d in days]
+    place_dance = dance.classify(t_days, totals, 0.02 * float(np.median(totals)), unit="km²",
+                                 when=[f"{d:%b} {d.day}" for d in days])
+    place_dance["basis"] = "total water area"
     return layers.write_manifest(spot, out, {
         "module": "water",
         "title": f"{spot['name']}: the water dance",
@@ -138,6 +149,12 @@ def build_layers(spot, files, synthetic, res):
             {"id": "flooded_veg_km2", "label": "Flooded vegetation", "unit": "km²", "color": hexcolour(VEG_RGBA)},
         ],
         "chart": {"area": "water_total_km2", "line": "open_water_km2", "label": "Water, km²"},
+        "series": {"file": "series.bin", "count": count, "width": w, "height": h, "factor": factor,
+                   "full_width": target.width, "full_height": target.height,
+                   "dates": [d.isoformat() for d in days], "label": "Radar brightness", "unit": "dB",
+                   "sigma": 0.6, "threshold": round(float(np.median(thresholds)), 1),
+                   "threshold_label": "Below the dashed line counts as open water"},
+        "dance": place_dance,
         "method": [
             "Each pass is averaged onto one shared grid, so dates line up pixel for pixel.",
             "Open water: HH backscatter below a per-pass Otsu threshold, kept between -24 and -14 dB.",

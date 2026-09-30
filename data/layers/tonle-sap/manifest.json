@@ -90,6 +90,37 @@
     "line": "open_water_km2",
     "label": "Water, km\u00b2"
   },
+  "series": {
+    "file": "series.bin",
+    "count": 8,
+    "width": 141,
+    "height": 153,
+    "factor": 9,
+    "full_width": 1262,
+    "full_height": 1370,
+    "dates": [
+      "2026-06-19",
+      "2026-07-01",
+      "2026-07-13",
+      "2026-07-25",
+      "2026-08-18",
+      "2026-08-30",
+      "2026-09-11",
+      "2026-09-23"
+    ],
+    "label": "Radar brightness",
+    "unit": "dB",
+    "sigma": 0.6,
+    "threshold": -15.0,
+    "threshold_label": "Below the dashed line counts as open water"
+  },
+  "dance": {
+    "dance": "march",
+    "confidence": "high",
+    "reason": "A steady trend of about +780 km\u00b2 every 12 days.",
+    "rate_per_12_days": 779.8799999999998,
+    "basis": "total water area"
+  },
   "method": [
     "Each pass is averaged onto one shared grid, so dates line up pixel for pixel.",
     "Open water: HH backscatter below a per-pass Otsu threshold, kept between -24 and -14 dB.",

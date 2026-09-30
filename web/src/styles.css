@@ -228,6 +228,20 @@ code { font-size: 0.9em; background: rgba(26, 34, 51, 0.06); padding: 0 0.25em; 
 }
 .stage-legend .legend { margin: 0; }
 
+.hint { margin: 12px 0 0; font-size: 0.85rem; color: var(--muted); }
+.inspector { margin-top: 14px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.inspector-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.inspector-head .card-subtitle { margin: 0; color: var(--ink); }
+.inspector-close { position: static; width: 28px; height: 28px; }
+.inspector-chart { display: block; width: 100%; height: auto; margin-top: 6px; }
+.inspector-chart .axis { font-size: 10px; fill: var(--muted); font-family: var(--ui); font-variant-numeric: tabular-nums; }
+.inspector-chart .band { fill: rgba(31, 143, 209, 0.18); }
+.inspector-chart .series-line { fill: none; stroke: var(--ink); stroke-width: 1.8; }
+.inspector-chart .series-dot { fill: var(--ink); }
+.inspector-chart .threshold { stroke: #1f8fd1; stroke-width: 1.2; stroke-dasharray: 4 3; }
+.inspector-chart .event-line { stroke: #c0392b; stroke-width: 1.2; stroke-dasharray: 3 3; }
+.card-dance.measured { margin-top: 8px; }
+
 /* ---------- Markers: each place pulses in its dance's rhythm ---------- */
 .marker {
   --c: var(--ink);

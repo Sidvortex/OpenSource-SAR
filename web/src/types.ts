@@ -99,6 +99,32 @@ export interface LayerManifest {
   chart: { area: string; line: string | null; label: string };
   method: string[];
   frames: Frame[];
+  series?: SeriesDef;
+  dance?: MeasuredDance;
+}
+
+export interface SeriesDef {
+  file: string;
+  sigma_file?: string;
+  count: number;
+  width: number;
+  height: number;
+  factor: number;
+  full_width: number;
+  full_height: number;
+  dates: string[];
+  label: string;
+  unit: string;
+  sigma?: number;
+  threshold?: number;
+  threshold_label?: string;
+}
+
+export interface MeasuredDance {
+  dance: DanceId;
+  confidence: 'high' | 'medium' | 'low';
+  reason: string;
+  basis?: string;
 }
 
 export interface LayerIndex {

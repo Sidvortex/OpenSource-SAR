@@ -11,7 +11,8 @@
     "dev": "vite",
     "prebuild": "node scripts/sync-data.mjs",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:dance": "esbuild scripts/test-dance.ts --bundle --platform=node --format=esm --outfile=scripts/.test-dance.mjs --log-level=warning && node scripts/.test-dance.mjs"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.1.0",

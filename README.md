@@ -14,9 +14,9 @@ SARabande grows in ten parts. Every part ends with a working public site.
 | --- | --- | --- |
 | 1 | Globe and atlas: 19 hotspots, dance legend, place cards, weekly NISAR coverage check, automatic deploys | Done |
 | 2 | Water dance: Tonle Sap water extent from GCOV, time slider and chart, and the 3D before/after showcase | Done |
-| 3 | Earthquake: Venezuela GUNW pairs as fringes, movement and data quality, compared in the 3D showcase | **This version** |
-| 4 | Point inspector and the dance classifier | Next |
-| 5 | Ground-motion time series, MintPy, GNSS validation | |
+| 3 | Earthquake: Venezuela GUNW pairs as fringes, movement and data quality, compared in the 3D showcase | Done |
+| 4 | Point inspector and the dance classifier | **This version** |
+| 5 | Ground-motion time series, MintPy, GNSS validation | Next |
 | 6 | Explanations at three reading levels, story mode, "How radar sees" | |
 | 7 | Fire, farming and ice modules, event markers | |
 | 8 | Draw any area on Earth, optional self-hosted API, exposure layer | |
@@ -99,6 +99,21 @@ python pipeline/quake.py process --hotspot venezuela-coast
 
 Every module now writes the same general `manifest.json` (frames, layers with plain-words legends, statistics), so later parts add pipelines without new front-end code for the basics.
 
+## Part 4: the inspector and the dance classifier
+
+Click anywhere on a place's layer to see that spot's full history, with its measurement uncertainty as a shaded band, and the dance measured for that spot alone. Each place card now shows the expected dance next to the dance **measured from the data**.
+
+The classifier compares simple explanations of a time series against its noise: no change (Still), one sudden jump (Tango), a rise and fall (Waltz), a speeding-up trend (Crescendo) or a steady trend (March). It exists twice, in `pipeline/dance.py` for the pipeline and in `web/src/dance.ts` for clicked pixels, and both must pass the same test cases in `data/dance_tests.json`:
+
+```bash
+python pipeline/dance.py --test
+cd web && npm run test:dance
+```
+
+Add a test case whenever you change a rule, so the two versions can never drift apart. The pipelines also write each pixel's history to small binary files (`series.bin`, and `sigma.bin` for uncertainty), which are float32, laid out time by row by column.
+
+With only months of passes, some places show part of their dance: Tonle Sap's monsoon rise reads as a March until a full year reveals the Waltz. The card shows both, which is a useful talking point.
+
 ## Put it online for free
 
 1. Push this folder to a **public** GitHub repository.
@@ -125,7 +140,7 @@ If the basemap cannot load, the globe falls back to public-domain Natural Earth 
 ```
 data/          Shared data: hotspots.json, coverage.json, basemap/, layers/<place>/ (web layers + manifest)
 pipeline/      Python: coverage checks, nisar_io.py (HDF5 reader), layers.py (shared output),
-               water.py and water_dance.py (Part 2), quake.py (Part 3)
+               water.py and water_dance.py (Part 2), quake.py (Part 3), dance.py (Part 4)
 web/           React, TypeScript and Vite app with a MapLibre globe
 .github/       Free GitHub Actions: deploy to Pages, weekly coverage check
 ```

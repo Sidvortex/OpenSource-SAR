@@ -29,6 +29,7 @@ from rasterio.warp import transform, transform_bounds
 from scipy import ndimage
 
 import coverage_check as cc
+import dance
 import layers
 import nisar_io
 import water
@@ -129,6 +130,43 @@ def build_layers(spot, files, synthetic, res, iono=True, flip=False):
             "sources": sources,
         })
 
+    # Part 4: each pixel's cumulative movement, its 1-sigma uncertainty from coherence,
+    # and the place's dance measured at the spot that moved most.
+    keys = list(maps)
+    chained = all(keys[i][1] == keys[i + 1][0] for i in range(len(keys) - 1))
+    factor = layers.series_factor(target.height, target.width)
+    reduced = [layers.reduce_grid(maps[k][0], factor) for k in keys]
+    sig_pairs = []
+    for k in keys:
+        coh = maps[k][1]
+        if coh is None:
+            sig_pairs.append(np.full_like(reduced[0], 1.0))
+            continue
+        g = np.clip(layers.reduce_grid(coh, factor), 0.05, 0.999)
+        sigma_phase = np.sqrt(1 - g ** 2) / (g * np.sqrt(2 * 10))          # about 10 looks
+        sig_pairs.append((wavelength or 0.2385) / (4 * np.pi) * sigma_phase * 100)
+    if chained:
+        dates = [keys[0][0].isoformat()] + [k[1].isoformat() for k in keys]
+        values = [np.zeros_like(reduced[0])] + list(np.cumsum(np.stack(reduced), axis=0))
+        sigmas = [np.full_like(reduced[0], 0.1)] + list(np.sqrt(np.cumsum(np.stack(sig_pairs) ** 2, axis=0)))
+        label = "Total movement since the first pass"
+    else:
+        dates = [k[1].isoformat() for k in keys]
+        values, sigmas, label = reduced, sig_pairs, "Movement in each pair"
+    count, h, w = layers.write_series(out, "series.bin", values)
+    layers.write_series(out, "sigma.bin", sigmas)
+    final = np.abs(values[-1])
+    if np.isfinite(final).any():
+        r, c = np.unravel_index(np.nanargmax(final), final.shape)
+        t_days = [(date.fromisoformat(d) - date.fromisoformat(dates[0])).days for d in dates]
+        place_dance = dance.classify(t_days, [float(v[r, c]) for v in values], [float(s[r, c]) for s in sigmas],
+                                     unit="cm", when=[pretty(date.fromisoformat(d)).rsplit(',', 1)[0] for d in dates])
+    else:
+        place_dance = {"dance": "still", "confidence": "low", "reason": "No reliable pixels."}
+    place_dance["basis"] = "the spot that moved most"
+    series = {"file": "series.bin", "sigma_file": "sigma.bin", "count": count, "width": w, "height": h, "factor": factor,
+              "full_width": target.width, "full_height": target.height, "dates": dates, "label": label, "unit": "cm"}
+
     event = spot.get("event")
     across = [f for f in frames if event and f["start"] < event < f["date"]]
     if across:
@@ -172,6 +210,8 @@ def build_layers(spot, files, synthetic, res, iono=True, flip=False):
             {"id": "moved_km2", "label": f"Moved over {MOVED_CM:.0f} cm", "unit": "km²"},
         ],
         "chart": {"area": "max_abs_cm", "line": None, "label": "Largest movement, cm"},
+        "series": series,
+        "dance": place_dance,
         "method": [
             "Each interferogram compares two passes 12 days apart; the phase change becomes centimetres along the line of sight.",
             f"Pixels with coherence below {MIN_COHERENCE}, or that the unwrapper could not connect, are left out.",

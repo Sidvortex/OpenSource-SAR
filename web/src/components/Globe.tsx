@@ -15,6 +15,8 @@ interface Props {
   selectedId: string | null;
   onSelect: (id: string) => void;
   overlay: Overlay | null;
+  onMapClick?: (lng: number, lat: number) => void;
+  pick?: [number, number] | null;
 }
 
 function areaOutline(spot: Hotspot | undefined): FeatureCollection {
@@ -30,6 +32,10 @@ function areaOutline(spot: Hotspot | undefined): FeatureCollection {
   };
 }
 
+function pickPoint(p: [number, number] | null): FeatureCollection {
+  return p ? { type: 'FeatureCollection', features: [{ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: p } }] } : EMPTY;
+}
+
 function addAreaLayer(map: maplibregl.Map) {
   if (map.getSource('area')) return;
   map.addSource('area', { type: 'geojson', data: EMPTY });
@@ -37,7 +43,7 @@ function addAreaLayer(map: maplibregl.Map) {
   map.addLayer({ id: 'area-line', type: 'line', source: 'area', paint: { 'line-color': '#1A2233', 'line-width': 1.5, 'line-dasharray': [2, 2] } });
 }
 
-export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay }: Props) {
+export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay, onMapClick, pick = null }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markers = useRef(new Map<string, HTMLButtonElement>());
@@ -49,6 +55,10 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay }: P
   selectedRef.current = selectedId;
   const overlayRef = useRef(overlay);
   overlayRef.current = overlay;
+  const clickRef = useRef(onMapClick);
+  clickRef.current = onMapClick;
+  const pickRef = useRef(pick);
+  pickRef.current = pick;
 
   // Create the map and the markers once per hotspot list.
   useEffect(() => {
@@ -73,7 +83,12 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay }: P
       const current = spotsRef.current.find((h) => h.id === selectedRef.current);
       (map.getSource('area') as maplibregl.GeoJSONSource).setData(areaOutline(current));
       applyOverlay(map, overlayRef.current, 'area-fill');
+      if (!map.getSource('pick')) {
+        map.addSource('pick', { type: 'geojson', data: pickPoint(pickRef.current) });
+        map.addLayer({ id: 'pick', type: 'circle', source: 'pick', paint: { 'circle-radius': 7, 'circle-color': '#1a2233', 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 2.5 } });
+      }
     });
+    map.on('click', (e) => clickRef.current?.(e.lngLat.lng, e.lngLat.lat));
 
     for (const spot of hotspots) {
       const el = document.createElement('button');
@@ -127,6 +142,10 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay }: P
       duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 2200,
     });
   }, [selectedId, hotspots]);
+
+  useEffect(() => {
+    (mapRef.current?.getSource('pick') as maplibregl.GeoJSONSource | undefined)?.setData(pickPoint(pick));
+  }, [pick]);
 
   // The radar layer for the current date and layer choice.
   useEffect(() => {

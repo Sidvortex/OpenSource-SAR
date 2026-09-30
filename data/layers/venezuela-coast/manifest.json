@@ -125,6 +125,35 @@
     "line": null,
     "label": "Largest movement, cm"
   },
+  "series": {
+    "file": "series.bin",
+    "sigma_file": "sigma.bin",
+    "count": 4,
+    "width": 149,
+    "height": 61,
+    "factor": 10,
+    "full_width": 1485,
+    "full_height": 604,
+    "dates": [
+      "2026-06-18",
+      "2026-06-30",
+      "2026-07-12",
+      "2026-07-24"
+    ],
+    "label": "Total movement since the first pass",
+    "unit": "cm"
+  },
+  "dance": {
+    "dance": "tango",
+    "confidence": "high",
+    "reason": "A sudden change of -56 cm between Jun 18 and Jun 30.",
+    "jump": -55.66901779174805,
+    "at": [
+      0.0,
+      12.0
+    ],
+    "basis": "the spot that moved most"
+  },
   "method": [
     "Each interferogram compares two passes 12 days apart; the phase change becomes centimetres along the line of sight.",
     "Pixels with coherence below 0.3, or that the unwrapper could not connect, are left out.",

@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { DANCES, MODULES, formatDate, vertexUrl } from '../catalog';
 import type { Coverage, Hotspot, LayerManifest } from '../types';
 
@@ -6,6 +6,8 @@ interface Props {
   spot: Hotspot;
   coverage: Coverage | null;
   manifest: LayerManifest | null;
+  canInspect?: boolean;
+  inspector?: ReactNode;
   onOpen3D: () => void;
   onClose: () => void;
 }
@@ -43,7 +45,7 @@ function CoverageStatus({ spot, coverage }: { spot: Hotspot; coverage: Coverage 
   );
 }
 
-export function PlaceCard({ spot, coverage, manifest, onOpen3D, onClose }: Props) {
+export function PlaceCard({ spot, coverage, manifest, canInspect, inspector, onOpen3D, onClose }: Props) {
   const module = MODULES[spot.module];
   return (
     <article className="card" aria-labelledby="card-title" style={{ '--c': module.color } as CSSProperties}>
@@ -58,6 +60,7 @@ export function PlaceCard({ spot, coverage, manifest, onOpen3D, onClose }: Props
       {manifest && (
         <button type="button" className="cta" onClick={onOpen3D}>See before and after in 3D</button>
       )}
+      {inspector ?? (canInspect && <p className="hint">Click anywhere on the layer to see that spot's history and its own dance.</p>)}
       {spot.sensitive && <p className="card-note">{spot.sensitive}</p>}
       {spot.caution && <p className="card-note">{spot.caution}</p>}
 
@@ -68,7 +71,14 @@ export function PlaceCard({ spot, coverage, manifest, onOpen3D, onClose }: Props
             <span><strong>{DANCES[d].name}.</strong> {DANCES[d].pattern}.</span>
           </p>
         ))}
-        <p className="fineprint">This dance is the expected pattern. From Part 4 it is measured from the data itself.</p>
+        {manifest?.dance ? (
+          <p className="card-dance measured">
+            <span className={`marker marker-demo dance-${manifest.dance.dance}`} aria-hidden="true"><span className="marker-ring" /><span className="marker-dot" /></span>
+            <span><strong>Measured: {DANCES[manifest.dance.dance].name}.</strong> {manifest.dance.reason}{manifest.dance.basis ? ` Based on ${manifest.dance.basis}.` : ''}</span>
+          </p>
+        ) : (
+          <p className="fineprint">This is the expected pattern until radar layers arrive for this place.</p>
+        )}
       </section>
 
       <section className="card-section" aria-labelledby="coverage-title">

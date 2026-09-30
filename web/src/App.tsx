@@ -10,6 +10,9 @@ import type { Overlay } from './mapStyle';
 import { startFrame } from './types';
 import type { Coverage, DanceId, Hotspot, LayerIndex, LayerManifest, ModuleId } from './types';
 import { overlayFor } from './components/Showcase3D';
+import { Inspector } from './components/Inspector';
+import { loadSeries, pixelAt } from './series';
+import type { Pick, SeriesData } from './series';
 
 const STEP_MS = 1200;
 
@@ -41,6 +44,8 @@ export default function App() {
   const [playing, setPlaying] = useState(false);
   const [kind, setKind] = useState<string>('water');
   const [showcase, setShowcase] = useState(false);
+  const [seriesData, setSeriesData] = useState<SeriesData | null>(null);
+  const [pick, setPick] = useState<Pick | null>(null);
 
   useEffect(() => {
     loadJson<{ hotspots: Hotspot[] }>('data/hotspots.json')
@@ -59,6 +64,8 @@ export default function App() {
     setManifest(null);
     setPlaying(false);
     setShowcase(false);
+    setSeriesData(null);
+    setPick(null);
     if (!selectedId || !layerIndex.layers[selectedId]) return;
     let cancelled = false;
     loadJson<LayerManifest>(`data/layers/${selectedId}/manifest.json`)
@@ -67,6 +74,7 @@ export default function App() {
         setManifest(m);
         setDateIndex(startFrame(m));
         setKind(m.layers[0].id);
+        loadSeries(m).then((d) => { if (!cancelled) setSeriesData(d); }).catch(() => setSeriesData(null));
         // Warm the cache so playback doesn't flicker.
         for (const f of m.frames) for (const file of Object.values(f.files)) new Image().src = siteUrl(`data/layers/${m.hotspot}/${file}`);
       })
@@ -108,6 +116,13 @@ export default function App() {
   }, [hotspots, query, modules, dance]);
   const visibleIds = useMemo(() => new Set(visible.map((h) => h.id)), [visible]);
 
+  // Part 4: clicking the layer picks a pixel for the inspector.
+  const onMapClick = useCallback((lng: number, lat: number) => {
+    if (!manifest || !seriesData) return;
+    const p = pixelAt(manifest, lng, lat);
+    if (p) setPick(p);
+  }, [manifest, seriesData]);
+
   const toggleModule = useCallback((m: ModuleId) => {
     setModules((prev) => {
       const next = new Set(prev);
@@ -134,7 +149,8 @@ export default function App() {
   const selected = hotspots.find((h) => h.id === selectedId) ?? null;
   return (
     <main className="app">
-      <Globe hotspots={hotspots} visibleIds={visibleIds} selectedId={selectedId} onSelect={select} overlay={overlay} />
+      <Globe hotspots={hotspots} visibleIds={visibleIds} selectedId={selectedId} onSelect={select} overlay={overlay}
+        onMapClick={onMapClick} pick={pick && !showcase ? [pick.lng, pick.lat] : null} />
       <Sidebar
         query={query} onQuery={setQuery}
         modules={modules} onToggleModule={toggleModule}
@@ -144,6 +160,8 @@ export default function App() {
       />
       {selected && (
         <PlaceCard spot={selected} coverage={coverage} manifest={manifest}
+          canInspect={!!seriesData}
+          inspector={manifest && seriesData && pick ? <Inspector manifest={manifest} data={seriesData} pick={pick} onClose={() => setPick(null)} /> : null}
           onOpen3D={() => { setPlaying(false); setShowcase(true); }}
           onClose={() => setSelectedId(null)} />
       )}

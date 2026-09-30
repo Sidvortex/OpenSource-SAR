@@ -1,6 +1,0 @@
-{
-  "checked": null,
-  "maturity": "PROVISIONAL",
-  "note": "Not checked yet. Run python pipeline/update_coverage.py, or wait for the weekly GitHub Action.",
-  "hotspots": {}
-}

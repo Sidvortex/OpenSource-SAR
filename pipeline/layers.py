@@ -80,3 +80,33 @@ def update_index(spot_id, module, synthetic):
     index = json.loads(path.read_text()) if path.exists() else {"layers": {}}
     index["layers"][spot_id] = {"module": module, "synthetic": synthetic, "updated": date.today().isoformat()}
     path.write_text(json.dumps(index, indent=2) + "\n")
+
+
+# ---------------------------------------------------------------- Part 4: pixel histories
+
+SERIES_MAX_SIDE = 160   # the inspector grid: small enough to download instantly
+
+
+def series_factor(height, width):
+    return max(1, int(np.ceil(max(height, width) / SERIES_MAX_SIDE)))
+
+
+def reduce_grid(values, factor):
+    """Block-average a full-resolution layer down to the inspector grid, ignoring NaN."""
+    h, w = values.shape
+    H, W = -(-h // factor) * factor, -(-w // factor) * factor
+    padded = np.full((H, W), np.nan, dtype="float32")
+    padded[:h, :w] = values
+    blocks = padded.reshape(H // factor, factor, W // factor, factor)
+    with np.errstate(invalid="ignore"):
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            return np.nanmean(blocks, axis=(1, 3)).astype("float32")
+
+
+def write_series(out, name, stack):
+    """Little-endian float32, laid out [time][row][column]; NaN means no data."""
+    array = np.ascontiguousarray(np.stack(stack).astype("<f4"))
+    (out / name).write_bytes(array.tobytes())
+    return array.shape
