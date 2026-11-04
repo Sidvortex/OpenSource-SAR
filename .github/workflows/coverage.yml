@@ -1,0 +1,62 @@
+name: Weekly update
+
+# Free for public repositories. Every Monday:
+#   * asks NASA's public ASF search (no login, no key) which NISAR products exist over every place;
+#   * refreshes each place's context (USGS earthquakes, Open-Meteo rain, optional NASA FIRMS fires);
+#   * collects ground reports filed as GitHub issues;
+#   * rebuilds the STAC catalogue and checks every manifest, then commits what changed.
+on:
+  schedule:
+    - cron: "17 3 * * 1"   # every Monday at 03:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    env:
+      SITE_URL: ${{ vars.SITE_URL }}
+      NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+      FIRMS_MAP_KEY: ${{ secrets.FIRMS_MAP_KEY }}   # optional, free from firms.modaps.eosdis.nasa.gov/api/map_key
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r pipeline/requirements.txt
+      - run: python pipeline/update_coverage.py
+      - name: Context (earthquakes, rain, fires)
+        run: python pipeline/context.py
+        continue-on-error: true
+      - name: Ground reports from issues
+        run: python pipeline/reports.py
+        continue-on-error: true
+      - run: python pipeline/stac.py
+      - run: python pipeline/validate.py
+      - name: Push alerts with ntfy (optional, set the NTFY_TOPIC secret)
+        if: env.NTFY_TOPIC != ''
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          for a in json.load(open("data/alerts.json"))["alerts"][:10]:
+              message = f"New NISAR {a['product']} pass over {a['name']} ({a['last']}). Informational only."
+              urllib.request.urlopen(urllib.request.Request(f"https://ntfy.sh/{os.environ['NTFY_TOPIC']}", data=message.encode(), method="POST"))
+          PY
+      - name: Commit what changed
+        run: |
+          git add data/coverage.json data/alerts.json data/stac
+          git add data/layers/*/context.json 2>/dev/null || true
+          [ -f data/reports.json ] && git add data/reports.json
+          [ -f data/feed.xml ] && git add data/feed.xml
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          git config user.name "opensource-sar-bot"
+          git config user.email "opensource-sar-bot@users.noreply.github.com"
+          git commit -m "Weekly update: coverage, context and reports"
+          git push

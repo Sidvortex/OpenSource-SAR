@@ -1,0 +1,41 @@
+name: Ground report
+description: Tell us what you see on the ground at an Open Source SAR place (cracks, flooding, burn scars, crops, ice).
+title: "Ground report: "
+labels:
+  - ground-report
+body:
+  - type: markdown
+    attributes:
+      value: "Thank you! Reports are public and moderated. Don't include anyone's personal details, and stay safe: never enter a hazard area to take a photo."
+  - type: input
+    id: place
+    attributes:
+      label: Place
+      description: "Name, plus latitude and longitude (for example 10.60, -66.93) so it appears on the map"
+    validations:
+      required: true
+  - type: input
+    id: date
+    attributes:
+      label: Date you saw it
+      placeholder: "2026-10-01"
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: "What did you see?"
+      options:
+        - Cracks or sinking ground
+        - Flooding
+        - Fire or burn scar
+        - Crops being planted or harvested
+        - Glacier or ice change
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: "What changed? Drag photos here if you have them."

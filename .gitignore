@@ -9,3 +9,5 @@ __pycache__/
 # Raw NISAR products are gigabytes each: never commit them.
 *.h5
 pipeline/work/
+scripts/.test-dance.mjs
+.pytest_cache/
