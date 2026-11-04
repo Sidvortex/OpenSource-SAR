@@ -1,6 +1,6 @@
 // Part 10: offline support. Network first; anything the site has shown before is kept,
 // so a demo keeps working on bad venue Wi-Fi. Open each hero once before presenting.
-const CACHE = 'sarabande-v1';
+const CACHE = 'opensource-sar-v1';
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
 self.addEventListener('fetch', (event) => {

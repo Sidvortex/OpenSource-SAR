@@ -1,6 +1,6 @@
 {
   "hotspot": "mexico-city",
-  "created": "2026-09-29",
+  "created": "2026-10-27",
   "module": "ground",
   "title": "Mexico City: the ground on the move",
   "headline": "The fastest-moving ground here moves about 25 cm a year along the radar's line of sight, roughly 32 cm a year if it is all sinking.",
@@ -24,6 +24,7 @@
       19.14924
     ]
   ],
+  "grid_res": 150.0,
   "event": null,
   "frame_noun": "pairs",
   "sides": [
@@ -163,6 +164,11 @@
       "id": "moved_km2",
       "label": "Moved over 10 cm",
       "unit": "km\u00b2"
+    },
+    {
+      "id": "people_exposed",
+      "label": "People on changed ground",
+      "unit": "people"
     }
   ],
   "chart": {
@@ -243,7 +249,8 @@
     "The ionospheric phase screen shipped with each product is subtracted.",
     "Movement is measured relative to the median of the scene's outer edge.",
     "One fringe (colour cycle) equals half the radar wavelength: about 12 cm.",
-    "Gaps in the 12-day chain (such as NISAR's instrument gap) are bridged with each pixel's average rate; the uncertainty band grows across them."
+    "Gaps in the 12-day chain (such as NISAR's instrument gap) are bridged with each pixel's average rate; the uncertainty band grows across them.",
+    "People on changed ground: a population raster summed inside the changed area of each frame."
   ],
   "frames": [
     {
@@ -262,7 +269,8 @@
         "max_away_cm": 0.7,
         "max_abs_cm": 0.7,
         "moved_km2": 0.0,
-        "max_total_cm": 0.7
+        "max_total_cm": 0.7,
+        "people_exposed": 0
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260619T010000_20260619T010040_20260701T010000_20260701T010040_DEMO.h5"
@@ -284,7 +292,8 @@
         "max_away_cm": 0.7,
         "max_abs_cm": 0.7,
         "moved_km2": 0.0,
-        "max_total_cm": 1.4
+        "max_total_cm": 1.4,
+        "people_exposed": 0
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260701T010000_20260701T010040_20260713T010000_20260713T010040_DEMO.h5"
@@ -306,7 +315,8 @@
         "max_away_cm": 0.6,
         "max_abs_cm": 0.6,
         "moved_km2": 0.0,
-        "max_total_cm": 2.0
+        "max_total_cm": 2.0,
+        "people_exposed": 0
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260713T010000_20260713T010040_20260725T010000_20260725T010040_DEMO.h5"
@@ -328,7 +338,8 @@
         "max_away_cm": 0.7,
         "max_abs_cm": 0.7,
         "moved_km2": 0.0,
-        "max_total_cm": 4.0
+        "max_total_cm": 4.0,
+        "people_exposed": 0
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260818T010000_20260818T010040_20260830T010000_20260830T010040_DEMO.h5"
@@ -350,7 +361,8 @@
         "max_away_cm": 0.7,
         "max_abs_cm": 0.7,
         "moved_km2": 0.0,
-        "max_total_cm": 4.6
+        "max_total_cm": 4.6,
+        "people_exposed": 553
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260830T010000_20260830T010040_20260911T010000_20260911T010040_DEMO.h5"
@@ -372,11 +384,17 @@
         "max_away_cm": 0.8,
         "max_abs_cm": 0.8,
         "moved_km2": 0.0,
-        "max_total_cm": 5.4
+        "max_total_cm": 5.4,
+        "people_exposed": 8849
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260911T010000_20260911T010040_20260923T010000_20260923T010040_DEMO.h5"
       ]
     }
-  ]
+  ],
+  "exposure": {
+    "source": "SYNTHETIC_population_mexico-city.tif",
+    "synthetic": true,
+    "note": "People per pixel summed where this layer shows change. A count of people living there, not of people harmed."
+  }
 }

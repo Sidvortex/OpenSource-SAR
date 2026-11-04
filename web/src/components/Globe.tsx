@@ -4,7 +4,7 @@ import type { FeatureCollection } from 'geojson';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { DANCES, MODULES } from '../catalog';
 import type { Hotspot } from '../types';
-import { STYLE_URL, applyOverlay, useOfflineFallback } from '../mapStyle';
+import { STYLE_URL, applyOptical, applyOverlay, useOfflineFallback } from '../mapStyle';
 import type { Overlay } from '../mapStyle';
 
 const EMPTY: FeatureCollection = { type: 'FeatureCollection', features: [] };
@@ -19,6 +19,9 @@ interface Props {
   pick?: [number, number] | null;
   drawBox?: [number, number, number, number] | null;
   onReady?: (map: maplibregl.Map) => void;
+  opticalDate?: string | null;
+  reports?: FeatureCollection | null;
+  onReport?: (url: string) => void;
 }
 
 function areaOutline(spot: Hotspot | undefined): FeatureCollection {
@@ -45,7 +48,7 @@ function addAreaLayer(map: maplibregl.Map) {
   map.addLayer({ id: 'area-line', type: 'line', source: 'area', paint: { 'line-color': '#1A2233', 'line-width': 1.5, 'line-dasharray': [2, 2] } });
 }
 
-export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay, onMapClick, pick = null, drawBox = null, onReady }: Props) {
+export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay, onMapClick, pick = null, drawBox = null, onReady, opticalDate = null, reports = null, onReport }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markers = useRef(new Map<string, HTMLButtonElement>());
@@ -57,6 +60,12 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay, onM
   selectedRef.current = selectedId;
   const overlayRef = useRef(overlay);
   overlayRef.current = overlay;
+  const opticalRef = useRef(opticalDate);
+  opticalRef.current = opticalDate;
+  const reportsRef = useRef(reports);
+  reportsRef.current = reports;
+  const reportClick = useRef(onReport);
+  reportClick.current = onReport;
   const clickRef = useRef(onMapClick);
   clickRef.current = onMapClick;
   const pickRef = useRef(pick);
@@ -87,6 +96,15 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay, onM
       const current = spotsRef.current.find((h) => h.id === selectedRef.current);
       (map.getSource('area') as maplibregl.GeoJSONSource).setData(areaOutline(current));
       applyOverlay(map, overlayRef.current, 'area-fill');
+      applyOptical(map, opticalRef.current, 'area-fill');
+      if (!map.getSource('reports')) {
+        map.addSource('reports', { type: 'geojson', data: reportsRef.current ?? EMPTY });
+        map.addLayer({ id: 'reports', type: 'circle', source: 'reports', paint: { 'circle-radius': 5, 'circle-color': '#ffffff', 'circle-stroke-color': '#e0552b', 'circle-stroke-width': 2.5 } });
+        map.on('click', 'reports', (e) => {
+          const url = e.features?.[0]?.properties?.url;
+          if (url) reportClick.current?.(String(url));
+        });
+      }
       if (!map.getSource('pick')) {
         map.addSource('pick', { type: 'geojson', data: pickPoint(pickRef.current) });
         map.addSource('draw', { type: 'geojson', data: EMPTY });
@@ -160,6 +178,15 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay, onM
     const [w, s, e, n] = drawBox;
     src.setData({ type: 'FeatureCollection', features: [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [[w, s], [e, s], [e, n], [w, n], [w, s]] } }] });
   }, [drawBox]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map) applyOptical(map, opticalDate, 'area-fill');
+  }, [opticalDate]);
+
+  useEffect(() => {
+    (mapRef.current?.getSource('reports') as maplibregl.GeoJSONSource | undefined)?.setData(reports ?? EMPTY);
+  }, [reports]);
 
   // The radar layer for the current date and layer choice.
   useEffect(() => {

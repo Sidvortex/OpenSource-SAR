@@ -1,8 +1,8 @@
 {
-  "name": "sarabande-web",
+  "name": "opensource-sar-web",
   "private": true,
   "version": "0.1.0",
-  "description": "SARabande: watch Earth's surface dance, measured by NISAR radar. Free and open source.",
+  "description": "Open Source SAR: watch Earth's surface dance, measured by NISAR radar. Free and open source.",
   "license": "MIT",
   "type": "module",
   "scripts": {

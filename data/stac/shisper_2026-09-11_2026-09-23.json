@@ -39,13 +39,13 @@
   "datetime": "2026-09-23T00:00:00Z",
   "start_datetime": "2026-09-11T00:00:00Z",
   "end_datetime": "2026-09-23T00:00:00Z",
-  "sarabande:module": "ice",
-  "sarabande:synthetic": true,
-  "sarabande:stats": {
+  "opensource-sar:module": "ice",
+  "opensource-sar:synthetic": true,
+  "opensource-sar:stats": {
    "max_speed_m_day": 6.81,
    "fast_km2": 30.6
   },
-  "sarabande:sources": [
+  "opensource-sar:sources": [
    "SYNTHETIC_NISAR_L2_PR_GOFF_DEMO_20260911T005000_20260911T005040_20260923T005000_20260923T005040_DEMO.h5"
   ]
  },

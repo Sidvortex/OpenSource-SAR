@@ -1,6 +1,6 @@
 {
   "hotspot": "punjab-haryana",
-  "created": "2026-09-29",
+  "created": "2026-10-27",
   "module": "farming",
   "title": "Punjab and Haryana: the farming season",
   "headline": "At the season's peak (2026-08-18), 80% of the land showed a full crop canopy.",
@@ -24,6 +24,7 @@
       29.498556
     ]
   ],
+  "grid_res": 300.0,
   "event": null,
   "frame_noun": "passes",
   "sides": [

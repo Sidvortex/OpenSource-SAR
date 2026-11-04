@@ -112,7 +112,7 @@ export function Inspector({ manifest, data, pick, onClose }: Props) {
           </p>
           <p className="inspector-actions">
             <button type="button" className="chip" onClick={() => sonify(values)}>Hear it</button>
-            <button type="button" className="chip" onClick={() => downloadCsv(`sarabande-${manifest.hotspot}-${pick.lat.toFixed(3)}-${pick.lng.toFixed(3)}.csv`, s.dates, values, sigma, s.unit)}>Download CSV</button>
+            <button type="button" className="chip" onClick={() => downloadCsv(`opensource-sar-${manifest.hotspot}-${pick.lat.toFixed(3)}-${pick.lng.toFixed(3)}.csv`, s.dates, values, sigma, s.unit)}>Download CSV</button>
           </p>
           {measured && (
             <p className="card-dance measured">

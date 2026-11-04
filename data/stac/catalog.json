@@ -1,8 +1,8 @@
 {
  "type": "Catalog",
  "stac_version": "1.0.0",
- "id": "sarabande",
- "description": "SARabande web layers derived from NISAR. Check each item's 'synthetic' flag.",
+ "id": "opensource-sar",
+ "description": "Open Source SAR web layers derived from NISAR. Check each item's 'synthetic' flag.",
  "links": [
   {
    "rel": "root",

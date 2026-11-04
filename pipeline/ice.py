@@ -90,7 +90,7 @@ def build_layers(spot, files, synthetic, res):
         "headline": f"The fastest ice moved about {peaks[-1]:.1f} m a day in the latest pair, "
                     f"{'up from' if peaks[-1] > peaks[0] else 'compared with'} {peaks[0]:.1f} m a day in the first.",
         "synthetic": synthetic, "product": "NISAR L2 GOFF (geocoded pixel offsets)",
-        "bounds": target.corners_lonlat(), "event": None, "frame_noun": "pairs", "sides": ["Earlier pair", "Later pair"],
+        "bounds": target.corners_lonlat(), "grid_res": target.res, "event": None, "frame_noun": "pairs", "sides": ["Earlier pair", "Later pair"],
         "side_stat": {"id": "max_speed_m_day", "label": "Top speed", "unit": "m/day"},
         "compare": [0, len(frames) - 1],
         "layers": [{"id": "speed", "label": "Ice speed", "opacity": 0.9,
@@ -156,7 +156,7 @@ def make_demo_goff(spot, out_dir, spacing=60.0, epsg=32643):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="SARabande Part 7: ice speed from GOFF.")
+    parser = argparse.ArgumentParser(description="Open Source SAR Part 7: ice speed from GOFF.")
     sub = parser.add_subparsers(dest="command", required=True)
     for name in ("demo", "process"):
         p = sub.add_parser(name)

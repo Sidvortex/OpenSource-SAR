@@ -6,3 +6,4 @@ scipy>=1.11        # BSD-3-Clause: image clean-up
 h5py>=3.10         # BSD-3-Clause: NISAR HDF5 files
 rasterio>=1.3      # BSD-3-Clause: reprojection (bundles GDAL, MIT)
 pillow>=10.0       # MIT-CMU: PNG layers
+jsonschema>=4.21   # MIT: checks manifests against data/manifest.schema.json

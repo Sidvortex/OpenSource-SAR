@@ -1,0 +1,12 @@
+{
+ "hotspot": "venezuela-coast",
+ "seed": "Hand-entered from the USGS event pages cited by NASA Earth Observatory; run python pipeline/context.py to refresh with full details.",
+ "window": ["2026-06-04", "2026-07-27"],
+ "events": [
+  {"kind": "earthquake", "date": "2026-06-24", "label": "M7.2 21 km ENE of San Felipe, Venezuela", "magnitude": 7.2, "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7zc/executive"},
+  {"kind": "earthquake", "date": "2026-06-24", "label": "M7.5 20 km ESE of Yumare, Venezuela", "magnitude": 7.5, "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000t7zp/executive"}
+ ],
+ "rain": null,
+ "sources": ["Earthquakes: USGS"],
+ "errors": []
+}

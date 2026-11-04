@@ -109,6 +109,7 @@ export interface LayerManifest {
     stations: { id: string; lon: number; lat: number; gnss_cm_yr: number; insar_cm_yr: number | null; difference_cm_yr: number | null }[];
   } | null;
   bridged?: string[][];
+  exposure?: { source: string; synthetic: boolean; note: string };
 }
 
 export interface SeriesDef {
@@ -134,6 +135,17 @@ export interface MeasuredDance {
   reason: string;
   basis?: string;
 }
+
+export interface ContextEvent { kind: 'earthquake' | 'fire'; date: string; label: string; magnitude?: number; count?: number; url?: string; lon?: number; lat?: number }
+export interface PlaceContext {
+  hotspot: string;
+  events: ContextEvent[];
+  rain: { dates: string[]; mm: (number | null)[]; point: [number, number] } | null;
+  sources: string[];
+  seed?: string;
+}
+
+export interface GroundReport { id: number; url: string; title: string; place: string; date: string; kind: string; details: string; lon: number | null; lat: number | null }
 
 export interface LayerIndex {
   layers: Record<string, { module: ModuleId; synthetic: boolean; updated: string; headline?: string; dance?: DanceId | null; latest?: string | null }>;

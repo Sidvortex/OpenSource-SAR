@@ -10,8 +10,8 @@ MEDIA = {".png": "image/png", ".webp": "image/webp", ".bin": "application/octet-
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    catalog = {"type": "Catalog", "stac_version": "1.0.0", "id": "sarabande",
-               "description": "SARabande web layers derived from NISAR. Check each item's 'synthetic' flag.",
+    catalog = {"type": "Catalog", "stac_version": "1.0.0", "id": "opensource-sar",
+               "description": "Open Source SAR web layers derived from NISAR. Check each item's 'synthetic' flag.",
                "links": [{"rel": "root", "href": "./catalog.json", "type": "application/json"}]}
     for manifest_path in sorted(LAYERS.glob("*/manifest.json")):
         m = json.loads(manifest_path.read_text())
@@ -25,9 +25,9 @@ def main():
             item = {"type": "Feature", "stac_version": "1.0.0", "id": item_id, "bbox": bbox,
                     "geometry": {"type": "Polygon", "coordinates": [ring]},
                     "properties": {"datetime": f"{frame['date']}T00:00:00Z", "start_datetime": f"{frame.get('start', frame['date'])}T00:00:00Z",
-                                   "end_datetime": f"{frame['date']}T00:00:00Z", "sarabande:module": m["module"],
-                                   "sarabande:synthetic": m["synthetic"], "sarabande:stats": frame["stats"],
-                                   "sarabande:sources": frame.get("sources", [])},
+                                   "end_datetime": f"{frame['date']}T00:00:00Z", "opensource-sar:module": m["module"],
+                                   "opensource-sar:synthetic": m["synthetic"], "opensource-sar:stats": frame["stats"],
+                                   "opensource-sar:sources": frame.get("sources", [])},
                     "assets": assets,
                     "links": [{"rel": "root", "href": "./catalog.json"}, {"rel": "parent", "href": "./catalog.json"}]}
             (OUT / f"{item_id}.json").write_text(json.dumps(item, indent=1))

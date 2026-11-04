@@ -1,4 +1,4 @@
-# Fully self-hosted SARabande: the API on :8000 and the built site on :8080. Free and open source.
+# Fully self-hosted Open Source SAR: the API on :8000 and the built site on :8080. Free and open source.
 #   cd web && npm ci && npm run build && cd ..
 #   docker compose up
 services:

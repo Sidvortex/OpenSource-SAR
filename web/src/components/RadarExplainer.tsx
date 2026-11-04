@@ -12,7 +12,7 @@ const QUIZ = [
   { q: 'Why does flooded forest look bright to radar?', options: ['Water glows', 'The pulse bounces off water and trunks straight back', 'Leaves are shiny'], answer: 1 },
 ];
 
-export function RadarExplainer({ onClose }: { onClose: () => void }) {
+export default function RadarExplainer({ onClose }: { onClose: () => void }) {
   const [band, setBand] = useState(3);
   const [move, setMove] = useState(30);
   const [answers, setAnswers] = useState<(number | null)[]>(QUIZ.map(() => null));

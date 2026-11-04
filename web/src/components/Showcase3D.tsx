@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent, PointerEvent } from 'react';
 import maplibregl from 'maplibre-gl';
-import { STYLE_URL, TERRAIN_ATTRIBUTION, TERRAIN_URL, applyOverlay, siteUrl, useOfflineFallback } from '../mapStyle';
-import type { Overlay } from '../mapStyle';
+import { STYLE_URL, TERRAIN_ATTRIBUTION, TERRAIN_URL, applyOptical, applyOverlay, overlayFor, useOfflineFallback } from '../mapStyle';
 import type { Hotspot, LayerManifest } from '../types';
 import { Legend, frameLabel, statText } from './TimeBar';
 
@@ -16,18 +15,9 @@ interface Props {
 const REVEAL_MS = 7000;
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export function overlayFor(manifest: LayerManifest, index: number, kind: string): Overlay {
-  const frame = manifest.frames[index];
-  const layer = manifest.layers.find((l) => l.id === kind && frame.files[l.id]) ?? manifest.layers.find((l) => frame.files[l.id])!;
-  return {
-    url: siteUrl(`data/layers/${manifest.hotspot}/${frame.files[layer.id]}`),
-    coordinates: manifest.bounds,
-    opacity: layer.opacity,
-  };
-}
 
 /** A 3D map: free basemap, free terrain draped with the chosen pass. */
-function createMap(container: HTMLElement, spot: Hotspot, exaggeration: number, overlay: () => Overlay) {
+function createMap(container: HTMLElement, spot: Hotspot, exaggeration: number, onStyle: (map: maplibregl.Map) => void) {
   const map = new maplibregl.Map({
     container,
     style: STYLE_URL,
@@ -61,12 +51,12 @@ function createMap(container: HTMLElement, spot: Hotspot, exaggeration: number, 
       map.setTerrain({ source: 'dem', exaggeration });
     }
     map.setSky({ 'sky-color': '#1c2536', 'horizon-color': '#51607a', 'fog-color': '#c9d3de', 'sky-horizon-blend': 0.6, 'horizon-fog-blend': 0.7, 'fog-ground-blend': 0.85 });
-    applyOverlay(map, overlay());
+    onStyle(map);
   });
   return map;
 }
 
-export function Showcase3D({ spot, manifest, kind: initialKind, onClose }: Props) {
+export default function Showcase3D({ spot, manifest, kind: initialKind, onClose }: Props) {
   const last = manifest.frames.length - 1;
   const [defaultLeft, defaultRight] = manifest.compare ?? [0, last];
   const [before, setBefore] = useState(defaultLeft);
@@ -88,8 +78,12 @@ export function Showcase3D({ spot, manifest, kind: initialKind, onClose }: Props
   // Build both maps once and keep their cameras locked together.
   useEffect(() => {
     if (!beforeBox.current || !afterBox.current) return;
-    const a = createMap(beforeBox.current, spot, exaggeration, () => overlayFor(manifest, state.current.before, state.current.kind));
-    const b = createMap(afterBox.current, spot, exaggeration, () => overlayFor(manifest, state.current.after, state.current.kind));
+    const first = (m: maplibregl.Map, i: number) => {
+      if (state.current.kind === 'optical') applyOptical(m, manifest.frames[i].date);
+      else applyOverlay(m, overlayFor(manifest, i, state.current.kind));
+    };
+    const a = createMap(beforeBox.current, spot, exaggeration, (m) => first(m, state.current.before));
+    const b = createMap(afterBox.current, spot, exaggeration, (m) => first(m, state.current.after));
     b.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
     b.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
     let syncing = false;
@@ -111,8 +105,13 @@ export function Showcase3D({ spot, manifest, kind: initialKind, onClose }: Props
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spot, manifest]);
 
-  useEffect(() => { if (maps.current) applyOverlay(maps.current.before, overlayFor(manifest, before, kind)); }, [before, kind, manifest]);
-  useEffect(() => { if (maps.current) applyOverlay(maps.current.after, overlayFor(manifest, after, kind)); }, [after, kind, manifest]);
+  // 'optical' swaps the radar layer for NASA's same-day true-colour image on each side.
+  const show = useCallback((m: maplibregl.Map, i: number) => {
+    if (kind === 'optical') { applyOverlay(m, null); applyOptical(m, manifest.frames[i].date); }
+    else { applyOptical(m, null); applyOverlay(m, overlayFor(manifest, i, kind)); }
+  }, [kind, manifest]);
+  useEffect(() => { if (maps.current) show(maps.current.before, before); }, [before, show]);
+  useEffect(() => { if (maps.current) show(maps.current.after, after); }, [after, show]);
   useEffect(() => {
     if (!maps.current || !TERRAIN_URL) return;
     for (const m of [maps.current.before, maps.current.after]) {
@@ -183,7 +182,7 @@ export function Showcase3D({ spot, manifest, kind: initialKind, onClose }: Props
           <strong>{sideB}: {frameLabel(a)}</strong>
           {stat && <span>{statText(stat, a.stats[stat.id])}</span>}
         </div>
-        <div className="stage-legend"><Legend layer={layer} /></div>
+        <div className="stage-legend">{kind === 'optical' ? <p className="legend">NASA MODIS true colour for each side's date. White is cloud.</p> : <Legend layer={layer} />}</div>
         <div className="divider" style={{ left: `${split}%` }}
           role="slider" tabIndex={0} aria-label="Before and after divider" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(split)}
           onKeyDown={onDividerKey}
@@ -211,6 +210,7 @@ export function Showcase3D({ spot, manifest, kind: initialKind, onClose }: Props
           {manifest.layers.map((l) => (
             <button key={l.id} type="button" aria-pressed={kind === l.id} onClick={() => setKind(l.id)}>{l.label}</button>
           ))}
+          <button type="button" aria-pressed={kind === 'optical'} onClick={() => setKind('optical')}>Optical</button>
         </div>
         <label className="range">Terrain height x{exaggeration.toFixed(1)}
           <input type="range" min={1} max={4} step={0.5} value={exaggeration} onChange={(e) => setExaggeration(Number(e.target.value))} />

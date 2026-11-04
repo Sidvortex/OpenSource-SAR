@@ -1,4 +1,4 @@
-/* SARabande design tokens.
+/* Open Source SAR design tokens.
    Colours come from radar false-colour imagery: violet, radar blue, ember,
    chartreuse and glacier teal, set on a cool mist rather than cream or black. */
 :root {
@@ -48,7 +48,7 @@ code { font-size: 0.9em; background: rgba(26, 34, 51, 0.06); padding: 0 0.25em; 
 .panel-head { padding: 22px 22px 14px; border-bottom: 1px solid var(--line); }
 .wordmark {
   margin: 0; font-family: var(--ui); font-weight: 800; font-stretch: 125%;
-  font-size: 2rem; line-height: 1; letter-spacing: -0.01em;
+  font-size: 1.7rem; line-height: 1.05; letter-spacing: -0.01em;
 }
 .tagline { margin: 8px 0 0; color: var(--muted); max-width: 30ch; }
 .sheet-toggle { display: none; }
@@ -299,6 +299,14 @@ code { font-size: 0.9em; background: rgba(26, 34, 51, 0.06); padding: 0 0.25em; 
   .areacheck { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; }
 }
 
+.chart-rain { fill: rgba(31, 143, 209, 0.55); }
+.chart-mark path { stroke: #fff; stroke-width: 0.8; }
+.mark-earthquake path { fill: #c0392b; }
+.mark-fire path { fill: #e0552b; }
+.events-line a { color: var(--ink); }
+.card-people { margin: 0; font-size: 0.95rem; }
+.card-people strong { font-size: 1.35rem; font-stretch: 110%; font-variant-numeric: tabular-nums; }
+
 /* ---------- Markers: each place pulses in its dance's rhythm ---------- */
 .marker {
   --c: var(--ink);
@@ -374,7 +382,7 @@ code { font-size: 0.9em; background: rgba(26, 34, 51, 0.06); padding: 0 0.25em; 
   .panel { top: auto; left: 8px; right: 8px; bottom: 8px; max-height: 46vh; }
   .panel:not(.is-open) .panel-body { display: none; }
   .panel-head { padding: 14px 16px 12px; border-bottom: 0; }
-  .wordmark { font-size: 1.5rem; }
+  .wordmark { font-size: 1.3rem; }
   .tagline { display: none; }
   .sheet-toggle {
     display: block; margin-top: 10px; width: 100%; padding: 9px; border: 1px solid var(--line);

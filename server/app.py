@@ -22,7 +22,7 @@ PIPELINE = ROOT / "pipeline"
 sys.path.insert(0, str(PIPELINE))
 import coverage_check as cc  # noqa: E402
 
-app = FastAPI(title="SARabande API", description="Free, open-source companion API for SARabande.")
+app = FastAPI(title="Open Source SAR API", description="Free, open-source companion API for Open Source SAR.")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET", "POST"], allow_headers=["*"])
 SCRIPTS = {"water": "water_dance.py", "ground": "quake.py", "fire": "backscatter.py", "farming": "backscatter.py", "ice": "ice.py"}
 JOBS: dict = {}

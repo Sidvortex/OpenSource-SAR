@@ -66,7 +66,7 @@ def summarise(area, stacks):
 
 FEED = ROOT / "data" / "feed.xml"
 ALERTS = ROOT / "data" / "alerts.json"
-SITE_URL = os.environ.get("SITE_URL", "https://example.github.io/sarabande/")
+SITE_URL = os.environ.get("SITE_URL", "https://sidvortex.github.io/OpenSource-SAR/")
 
 
 def new_passes(previous, current, spots):
@@ -93,8 +93,8 @@ def write_feed(alerts, checked):
              f"<link>{escape(SITE_URL)}#place={a['hotspot']}</link><guid isPermaLink=\"false\">{a['hotspot']}-{a['product']}-{a['last']}</guid>"
              f"<pubDate>{checked}</pubDate><description>Informational only, not an official warning.</description>" for a in alerts]
     body = "".join(f"<item>{i}</item>" for i in (items + old_items)[:50])
-    FEED.write_text('<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>SARabande: new NISAR passes</title>'
-                    f"<link>{escape(SITE_URL)}</link><description>New radar passes over SARabande hotspots. Not an official warning system.</description>"
+    FEED.write_text('<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Open Source SAR: new NISAR passes</title>'
+                    f"<link>{escape(SITE_URL)}</link><description>New radar passes over Open Source SAR hotspots. Not an official warning system.</description>"
                     f"{body}</channel></rss>\n")
 
 

@@ -39,15 +39,16 @@
   "datetime": "2026-06-30T00:00:00Z",
   "start_datetime": "2026-06-18T00:00:00Z",
   "end_datetime": "2026-06-30T00:00:00Z",
-  "sarabande:module": "ground",
-  "sarabande:synthetic": true,
-  "sarabande:stats": {
+  "opensource-sar:module": "ground",
+  "opensource-sar:synthetic": true,
+  "opensource-sar:stats": {
    "max_toward_cm": 48.3,
    "max_away_cm": 54.1,
    "max_abs_cm": 54.1,
-   "moved_km2": 9389.1
+   "moved_km2": 9389.1,
+   "people_exposed": 1544612
   },
-  "sarabande:sources": [
+  "opensource-sar:sources": [
    "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260618T101500_20260618T101540_20260630T101500_20260630T101540_DEMO.h5"
   ]
  },

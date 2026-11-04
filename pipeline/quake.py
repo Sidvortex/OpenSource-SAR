@@ -157,7 +157,7 @@ def cmd_demo(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="SARabande Part 3: the earthquake.")
+    parser = argparse.ArgumentParser(description="Open Source SAR Part 3: the earthquake.")
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("download")
     p.add_argument("--hotspot", default="venezuela-coast")

@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import type { PointerEvent } from 'react';
 import { formatDate } from '../catalog';
-import type { Frame, LayerDef, LayerManifest, StatDef } from '../types';
+import type { Frame, LayerDef, LayerManifest, PlaceContext, StatDef } from '../types';
 
 const GAP = { start: '2026-07-27', end: '2026-08-10' };   // permanent NISAR instrument gap
 const W = 560;
@@ -45,9 +45,12 @@ interface Props {
   kind: string;
   onKind: (k: string) => void;
   onSnapshot?: () => void;
+  context?: PlaceContext | null;
+  optical?: boolean;
+  onOptical?: (on: boolean) => void;
 }
 
-export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, onKind, onSnapshot }: Props) {
+export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, onKind, onSnapshot, context, optical, onOptical }: Props) {
   const frames = manifest.frames;
   const current = frames[index];
   const layer = manifest.layers.find((l) => l.id === kind) ?? manifest.layers[0];
@@ -71,8 +74,18 @@ export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, on
       gap: day(GAP.end) > t0 && day(GAP.start) < t1
         ? { x0: Math.max(x(GAP.start), PAD.left), x1: Math.min(x(GAP.end), W - PAD.right) } : null,
       event: inRange(manifest.event) ? x(manifest.event!) : null,
+      // Part 7: what else happened. Events and daily rain inside the chart's time range.
+      marks: (context?.events ?? []).filter((e) => inRange(e.date) || e.date === frames[0].date)
+        .map((e) => ({ ...e, x: x(e.date) })),
+      rain: (() => {
+        const r = context?.rain;
+        if (!r) return [];
+        const vals = r.dates.map((d, i) => ({ d, v: r.mm[i] ?? 0 })).filter((p) => day(p.d) >= t0 && day(p.d) <= t1);
+        const top = Math.max(...vals.map((p) => p.v), 1);
+        return vals.filter((p) => p.v > 0.5).map((p) => ({ x: x(p.d), h: (p.v / top) * 22, d: p.d, v: p.v }));
+      })(),
     };
-  }, [frames, manifest]);
+  }, [frames, manifest, context]);
 
   const scrub = (event: PointerEvent<SVGSVGElement>) => {
     const rect = svgRef.current?.getBoundingClientRect();
@@ -110,8 +123,12 @@ export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, on
         </div>
         <div className="segmented" role="group" aria-label="Layer">
           {manifest.layers.map((l) => (
-            <button key={l.id} type="button" aria-pressed={kind === l.id} onClick={() => onKind(l.id)}>{l.label}</button>
+            <button key={l.id} type="button" aria-pressed={!optical && kind === l.id} onClick={() => { onOptical?.(false); onKind(l.id); }}>{l.label}</button>
           ))}
+          {onOptical && (
+            <button type="button" aria-pressed={!!optical} onClick={() => onOptical(!optical)}
+              title="NASA MODIS true-colour image of the same day: see the clouds radar looks through">Optical</button>
+          )}
         </div>
       </div>
 
@@ -130,10 +147,17 @@ export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, on
             <text x={chart.event + 4} y={PAD.top + 4}>event</text>
           </g>
         )}
+        {chart.rain.map((r) => <rect key={r.d} className="chart-rain" x={r.x - 0.8} y={chart.base - r.h} width={1.6} height={r.h}><title>{`${r.d}: ${r.v} mm of rain`}</title></rect>)}
         <path className="chart-total" d={chart.area} />
         {chart.line && <path className="chart-open" d={chart.line} />}
         {frames.map((f, i) => (
           <circle key={f.date + (f.start ?? '')} className={i === index ? 'chart-dot is-current' : 'chart-dot'} cx={chart.x(f.date)} cy={chart.base} r={i === index ? 4 : 2.5} />
+        ))}
+        {chart.marks.map((m, i) => (
+          <g key={`${m.date}-${i}`} className={`chart-mark mark-${m.kind}`}>
+            <path d={`M${m.x} ${PAD.top - 2}l-4 -7h8z`} />
+            <title>{`${formatDate(m.date)}: ${m.label}`}</title>
+          </g>
         ))}
         <line className="chart-now" x1={chart.x(current.date)} x2={chart.x(current.date)} y1={PAD.top - 4} y2={chart.base} />
       </svg>
@@ -145,11 +169,21 @@ export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, on
             onChange={(e) => { onPlaying(false); onIndex(Number(e.target.value)); }} />
         </label>
       )}
-      <Legend layer={layer} />
+      {optical ? (
+        <p className="legend">Optical: NASA MODIS (Terra) true colour on {frameLabel(current)}. White is cloud: the radar layers see through it.</p>
+      ) : <Legend layer={layer} />}
+      {!!context?.events.length && (
+        <p className="timebar-foot events-line">
+          Also happened: {context.events.slice(0, 4).map((e, i) => (
+            <span key={i}>{i ? '; ' : ''}{e.url ? <a href={e.url} target="_blank" rel="noreferrer">{e.label}</a> : e.label} ({formatDate(e.date)})</span>
+          ))}{context.events.length > 4 ? `; and ${context.events.length - 4} more` : ''}.
+        </p>
+      )}
       {layer.note && <p className="timebar-foot">{layer.note}</p>}
       <p className="timebar-foot">
         {frames.length} {manifest.frame_noun}, {frameLabel(frames[0])} to {frameLabel(frames[frames.length - 1])}. Chart: {manifest.chart.label}.
         {chart.gap ? " The grey band is NISAR's instrument gap." : ''}
+        {chart.rain.length > 0 && ' Thin blue bars: daily rain (Open-Meteo).'}
         {onSnapshot && <> <button type="button" className="linkish" onClick={onSnapshot}>Save this view as an image</button></>}
       </p>
     </section>

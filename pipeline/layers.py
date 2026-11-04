@@ -70,7 +70,8 @@ def write_manifest(spot, out, manifest):
     manifest = {"hotspot": spot["id"], "created": date.today().isoformat(), **manifest}
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     update_index(spot["id"], manifest)
-    print(f"Wrote {len(manifest['frames'])} frames to {out.relative_to(ROOT)}")
+    shown = out.relative_to(ROOT) if out.is_relative_to(ROOT) else out
+    print(f"Wrote {len(manifest['frames'])} frames to {shown}")
     return manifest
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SARabande - week-one NISAR coverage check.
+Open Source SAR - week-one NISAR coverage check.
 
 Finds which calibrated NISAR L-band products exist over each demo hero (or any
 area you pass in), checks whether they are good enough to build on, and writes
@@ -261,7 +261,7 @@ def calendar_plot(key, area, stacks, out_dir):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Check NISAR coverage for SARabande hotspots.")
+    ap = argparse.ArgumentParser(description="Check NISAR coverage for Open Source SAR hotspots.")
     ap.add_argument("--hero", choices=[*HEROES, "all"], default="all")
     ap.add_argument("--wkt", help="custom area as a WKT polygon, longitude first")
     ap.add_argument("--name", default="custom", help="label for a custom area")

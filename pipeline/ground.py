@@ -250,7 +250,7 @@ def build_layers(spot, files, synthetic, res, iono=True, flip=False, gnss_dir=No
         "headline": headline,
         "synthetic": synthetic,
         "product": "NISAR L2 GUNW (geocoded unwrapped interferograms), HH polarisation",
-        "bounds": target.corners_lonlat(),
+        "bounds": target.corners_lonlat(), "grid_res": target.res,
         "event": event.isoformat() if event else None,
         "frame_noun": "pairs",
         "sides": ["Earlier pair", "Later pair"] if event else ["First pair", "Latest pair"],

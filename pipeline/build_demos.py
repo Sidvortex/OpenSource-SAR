@@ -13,7 +13,12 @@ STEPS = [
     ["backscatter.py", "demo", "--hotspot", "amazon-arc"],
     ["backscatter.py", "demo", "--hotspot", "punjab-haryana"],
     ["ice.py", "demo", "--hotspot", "shisper"],
+    ["exposure.py", "--hotspot", "tonle-sap", "--demo"],
+    ["exposure.py", "--hotspot", "venezuela-coast", "--demo"],
+    ["exposure.py", "--hotspot", "mexico-city", "--demo"],
+    ["exposure.py", "--hotspot", "amazon-arc", "--demo"],
     ["stac.py"],
+    ["validate.py"],
 ]
 for step in STEPS:
     print("\n>>", " ".join(step))

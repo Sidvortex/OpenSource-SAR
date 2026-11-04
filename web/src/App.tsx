@@ -1,23 +1,24 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { FeatureCollection } from 'geojson';
 import type maplibregl from 'maplibre-gl';
 import { AreaCheck } from './components/AreaCheck';
 import { Globe } from './components/Globe';
 import { Inspector } from './components/Inspector';
 import { PlaceCard } from './components/PlaceCard';
-import { RadarExplainer } from './components/RadarExplainer';
-import { Showcase3D, overlayFor } from './components/Showcase3D';
+const RadarExplainer = lazy(() => import('./components/RadarExplainer'));
+const Showcase3D = lazy(() => import('./components/Showcase3D'));
 import { Sidebar } from './components/Sidebar';
 import { StoryMode } from './components/StoryMode';
 import type { Story, StoryStep } from './components/StoryMode';
 import { TimeBar } from './components/TimeBar';
 import { MODULE_ORDER } from './catalog';
 import type { ExplainData } from './explain';
-import { siteUrl } from './mapStyle';
+import { overlayFor, siteUrl } from './mapStyle';
 import type { Overlay } from './mapStyle';
 import { loadSeries, pixelAt } from './series';
 import type { Pick, SeriesData } from './series';
 import { startFrame } from './types';
-import type { Coverage, DanceId, Hotspot, LayerIndex, LayerManifest, ModuleId } from './types';
+import type { Coverage, DanceId, GroundReport, Hotspot, LayerIndex, LayerManifest, ModuleId, PlaceContext } from './types';
 
 const STEP_MS = 1200;
 type Box = [number, number, number, number];
@@ -57,6 +58,9 @@ export default function App() {
   const [playing, setPlaying] = useState(false);
   const [kind, setKind] = useState('water');
   const [showcase, setShowcase] = useState(false);
+  const [context, setContext] = useState<PlaceContext | null>(null);
+  const [optical, setOptical] = useState(false);
+  const [reports, setReports] = useState<GroundReport[]>([]);
   const [seriesData, setSeriesData] = useState<SeriesData | null>(null);
   const [pick, setPick] = useState<Pick | null>(null);
   const [explainData, setExplainData] = useState<ExplainData | null>(null);
@@ -73,6 +77,7 @@ export default function App() {
     loadJson<Coverage>('data/coverage.json').then(setCoverage).catch(() => setCoverage(null));
     loadJson<LayerIndex>('data/layers/index.json').then(setLayerIndex).catch(() => undefined);
     loadJson<ExplainData>('data/explain.json').then(setExplainData).catch(() => undefined);
+    loadJson<{ reports: GroundReport[] }>('data/reports.json').then((d) => setReports(d.reports)).catch(() => undefined);
     loadJson<{ stories: Story[] }>('data/stories.json').then((d) => setStories(d.stories)).catch(() => undefined);
     const fromLink = readHash();
     if (fromLink.place) { want.current = fromLink.want; setSelectedId(fromLink.place); }
@@ -103,6 +108,8 @@ export default function App() {
       setKind(w?.layer && m.layers.some((l) => l.id === w.layer) ? w.layer : m.layers[0].id);
       setSeriesData(null);
       loadSeries(m).then((d) => { if (!cancelled) setSeriesData(d); }).catch(() => undefined);
+      setContext(null);
+      loadJson<PlaceContext>(`data/layers/${m.hotspot}/context.json`).then((c) => { if (!cancelled) setContext(c); }).catch(() => undefined);
       for (const f of m.frames) for (const file of Object.values(f.files)) new Image().src = siteUrl(`data/layers/${m.hotspot}/${file}`);
     }).catch(() => setManifest(null));
     return () => { cancelled = true; };
@@ -125,9 +132,19 @@ export default function App() {
   }, [playing, manifest]);
 
   const overlay = useMemo<Overlay | null>(() => {
-    if (!manifest || showcase || manifest.hotspot !== selectedId) return null;
+    if (!manifest || showcase || optical || manifest.hotspot !== selectedId) return null;
     return overlayFor(manifest, Math.min(dateIndex, manifest.frames.length - 1), kind);
-  }, [manifest, dateIndex, kind, showcase, selectedId]);
+  }, [manifest, dateIndex, kind, showcase, selectedId, optical]);
+
+  const opticalDate = optical && manifest && !showcase && manifest.hotspot === selectedId
+    ? manifest.frames[Math.min(dateIndex, manifest.frames.length - 1)].date : null;
+
+  const reportPins = useMemo<FeatureCollection>(() => ({
+    type: 'FeatureCollection',
+    features: reports.filter((r) => r.lat !== null && r.lon !== null).map((r) => ({
+      type: 'Feature', properties: { url: r.url, title: r.title }, geometry: { type: 'Point', coordinates: [r.lon!, r.lat!] },
+    })),
+  }), [reports]);
 
   const visible = useMemo(() => {
     if (!hotspots) return [];
@@ -182,7 +199,7 @@ export default function App() {
     if (!map) return;
     map.once('render', () => {
       const link = document.createElement('a');
-      link.download = `sarabande-${selectedId ?? 'globe'}.png`;
+      link.download = `opensource-sar-${selectedId ?? 'globe'}.png`;
       link.href = map.getCanvas().toDataURL('image/png');
       link.click();
     });
@@ -192,7 +209,7 @@ export default function App() {
   if (error) {
     return (
       <main className="fatal">
-        <h1 className="wordmark">SARabande</h1>
+        <h1 className="wordmark">Open Source SAR</h1>
         <p>The hotspot list did not load ({error}). Run <code>npm run dev</code> from the web folder so the data is copied in.</p>
       </main>
     );
@@ -205,7 +222,8 @@ export default function App() {
     <main className="app">
       <Globe hotspots={hotspots} visibleIds={visibleIds} selectedId={selectedId} onSelect={select} overlay={overlay}
         onMapClick={onMapClick} pick={pick && !showcase ? [pick.lng, pick.lat] : null}
-        drawBox={areaMode ? box : null} onReady={(m) => { mapRef.current = m; }} />
+        drawBox={areaMode ? box : null} onReady={(m) => { mapRef.current = m; }}
+        opticalDate={opticalDate} reports={reportPins} onReport={(url) => window.open(url, '_blank', 'noopener')} />
       <Sidebar
         query={query} onQuery={setQuery} modules={modules} onToggleModule={(m) => setModules((prev) => {
           const next = new Set(prev); if (next.has(m)) next.delete(m); else next.add(m); return next;
@@ -218,6 +236,7 @@ export default function App() {
       />
       {selected && !areaMode && (
         <PlaceCard spot={selected} coverage={coverage} manifest={placeManifest} explainData={explainData}
+          reports={reports.filter((r) => r.lat !== null && r.lon !== null && r.lon >= selected.bbox[0] && r.lon <= selected.bbox[2] && r.lat >= selected.bbox[1] && r.lat <= selected.bbox[3])}
           canInspect={!!seriesData && !!placeManifest}
           inspector={placeManifest && seriesData && pick ? <Inspector manifest={placeManifest} data={seriesData} pick={pick} onClose={() => setPick(null)} /> : null}
           onOpen3D={() => { setPlaying(false); setShowcase(true); }}
@@ -226,16 +245,19 @@ export default function App() {
       {areaMode && <AreaCheck box={box} onClose={() => { setAreaMode(false); setCorners([]); }} />}
       {placeManifest && !showcase && (
         <TimeBar manifest={placeManifest} index={Math.min(dateIndex, placeManifest.frames.length - 1)} onIndex={setDateIndex}
-          playing={playing} onPlaying={setPlaying} kind={kind} onKind={setKind} onSnapshot={snapshot} />
+          playing={playing} onPlaying={setPlaying} kind={kind} onKind={setKind} onSnapshot={snapshot}
+          context={context} optical={optical} onOptical={setOptical} />
       )}
       {story && (
         <StoryMode story={story.story} step={story.step}
           onStep={(i) => goToStep(story.story, i)} onExit={() => setStory(null)} />
       )}
       {placeManifest && selected && showcase && (
-        <Showcase3D spot={selected} manifest={placeManifest} kind={kind} onClose={() => setShowcase(false)} />
+        <Suspense fallback={<div className="showcase" aria-busy="true" />}>
+          <Showcase3D spot={selected} manifest={placeManifest} kind={optical ? 'optical' : kind} onClose={() => setShowcase(false)} />
+        </Suspense>
       )}
-      {radarOpen && <RadarExplainer onClose={() => setRadarOpen(false)} />}
+      {radarOpen && <Suspense fallback={null}><RadarExplainer onClose={() => setRadarOpen(false)} /></Suspense>}
     </main>
   );
 }

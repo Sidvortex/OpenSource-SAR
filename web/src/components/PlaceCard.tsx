@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { DANCES, MODULES, formatDate, vertexUrl } from '../catalog';
-import type { Coverage, Hotspot, LayerManifest } from '../types';
+import type { Coverage, GroundReport, Hotspot, LayerManifest } from '../types';
 import type { ExplainData } from '../explain';
 import { Explain } from './Explain';
 import { REPO_URL } from './Sidebar';
@@ -11,6 +11,7 @@ interface Props {
   manifest: LayerManifest | null;
   canInspect?: boolean;
   explainData?: ExplainData | null;
+  reports?: GroundReport[];
   inspector?: ReactNode;
   onOpen3D: () => void;
   onClose: () => void;
@@ -49,7 +50,7 @@ function CoverageStatus({ spot, coverage }: { spot: Hotspot; coverage: Coverage 
   );
 }
 
-export function PlaceCard({ spot, coverage, manifest, canInspect, explainData, inspector, onOpen3D, onClose }: Props) {
+export function PlaceCard({ spot, coverage, manifest, canInspect, explainData, reports = [], inspector, onOpen3D, onClose }: Props) {
   const module = MODULES[spot.module];
   return (
     <article className="card" aria-labelledby="card-title" style={{ '--c': module.color } as CSSProperties}>
@@ -86,6 +87,24 @@ export function PlaceCard({ spot, coverage, manifest, canInspect, explainData, i
         )}
       </section>
 
+      {manifest?.exposure && (() => {
+        const peak = Math.max(...manifest.frames.map((f) => f.stats.people_exposed ?? 0));
+        return (
+          <section className="card-section" aria-labelledby="people-title">
+            <h3 id="people-title" className="card-subtitle">People on changed ground{manifest.exposure.synthetic ? ' (synthetic population)' : ''}</h3>
+            <p className="card-people"><strong>{peak.toLocaleString('en')}</strong> people live where this layer shows change at its peak.</p>
+            <p className="fineprint">{manifest.exposure.note} Population: {manifest.exposure.source}.</p>
+          </section>
+        );
+      })()}
+      {reports.length > 0 && (
+        <section className="card-section" aria-labelledby="reports-title">
+          <h3 id="reports-title" className="card-subtitle">Ground reports here</h3>
+          <ul className="products">{reports.slice(0, 5).map((r) => (
+            <li key={r.id}><a href={r.url} target="_blank" rel="noreferrer">{r.kind || 'Report'}, {r.date}</a>{r.details ? `: ${r.details.slice(0, 90)}` : ''}</li>
+          ))}</ul>
+        </section>
+      )}
       {manifest?.validation && (
         <section className="card-section" aria-labelledby="gnss-title">
           <h3 id="gnss-title" className="card-subtitle">Checked against GNSS stations{manifest.validation.synthetic ? ' (synthetic stations)' : ''}</h3>

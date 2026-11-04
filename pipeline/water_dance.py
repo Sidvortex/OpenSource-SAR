@@ -131,7 +131,7 @@ def build_layers(spot, files, synthetic, res):
                      f"{last['stats']['open_water_km2']:,.0f} km² between the first and last pass."),
         "synthetic": synthetic,
         "product": "NISAR L2 GCOV (terrain-corrected backscatter), HH polarisation",
-        "bounds": target.corners_lonlat(),
+        "bounds": target.corners_lonlat(), "grid_res": target.res,
         "event": spot.get("event"),
         "frame_noun": "passes",
         "sides": ["Before", "After"],
@@ -192,7 +192,7 @@ def cmd_inspect(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="SARabande Part 2: the water dance.")
+    parser = argparse.ArgumentParser(description="Open Source SAR Part 2: the water dance.")
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("download", help="download the best GCOV stack for a hotspot")
     p.add_argument("--hotspot", default="tonle-sap")

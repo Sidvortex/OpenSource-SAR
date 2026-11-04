@@ -39,13 +39,14 @@
   "datetime": "2026-07-01T00:00:00Z",
   "start_datetime": "2026-07-01T00:00:00Z",
   "end_datetime": "2026-07-01T00:00:00Z",
-  "sarabande:module": "fire",
-  "sarabande:synthetic": true,
-  "sarabande:stats": {
+  "opensource-sar:module": "fire",
+  "opensource-sar:synthetic": true,
+  "opensource-sar:stats": {
    "burned_km2": 0.0,
-   "new_km2": 0.0
+   "new_km2": 0.0,
+   "people_exposed": 0
   },
-  "sarabande:sources": [
+  "opensource-sar:sources": [
    "SYNTHETIC demo, not a NISAR product"
   ]
  },

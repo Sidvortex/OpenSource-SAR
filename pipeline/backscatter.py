@@ -86,7 +86,7 @@ def build_fire(spot, target, hv, synthetic, sources):
         "module": "fire", "title": f"{spot['name']}: fire and forest loss",
         "headline": f"Radar mapped about {burned_series[-1]:,.0f} km² of new burn scars and clearings, seen through cloud and smoke.",
         "synthetic": synthetic, "product": "NISAR L2 GCOV (terrain-corrected backscatter), HV polarisation",
-        "bounds": target.corners_lonlat(), "event": None, "frame_noun": "passes", "sides": ["Before", "After"],
+        "bounds": target.corners_lonlat(), "grid_res": target.res, "event": None, "frame_noun": "passes", "sides": ["Before", "After"],
         "side_stat": {"id": "burned_km2", "label": "Burned or cleared", "unit": "km²"},
         "layers": [
             {"id": "burn", "label": "Burn scars", "opacity": 0.9,
@@ -128,7 +128,7 @@ def build_farming(spot, target, hv, synthetic, sources):
         "module": "farming", "title": f"{spot['name']}: the farming season",
         "headline": f"At the season's peak ({peak['date']}), {peak['stats']['growing_pct']:.0f}% of the land showed a full crop canopy.",
         "synthetic": synthetic, "product": "NISAR L2 GCOV (terrain-corrected backscatter), HV polarisation",
-        "bounds": target.corners_lonlat(), "event": None, "frame_noun": "passes", "sides": ["Before", "After"],
+        "bounds": target.corners_lonlat(), "grid_res": target.res, "event": None, "frame_noun": "passes", "sides": ["Before", "After"],
         "side_stat": {"id": "growing_pct", "label": "Full canopy", "unit": "%"},
         "layers": [
             {"id": "growth", "label": "Crop growth", "opacity": 0.85,
@@ -189,7 +189,7 @@ def demo_hv(spot, target, kind):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="SARabande Part 7: fire and farming from HV backscatter.")
+    parser = argparse.ArgumentParser(description="Open Source SAR Part 7: fire and farming from HV backscatter.")
     sub = parser.add_subparsers(dest="command", required=True)
     for name in ("demo", "process"):
         p = sub.add_parser(name)

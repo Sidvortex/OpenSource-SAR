@@ -39,15 +39,16 @@
   "datetime": "2026-08-18T00:00:00Z",
   "start_datetime": "2026-08-18T00:00:00Z",
   "end_datetime": "2026-08-18T00:00:00Z",
-  "sarabande:module": "water",
-  "sarabande:synthetic": true,
-  "sarabande:stats": {
+  "opensource-sar:module": "water",
+  "opensource-sar:synthetic": true,
+  "opensource-sar:stats": {
    "open_water_km2": 5225.9,
    "flooded_veg_km2": 1392.1,
    "water_total_km2": 6618.0,
-   "threshold_db": -15.0
+   "threshold_db": -15.0,
+   "people_exposed": 207514
   },
-  "sarabande:sources": [
+  "opensource-sar:sources": [
    "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260818T221500_20260818T221540_DEMO.h5"
   ]
  },

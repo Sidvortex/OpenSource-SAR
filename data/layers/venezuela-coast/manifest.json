@@ -1,6 +1,6 @@
 {
   "hotspot": "venezuela-coast",
-  "created": "2026-09-29",
+  "created": "2026-10-27",
   "module": "ground",
   "title": "Caracas and La Guaira coast: the earthquake",
   "headline": "Across the Jun 24, 2026 earthquakes, the ground moved up to 54 cm toward or away from the radar.",
@@ -24,6 +24,7 @@
       10.099761
     ]
   ],
+  "grid_res": 150.0,
   "event": "2026-06-24",
   "frame_noun": "pairs",
   "sides": [
@@ -118,6 +119,11 @@
       "id": "moved_km2",
       "label": "Moved over 10 cm",
       "unit": "km\u00b2"
+    },
+    {
+      "id": "people_exposed",
+      "label": "People on changed ground",
+      "unit": "people"
     }
   ],
   "chart": {
@@ -161,7 +167,8 @@
     "Pixels with coherence below 0.3, or that the unwrapper could not connect, are left out.",
     "The ionospheric phase screen shipped with each product is subtracted.",
     "Movement is measured relative to the median of the scene's outer edge.",
-    "One fringe (colour cycle) equals half the radar wavelength: about 12 cm."
+    "One fringe (colour cycle) equals half the radar wavelength: about 12 cm.",
+    "People on changed ground: a population raster summed inside the changed area of each frame."
   ],
   "frames": [
     {
@@ -177,7 +184,8 @@
         "max_toward_cm": 48.3,
         "max_away_cm": 54.1,
         "max_abs_cm": 54.1,
-        "moved_km2": 9389.1
+        "moved_km2": 9389.1,
+        "people_exposed": 1544612
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260618T101500_20260618T101540_20260630T101500_20260630T101540_DEMO.h5"
@@ -196,7 +204,8 @@
         "max_toward_cm": 2.1,
         "max_away_cm": 2.6,
         "max_abs_cm": 2.6,
-        "moved_km2": 0.0
+        "moved_km2": 0.0,
+        "people_exposed": 1590810
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260630T101500_20260630T101540_20260712T101500_20260712T101540_DEMO.h5"
@@ -215,11 +224,17 @@
         "max_toward_cm": 1.9,
         "max_away_cm": 1.7,
         "max_abs_cm": 1.9,
-        "moved_km2": 0.0
+        "moved_km2": 0.0,
+        "people_exposed": 1589272
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GUNW_DEMO_20260712T101500_20260712T101540_20260724T101500_20260724T101540_DEMO.h5"
       ]
     }
-  ]
+  ],
+  "exposure": {
+    "source": "SYNTHETIC_population_venezuela-coast.tif",
+    "synthetic": true,
+    "note": "People per pixel summed where this layer shows change. A count of people living there, not of people harmed."
+  }
 }

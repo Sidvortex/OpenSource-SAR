@@ -1,6 +1,6 @@
 {
   "hotspot": "tonle-sap",
-  "created": "2026-09-29",
+  "created": "2026-10-27",
   "module": "water",
   "title": "Tonle Sap: the water dance",
   "headline": "Open water grew from 2,750 km\u00b2 to 7,550 km\u00b2 between the first and last pass.",
@@ -24,6 +24,7 @@
       11.899919
     ]
   ],
+  "grid_res": 150.0,
   "event": null,
   "frame_noun": "passes",
   "sides": [
@@ -83,6 +84,11 @@
       "label": "Flooded vegetation",
       "unit": "km\u00b2",
       "color": "#37c2b0"
+    },
+    {
+      "id": "people_exposed",
+      "label": "People on changed ground",
+      "unit": "people"
     }
   ],
   "chart": {
@@ -118,14 +124,15 @@
     "dance": "march",
     "confidence": "high",
     "reason": "A steady trend of about +780 km\u00b2 every 12 days.",
-    "rate_per_12_days": 779.8799999999998,
+    "rate_per_12_days": 779.8800000000001,
     "basis": "total water area"
   },
   "method": [
     "Each pass is averaged onto one shared grid, so dates line up pixel for pixel.",
     "Open water: HH backscatter below a per-pass Otsu threshold, kept between -24 and -14 dB.",
     "Likely flooded vegetation: HH at least 3 dB brighter than on the driest pass (2026-06-19) and brighter than -8 dB.",
-    "Areas are true areas, corrected for map-projection stretch."
+    "Areas are true areas, corrected for map-projection stretch.",
+    "People on changed ground: a population raster summed inside the changed area of each frame."
   ],
   "frames": [
     {
@@ -139,7 +146,8 @@
         "open_water_km2": 2749.8,
         "flooded_veg_km2": 0.0,
         "water_total_km2": 2749.8,
-        "threshold_db": -15.2
+        "threshold_db": -15.2,
+        "people_exposed": 522
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260619T221500_20260619T221540_DEMO.h5"
@@ -156,7 +164,8 @@
         "open_water_km2": 2841.4,
         "flooded_veg_km2": 1114.0,
         "water_total_km2": 3955.4,
-        "threshold_db": -15.1
+        "threshold_db": -15.1,
+        "people_exposed": 25511
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260701T221500_20260701T221540_DEMO.h5"
@@ -173,7 +182,8 @@
         "open_water_km2": 3117.9,
         "flooded_veg_km2": 1217.4,
         "water_total_km2": 4335.3,
-        "threshold_db": -15.1
+        "threshold_db": -15.1,
+        "people_exposed": 40381
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260713T221500_20260713T221540_DEMO.h5"
@@ -190,7 +200,8 @@
         "open_water_km2": 3707.4,
         "flooded_veg_km2": 1238.8,
         "water_total_km2": 4946.2,
-        "threshold_db": -15.1
+        "threshold_db": -15.1,
+        "people_exposed": 69986
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260725T221500_20260725T221540_DEMO.h5"
@@ -207,7 +218,8 @@
         "open_water_km2": 5225.9,
         "flooded_veg_km2": 1392.1,
         "water_total_km2": 6618.0,
-        "threshold_db": -15.0
+        "threshold_db": -15.0,
+        "people_exposed": 207514
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260818T221500_20260818T221540_DEMO.h5"
@@ -224,7 +236,8 @@
         "open_water_km2": 6040.1,
         "flooded_veg_km2": 1475.0,
         "water_total_km2": 7515.1,
-        "threshold_db": -15.0
+        "threshold_db": -15.0,
+        "people_exposed": 375309
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260830T221500_20260830T221540_DEMO.h5"
@@ -241,7 +254,8 @@
         "open_water_km2": 6874.4,
         "flooded_veg_km2": 1534.0,
         "water_total_km2": 8408.4,
-        "threshold_db": -15.0
+        "threshold_db": -15.0,
+        "people_exposed": 503825
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260911T221500_20260911T221540_DEMO.h5"
@@ -258,11 +272,17 @@
         "open_water_km2": 7550.1,
         "flooded_veg_km2": 1550.3,
         "water_total_km2": 9100.4,
-        "threshold_db": -15.0
+        "threshold_db": -15.0,
+        "people_exposed": 564375
       },
       "sources": [
         "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260923T221500_20260923T221540_DEMO.h5"
       ]
     }
-  ]
+  ],
+  "exposure": {
+    "source": "SYNTHETIC_population_tonle-sap.tif",
+    "synthetic": true,
+    "note": "People per pixel summed where this layer shows change. A count of people living there, not of people harmed."
+  }
 }

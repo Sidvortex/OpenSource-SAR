@@ -23,15 +23,15 @@ interface Props {
   onArea: () => void;
 }
 
-export const REPO_URL: string = import.meta.env.VITE_REPO_URL ?? '';
-const NTFY_TOPIC: string = import.meta.env.VITE_NTFY_TOPIC ?? '';
+export const REPO_URL: string = import.meta.env.VITE_REPO_URL || 'https://github.com/Sidvortex/OpenSource-SAR';
+const NTFY_TOPIC: string = import.meta.env.VITE_NTFY_TOPIC || '';
 
 export function Sidebar(props: Props) {
   const { query, onQuery, modules, onToggleModule, dance, onDance, places, selectedId, onSelect, open, onToggleOpen, moving, stories, onStory, onRadar, onArea } = props;
   return (
     <aside className={`panel${open ? ' is-open' : ''}`} aria-label="Places and filters">
       <header className="panel-head">
-        <h1 className="wordmark">SARabande</h1>
+        <h1 className="wordmark">Open Source SAR</h1>
         <p className="tagline">Watch Earth's surface dance, measured by NISAR radar every 12 days.</p>
         <button type="button" className="sheet-toggle" aria-expanded={open} onClick={onToggleOpen}>
           {open ? 'Hide places' : `Show ${places.length} places`}
