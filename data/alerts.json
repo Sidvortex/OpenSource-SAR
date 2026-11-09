@@ -1,0 +1,197 @@
+{
+  "checked": "2026-11-09",
+  "alerts": [
+    {
+      "hotspot": "venezuela-coast",
+      "name": "Caracas and La Guaira coast",
+      "product": "GUNW",
+      "last": "2026-08-21"
+    },
+    {
+      "hotspot": "venezuela-coast",
+      "name": "Caracas and La Guaira coast",
+      "product": "GCOV",
+      "last": "2026-07-24"
+    },
+    {
+      "hotspot": "mexico-city",
+      "name": "Mexico City",
+      "product": "GUNW",
+      "last": "2026-10-20"
+    },
+    {
+      "hotspot": "mexico-city",
+      "name": "Mexico City",
+      "product": "GCOV",
+      "last": "2026-10-20"
+    },
+    {
+      "hotspot": "jakarta",
+      "name": "Jakarta",
+      "product": "GUNW",
+      "last": "2026-10-17"
+    },
+    {
+      "hotspot": "jakarta",
+      "name": "Jakarta",
+      "product": "GCOV",
+      "last": "2026-10-17"
+    },
+    {
+      "hotspot": "tehran",
+      "name": "Tehran plain",
+      "product": "GUNW",
+      "last": "2026-10-21"
+    },
+    {
+      "hotspot": "tehran",
+      "name": "Tehran plain",
+      "product": "GCOV",
+      "last": "2026-10-21"
+    },
+    {
+      "hotspot": "san-joaquin",
+      "name": "San Joaquin Valley",
+      "product": "GUNW",
+      "last": "2026-10-21"
+    },
+    {
+      "hotspot": "san-joaquin",
+      "name": "San Joaquin Valley",
+      "product": "GCOV",
+      "last": "2026-10-21"
+    },
+    {
+      "hotspot": "joshimath",
+      "name": "Joshimath and the Uttarakhand Himalaya",
+      "product": "GUNW",
+      "last": "2026-10-20"
+    },
+    {
+      "hotspot": "joshimath",
+      "name": "Joshimath and the Uttarakhand Himalaya",
+      "product": "GCOV",
+      "last": "2026-10-20"
+    },
+    {
+      "hotspot": "reykjanes",
+      "name": "Reykjanes Peninsula",
+      "product": "GUNW",
+      "last": "2026-10-19"
+    },
+    {
+      "hotspot": "reykjanes",
+      "name": "Reykjanes Peninsula",
+      "product": "GCOV",
+      "last": "2026-10-19"
+    },
+    {
+      "hotspot": "campi-flegrei",
+      "name": "Campi Flegrei",
+      "product": "GUNW",
+      "last": "2026-10-15"
+    },
+    {
+      "hotspot": "campi-flegrei",
+      "name": "Campi Flegrei",
+      "product": "GCOV",
+      "last": "2026-10-15"
+    },
+    {
+      "hotspot": "tonle-sap",
+      "name": "Tonle Sap",
+      "product": "GCOV",
+      "last": "2026-10-17"
+    },
+    {
+      "hotspot": "pantanal",
+      "name": "Pantanal",
+      "product": "GCOV",
+      "last": "2026-10-21"
+    },
+    {
+      "hotspot": "brahmaputra",
+      "name": "Brahmaputra valley",
+      "product": "GCOV",
+      "last": "2026-10-18"
+    },
+    {
+      "hotspot": "sudd",
+      "name": "Sudd wetland",
+      "product": "GCOV",
+      "last": "2026-10-20"
+    },
+    {
+      "hotspot": "amazon-arc",
+      "name": "Amazon arc of deforestation",
+      "product": "GCOV",
+      "last": "2026-10-19"
+    },
+    {
+      "hotspot": "canada-boreal",
+      "name": "Canadian boreal forest",
+      "product": "GCOV",
+      "last": "2026-10-21"
+    },
+    {
+      "hotspot": "punjab-haryana",
+      "name": "Punjab and Haryana",
+      "product": "GCOV",
+      "last": "2026-10-21"
+    },
+    {
+      "hotspot": "punjab-haryana",
+      "name": "Punjab and Haryana",
+      "product": "SME2",
+      "last": "2026-10-21"
+    },
+    {
+      "hotspot": "mekong-delta",
+      "name": "Mekong Delta",
+      "product": "GCOV",
+      "last": "2026-10-17"
+    },
+    {
+      "hotspot": "mekong-delta",
+      "name": "Mekong Delta",
+      "product": "SME2",
+      "last": "2026-10-17"
+    },
+    {
+      "hotspot": "south-africa-maize",
+      "name": "South African maize belt",
+      "product": "GCOV",
+      "last": "2026-10-20"
+    },
+    {
+      "hotspot": "south-africa-maize",
+      "name": "South African maize belt",
+      "product": "SME2",
+      "last": "2026-10-20"
+    },
+    {
+      "hotspot": "shisper",
+      "name": "Shisper Glacier",
+      "product": "GOFF",
+      "last": "2026-10-16"
+    },
+    {
+      "hotspot": "shisper",
+      "name": "Shisper Glacier",
+      "product": "GCOV",
+      "last": "2026-10-16"
+    },
+    {
+      "hotspot": "sermeq-kujalleq",
+      "name": "Sermeq Kujalleq (Jakobshavn)",
+      "product": "GOFF",
+      "last": "2026-10-21"
+    },
+    {
+      "hotspot": "sermeq-kujalleq",
+      "name": "Sermeq Kujalleq (Jakobshavn)",
+      "product": "GCOV",
+      "last": "2026-10-21"
+    }
+  ]
+}

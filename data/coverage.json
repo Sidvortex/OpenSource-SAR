@@ -1,6 +1,465 @@
 {
-  "checked": null,
+  "checked": "2026-11-09",
   "maturity": "PROVISIONAL",
-  "note": "Not checked yet. Run python pipeline/update_coverage.py, or wait for the weekly GitHub Action.",
-  "hotspots": {}
+  "hotspots": {
+    "venezuela-coast": {
+      "verdict": "pass",
+      "score": 2,
+      "need": 1,
+      "rule": "12-day GUNW pairs spanning the Jun 24 earthquakes",
+      "products": {
+        "GUNW": {
+          "stacks": 6,
+          "items": 28,
+          "best_stack": "T162 F6 ASCENDING",
+          "best_items": 5,
+          "first": "2026-05-20",
+          "last": "2026-08-21",
+          "size_gb": 64.4
+        },
+        "GCOV": {
+          "stacks": 6,
+          "items": 28,
+          "best_stack": "T162 F6 ASCENDING",
+          "best_items": 5,
+          "first": "2026-06-01",
+          "last": "2026-07-24",
+          "size_gb": 162.3
+        }
+      },
+      "errors": []
+    },
+    "mexico-city": {
+      "verdict": "pass",
+      "score": 9,
+      "need": 6,
+      "rule": "back-to-back 12-day GUNW pairs on one track and frame",
+      "products": {
+        "GUNW": {
+          "stacks": 5,
+          "items": 40,
+          "best_stack": "T19 F11 ASCENDING",
+          "best_items": 9,
+          "first": "2026-06-10",
+          "last": "2026-10-20",
+          "size_gb": 94.7
+        },
+        "GCOV": {
+          "stacks": 5,
+          "items": 45,
+          "best_stack": "T91 F12 ASCENDING",
+          "best_items": 10,
+          "first": "2026-06-20",
+          "last": "2026-10-20",
+          "size_gb": 315.0
+        }
+      },
+      "errors": []
+    },
+    "jakarta": {
+      "verdict": "pass",
+      "score": 8,
+      "need": 6,
+      "rule": "back-to-back 12-day GUNW pairs on one track and frame",
+      "products": {
+        "GUNW": {
+          "stacks": 5,
+          "items": 40,
+          "best_stack": "T10 F174 ASCENDING",
+          "best_items": 8,
+          "first": "2026-06-26",
+          "last": "2026-10-17",
+          "size_gb": 93.7
+        },
+        "GCOV": {
+          "stacks": 5,
+          "items": 46,
+          "best_stack": "T82 F175 ASCENDING",
+          "best_items": 10,
+          "first": "2026-06-19",
+          "last": "2026-10-17",
+          "size_gb": 200.2
+        }
+      },
+      "errors": []
+    },
+    "tehran": {
+      "verdict": "pass",
+      "score": 9,
+      "need": 6,
+      "rule": "back-to-back 12-day GUNW pairs on one track and frame",
+      "products": {
+        "GUNW": {
+          "stacks": 4,
+          "items": 33,
+          "best_stack": "T136 F70 DESCENDING",
+          "best_items": 9,
+          "first": "2026-06-23",
+          "last": "2026-10-21",
+          "size_gb": 79.1
+        },
+        "GCOV": {
+          "stacks": 4,
+          "items": 40,
+          "best_stack": "T136 F70 DESCENDING",
+          "best_items": 10,
+          "first": "2026-06-18",
+          "last": "2026-10-21",
+          "size_gb": 75.7
+        }
+      },
+      "errors": []
+    },
+    "san-joaquin": {
+      "verdict": "pass",
+      "score": 10,
+      "need": 6,
+      "rule": "back-to-back 12-day GUNW pairs on one track and frame",
+      "products": {
+        "GUNW": {
+          "stacks": 9,
+          "items": 77,
+          "best_stack": "T106 F20 ASCENDING",
+          "best_items": 10,
+          "first": "2026-06-05",
+          "last": "2026-10-21",
+          "size_gb": 182.7
+        },
+        "GCOV": {
+          "stacks": 9,
+          "items": 80,
+          "best_stack": "T106 F20 ASCENDING",
+          "best_items": 10,
+          "first": "2026-06-17",
+          "last": "2026-10-21",
+          "size_gb": 519.3
+        }
+      },
+      "errors": []
+    },
+    "joshimath": {
+      "verdict": "pass",
+      "score": 9,
+      "need": 6,
+      "rule": "back-to-back 12-day GUNW pairs on one track and frame",
+      "products": {
+        "GUNW": {
+          "stacks": 4,
+          "items": 33,
+          "best_stack": "T106 F73 DESCENDING",
+          "best_items": 9,
+          "first": "2026-06-06",
+          "last": "2026-10-20",
+          "size_gb": 79.0
+        },
+        "GCOV": {
+          "stacks": 4,
+          "items": 36,
+          "best_stack": "T55 F17 ASCENDING",
+          "best_items": 10,
+          "first": "2026-06-18",
+          "last": "2026-10-20",
+          "size_gb": 273.4
+        }
+      },
+      "errors": []
+    },
+    "reykjanes": {
+      "verdict": "pass",
+      "score": 9,
+      "need": 6,
+      "rule": "back-to-back 12-day GUNW pairs on one track and frame",
+      "products": {
+        "GUNW": {
+          "stacks": 6,
+          "items": 52,
+          "best_stack": "T111 F56 DESCENDING",
+          "best_items": 9,
+          "first": "2026-05-26",
+          "last": "2026-10-19",
+          "size_gb": 106.7
+        },
+        "GCOV": {
+          "stacks": 6,
+          "items": 55,
+          "best_stack": "T82 F56 DESCENDING",
+          "best_items": 10,
+          "first": "2026-06-19",
+          "last": "2026-10-19",
+          "size_gb": 229.2
+        }
+      },
+      "errors": []
+    },
+    "campi-flegrei": {
+      "verdict": "pass",
+      "score": 8,
+      "need": 6,
+      "rule": "back-to-back 12-day GUNW pairs on one track and frame",
+      "products": {
+        "GUNW": {
+          "stacks": 2,
+          "items": 15,
+          "best_stack": "T152 F68 DESCENDING",
+          "best_items": 8,
+          "first": "2026-06-24",
+          "last": "2026-10-15",
+          "size_gb": 30.2
+        },
+        "GCOV": {
+          "stacks": 2,
+          "items": 18,
+          "best_stack": "T152 F68 DESCENDING",
+          "best_items": 9,
+          "first": "2026-06-17",
+          "last": "2026-10-15",
+          "size_gb": 24.1
+        }
+      },
+      "errors": []
+    },
+    "tonle-sap": {
+      "verdict": "pass",
+      "score": 10,
+      "need": 6,
+      "rule": "GCOV passes on one track and frame",
+      "products": {
+        "GCOV": {
+          "stacks": 11,
+          "items": 102,
+          "best_stack": "T76 F81 DESCENDING",
+          "best_items": 10,
+          "first": "2026-06-19",
+          "last": "2026-10-17",
+          "size_gb": 383.3
+        }
+      },
+      "errors": []
+    },
+    "pantanal": {
+      "verdict": "pass",
+      "score": 9,
+      "need": 6,
+      "rule": "GCOV passes on one track and frame",
+      "products": {
+        "GCOV": {
+          "stacks": 9,
+          "items": 78,
+          "best_stack": "T10 F97 DESCENDING",
+          "best_items": 9,
+          "first": "2026-06-21",
+          "last": "2026-10-21",
+          "size_gb": 170.4
+        }
+      },
+      "errors": []
+    },
+    "brahmaputra": {
+      "verdict": "pass",
+      "score": 10,
+      "need": 6,
+      "rule": "GCOV passes on one track and frame",
+      "products": {
+        "GCOV": {
+          "stacks": 13,
+          "items": 123,
+          "best_stack": "T62 F75 DESCENDING",
+          "best_items": 10,
+          "first": "2026-06-18",
+          "last": "2026-10-18",
+          "size_gb": 923.2
+        }
+      },
+      "errors": []
+    },
+    "sudd": {
+      "verdict": "pass",
+      "score": 10,
+      "need": 6,
+      "rule": "GCOV passes on one track and frame",
+      "products": {
+        "GCOV": {
+          "stacks": 16,
+          "items": 140,
+          "best_stack": "T50 F84 DESCENDING",
+          "best_items": 10,
+          "first": "2026-06-17",
+          "last": "2026-10-20",
+          "size_gb": 245.2
+        }
+      },
+      "errors": []
+    },
+    "amazon-arc": {
+      "verdict": "pass",
+      "score": 9,
+      "need": 6,
+      "rule": "GCOV passes on one track and frame",
+      "products": {
+        "GCOV": {
+          "stacks": 13,
+          "items": 113,
+          "best_stack": "T10 F92 DESCENDING",
+          "best_items": 9,
+          "first": "2026-06-21",
+          "last": "2026-10-19",
+          "size_gb": 212.6
+        }
+      },
+      "errors": []
+    },
+    "canada-boreal": {
+      "verdict": "pass",
+      "score": 10,
+      "need": 6,
+      "rule": "GCOV passes on one track and frame",
+      "products": {
+        "GCOV": {
+          "stacks": 17,
+          "items": 162,
+          "best_stack": "T105 F29 ASCENDING",
+          "best_items": 10,
+          "first": "2026-06-18",
+          "last": "2026-10-21",
+          "size_gb": 1036.0
+        }
+      },
+      "errors": []
+    },
+    "punjab-haryana": {
+      "verdict": "pass",
+      "score": 10,
+      "need": 6,
+      "rule": "GCOV passes on one track and frame",
+      "products": {
+        "GCOV": {
+          "stacks": 14,
+          "items": 133,
+          "best_stack": "T135 F72 DESCENDING",
+          "best_items": 10,
+          "first": "2026-06-18",
+          "last": "2026-10-21",
+          "size_gb": 892.2
+        },
+        "SME2": {
+          "stacks": 14,
+          "items": 127,
+          "best_stack": "T135 F72 DESCENDING",
+          "best_items": 10,
+          "first": "2026-06-18",
+          "last": "2026-10-21",
+          "size_gb": 14.5
+        }
+      },
+      "errors": []
+    },
+    "mekong-delta": {
+      "verdict": "pass",
+      "score": 10,
+      "need": 6,
+      "rule": "GCOV passes on one track and frame",
+      "products": {
+        "GCOV": {
+          "stacks": 8,
+          "items": 74,
+          "best_stack": "T47 F83 DESCENDING",
+          "best_items": 10,
+          "first": "2026-06-17",
+          "last": "2026-10-17",
+          "size_gb": 266.7
+        },
+        "SME2": {
+          "stacks": 8,
+          "items": 74,
+          "best_stack": "T47 F83 DESCENDING",
+          "best_items": 10,
+          "first": "2026-06-17",
+          "last": "2026-10-17",
+          "size_gb": 5.2
+        }
+      },
+      "errors": []
+    },
+    "south-africa-maize": {
+      "verdict": "pass",
+      "score": 10,
+      "need": 6,
+      "rule": "GCOV passes on one track and frame",
+      "products": {
+        "GCOV": {
+          "stacks": 17,
+          "items": 155,
+          "best_stack": "T71 F163 ASCENDING",
+          "best_items": 10,
+          "first": "2026-06-19",
+          "last": "2026-10-20",
+          "size_gb": 478.0
+        },
+        "SME2": {
+          "stacks": 17,
+          "items": 149,
+          "best_stack": "T71 F165 ASCENDING",
+          "best_items": 10,
+          "first": "2026-06-19",
+          "last": "2026-10-20",
+          "size_gb": 16.1
+        }
+      },
+      "errors": []
+    },
+    "shisper": {
+      "verdict": "pass",
+      "score": 8,
+      "need": 4,
+      "rule": "GOFF pixel-offset pairs on one track and frame",
+      "products": {
+        "GOFF": {
+          "stacks": 3,
+          "items": 22,
+          "best_stack": "T55 F20 ASCENDING",
+          "best_items": 8,
+          "first": "2026-06-30",
+          "last": "2026-10-16",
+          "size_gb": 24.6
+        },
+        "GCOV": {
+          "stacks": 3,
+          "items": 28,
+          "best_stack": "T55 F20 ASCENDING",
+          "best_items": 10,
+          "first": "2026-06-18",
+          "last": "2026-10-16",
+          "size_gb": 164.0
+        }
+      },
+      "errors": []
+    },
+    "sermeq-kujalleq": {
+      "verdict": "pass",
+      "score": 9,
+      "need": 4,
+      "rule": "GOFF pixel-offset pairs on one track and frame",
+      "products": {
+        "GOFF": {
+          "stacks": 6,
+          "items": 48,
+          "best_stack": "T131 F37 ASCENDING",
+          "best_items": 9,
+          "first": "2026-06-23",
+          "last": "2026-10-21",
+          "size_gb": 45.5
+        },
+        "GCOV": {
+          "stacks": 6,
+          "items": 57,
+          "best_stack": "T131 F37 ASCENDING",
+          "best_items": 10,
+          "first": "2026-06-18",
+          "last": "2026-10-21",
+          "size_gb": 53.0
+        }
+      },
+      "errors": []
+    }
+  }
 }
