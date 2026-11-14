@@ -23,6 +23,7 @@ POLARISATIONS = {"HH": ["HHHH"], "HV": ["HVHV"], "VV": ["VVVV"]}
 X_NAMES = ["xCoordinates", "x_coordinates", "xCoordinate"]
 Y_NAMES = ["yCoordinates", "y_coordinates", "yCoordinate"]
 TIMESTAMP = re.compile(r"(\d{8})T\d{6}")
+MIN_POWER = 1e-5        # -50 dB
 
 
 @dataclass
@@ -125,7 +126,9 @@ def read_crop(path, bbox_lonlat, polarisations=("HH", "HV"), margin_m=2000):
             if name is None:
                 continue
             raw = group[name][yr[0]:yr[1], xr[0]:xr[1]].astype("float32")
-            raw[~np.isfinite(raw) | (raw <= 0)] = np.nan   # fill and invalid pixels
+            # Fill and invalid pixels. Below -50 dB is no real measurement (L-band's noise
+            # floor is near -30 dB): NISAR leaves such near-zero values at the swath's edge.
+            raw[~np.isfinite(raw) | (raw < MIN_POWER)] = np.nan
             bands[pol] = raw
         if "HH" not in bands and "VV" not in bands:
             raise KeyError(f"{path}: no co-polarised band (HH or VV) found")

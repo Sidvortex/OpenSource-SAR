@@ -1,115 +1,172 @@
 # Space Apps submission: Open Source SAR
 
-*Drafted by Mind (Ravada Siddharth), team lead. Paste each section into the matching field on our Space Apps project page, and edit wherever the facts change (real data, team names, links).*
+*Written by Mind (Ravada Siddharth), team lead. One section per field of the Space Apps project form, in the form's order. Paste each one as it is, and fill in the two bracketed links and the team names.*
 
 - **Challenge:** Dancing with the SARs
-- **Project name:** Open Source SAR
 - **Repository:** https://github.com/Sidvortex/OpenSource-SAR
 - **Live site:** https://sidvortex.github.io/OpenSource-SAR/
 
-## High-level summary (about 150 words)
+---
 
-Open Source SAR lets anyone watch Earth's surface "dance" using the NASA-ISRO NISAR radar, which maps the planet every 12 days through clouds, smoke and darkness. We turn NISAR's flood, interferogram and pixel-offset products into an interactive globe: a lake that breathes with the monsoon, a city that sinks, a coast that jumped in an earthquake, forests that burn and a glacier that surges. Click any pixel to see its history with uncertainty, and a classifier names the dance (Waltz, March, Tango, Crescendo or Still). Explanations come in three reading levels and three languages. Earthquakes, fires and rain are marked on the timeline; an Optical button shows the clouds radar sees through; and population data shows how many people live on changed ground. Everything is free and open source, end to end: no paid services, no keys in the app, and hosting on free GitHub Pages.
+## Project Name
 
-## Project demo (30-second video script)
+Open Source SAR
 
-| Time | Picture | Voice / subtitle |
-| --- | --- | --- |
-| 0–4 s | Globe spinning, markers pulsing in rhythm | "Every 12 days, a radar called NISAR maps the whole Earth." |
-| 4–9 s | Tonle Sap: press play, the lake swells | "It sees a lake breathe with the monsoon…" |
-| 9–13 s | Press Optical: white cloud covers the lake; press Movement again | "…straight through the clouds that blind ordinary cameras." |
-| 13–18 s | Caracas coast; the earthquake marks on the chart | "It saw this coast jump in the June earthquakes." |
-| 18–23 s | Click a pixel in Mexico City; the inspector says "March" | "Click anywhere, and we tell you how that ground dances." |
-| 23–27 s | 3D before/after, Play reveal | "See it in 3D, in your language, at your reading level." |
-| 27–30 s | Logo, repository address | "Open Source SAR. Free and open, end to end." |
+---
 
-Record real screen captures only, with subtitles burned in. If any layer is still a synthetic demo, show the on-screen "Synthetic demo" banner rather than hiding it.
+## High-Level Project Summary
 
-## Final project (detailed description)
+Open Source SAR is a free, open-source web app and data pipeline that lets anyone watch Earth's surface "dance" in NASA-ISRO NISAR radar data, which maps the planet every 12 days through cloud, smoke and darkness. It turns NISAR's backscatter, interferogram and pixel-offset products into an interactive 3D globe of places around the world: a lake that swells with the monsoon, a city that sinks, a coast that jumped in an earthquake, forests that burn, crops that grow and a glacier that surges. Click any spot to see its history with uncertainty, and a classifier names its motion as one of five dances (Waltz, March, Tango, Crescendo or Still). Plain-language explanations come at three reading levels in English, Hindi and Spanish. Earthquakes, fires, rain, cloud-free optical photos and 36 years of water records give each change its context. It answers the challenge by making SAR change readable for non-experts, honestly and at no cost to anyone.
 
-**What it does.** Open Source SAR is a web app and an open pipeline. The pipeline searches NASA's free archive for NISAR products over 19 places worldwide, downloads them with a free Earthdata login, and turns them into small image layers, statistics and time-series cubes. The app shows those layers on a 3D globe with a time slider, a chart, a click-any-pixel inspector and a before/after 3D view.
+---
 
-**The five dances.** Each place and each clicked pixel gets a plain-language label:
+## Link to Project Demo
 
-- **Waltz:** seasonal back and forth.
-- **March:** steady one-way change.
-- **Tango:** a sudden jump.
-- **Crescendo:** speeding up.
-- **Still:** no real change.
+[link to the 7-slide presentation PDF, e.g. https://github.com/Sidvortex/OpenSource-SAR/blob/main/docs/OpenSource-SAR-demo.pdf]
 
-The classifier is written twice, in Python and TypeScript, and both pass one shared test set.
+---
 
-**Modules:**
+## Link to Final Project
 
-| Module | NISAR product |
-| --- | --- |
-| Water and wetlands | GCOV backscatter |
-| Earthquakes and sinking ground | GUNW interferograms, checked against GNSS stations |
-| Fire and farming | GCOV change |
-| Glacier speed | GOFF pixel offsets |
+https://sidvortex.github.io/OpenSource-SAR/
 
-A converter also imports MintPy time series for research-grade ground motion.
+Source code, pipeline and documentation: https://github.com/Sidvortex/OpenSource-SAR
 
-**Context.** Earthquakes from USGS, rain from Open-Meteo and, optionally, fires from NASA FIRMS are drawn on each place's chart. An Optical button swaps radar for a true-colour photo near the same date (ESA Sentinel-2, or NASA GIBS MODIS where there is none), which makes radar's advantage obvious. For floods we compare against 36 years of JRC surface-water records, so the app shows only the water that is new, and ESA WorldCover says what kind of land it covered. A population layer (WorldPop or GHSL) counts the people living where the ground changed. The app is careful to call this a count of residents, not of people harmed.
+---
 
-**For everyone:**
+## Detailed Project Description
 
-- Explanations at three reading levels in English, Hindi and Spanish.
+**What it does**
+
+Open Source SAR has two halves that share one data contract.
+
+1. **The pipeline (Python)** searches NASA's archive for NISAR products over each place, downloads them with a free NASA Earthdata login, and turns them into small map layers, statistics and per-pixel time series:
+   - **Water and wetlands** from L2 GCOV backscatter: open water and likely flooded vegetation for every 12-day pass.
+   - **Earthquakes and sinking ground** from L2 GUNW interferograms: line-of-sight movement in centimetres, fringes and data quality, with the ionospheric correction applied and GNSS stations as an independent check.
+   - **Fire and farming** from GCOV cross-polarised change: burn scars and crop growth.
+   - **Glacier speed** from L2 GOFF pixel offsets.
+   - A converter that imports MintPy time series for research-grade ground motion.
+
+2. **The web app** shows those layers on a 3D globe with a time slider, a chart, a click-any-pixel inspector and a before/after 3D view with a "Play reveal". Each place and each clicked pixel gets one of five dances:
+   - **Waltz:** seasonal back and forth.
+   - **March:** steady one-way change.
+   - **Tango:** a sudden jump.
+   - **Crescendo:** speeding up.
+   - **Still:** no real change.
+
+   The classifier exists in Python and TypeScript, and both pass one shared test set.
+
+**Context that makes a change understandable**
+
+- Earthquakes (USGS) and active fires (NASA FIRMS) are marked on each place's timeline, with daily rain (Open-Meteo) as bars.
+- An Optical button swaps radar for a true-colour photo near the same date: ESA Sentinel-2 at 10 m, or NASA GIBS MODIS where there is none. A cloudy day shows exactly why radar matters.
+- For floods, the app compares against the JRC Global Surface Water record for 1984 to 2020 and shows only the water that is new. It also reports how much of the long-term water our method finds, as a check.
+- ESA WorldCover says what kind of land changed (cropland, built-up, forest), and a population layer counts how many people live there. The app says plainly that this counts residents, not people harmed.
+
+**For everyone**
+
+- Explanations at three reading levels (like I'm 10, everyday, expert) in English, Hindi and Spanish.
 - Guided stories, and a "How radar sees" lesson with a quiz.
-- Sonification.
-- Offline mode, and keyboard and screen-reader support.
-- Shareable links, image and CSV export, RSS and push alerts, and a STAC catalogue.
-- Ground reports from the public, filed as GitHub issues and shown on the map.
+- Sonification ("Hear it"), offline mode, and keyboard and screen-reader support.
+- "Check any area": draw a box anywhere on Earth to see which NISAR passes exist there.
+- Shareable links, image and CSV export, RSS and push alerts, and a STAC catalogue of every layer.
+- Ground reports from the public, filed through a GitHub issue form and shown as pins on the map.
 
-**How it's built.** A Python pipeline (NumPy, h5py, rasterio, asf_search) writes a static `data/` folder against one JSON schema. A React, TypeScript, Vite and MapLibre app reads it. Free GitHub Actions run the tests, validate every manifest, deploy to GitHub Pages and refresh coverage, context and reports every week. An optional FastAPI server in Docker adds on-demand processing for self-hosters.
+**Benefits**
 
-**Why it matters.** Radar data is powerful, but it is hard for most people to read. We wanted a farmer, a student or a city planner to be able to look up their own place and understand what the ground is doing, honestly, with its uncertainty, and without paying for anything.
+Radar sees through cloud and at night, so it watches floods, landslides and sinking ground exactly when cameras can't. But SAR data is hard to read, and the tools usually need expertise, a powerful computer or a paid account. Open Source SAR lets a student, a farmer, a journalist or a city planner open a link, find their place and understand what the ground is doing, with its uncertainty and its limits stated next to every number.
 
-**Honesty.** Every layer says whether it is real or a synthetic demo, and what the method can't tell you. The app is informational, not an official warning system.
+**What we hope to achieve**
 
-## Use of artificial intelligence
+A public, free window onto NISAR that any community can extend: add a place by editing one JSON file, run the pipeline, and the site, the alerts and the catalogue update themselves. The ROADMAP lists the next steps: combining ascending and descending passes into true vertical motion, Sentinel-1 history before NISAR, and more languages.
 
-We used an AI coding assistant (Claude, by Anthropic) to help draft code, tests and documentation. The team reviewed, ran and edited everything, and we chose the design, data and science approach. The app itself uses no AI model: explanations are written from templates that only restate numbers in the data. No AI-generated images or video are presented as NASA data.
+**Honest status**
 
-## NASA data
+The pipeline's readers have been tested on real NISAR PROVISIONAL products (GCOV, GUNW and GOFF all pass), and the coverage checks, NASA catalogue search, context events and optical photos use live data. Real NISAR layers for the hero places are being processed now. Until each one is finished, the app shows a clearly labelled synthetic demo built by the same code, with a "Synthetic demo" banner on every screen that shows one. The app is informational, not an official warning system.
 
-- **NISAR** L2 GCOV, L2 GUNW, L2 GOFF and L3 SME2 products (NASA/JPL and ISRO), via the Alaska Satellite Facility DAAC, found with NASA CMR and asf_search.
-- **NASA GIBS:** MODIS Terra corrected reflectance, true colour (the Optical view).
-- **NASA FIRMS:** VIIRS S-NPP active fires (optional context).
-- **NASA Earthdata Login**, for downloads.
+**Tools, languages, hardware and software**
 
-## Space agency partner data
+- **Languages:** Python 3 and TypeScript.
+- **Pipeline:** NumPy, SciPy, h5py, rasterio and GDAL, asf_search, Shapely, Pillow, matplotlib, jsonschema and pytest.
+- **Web app:** React, Vite and MapLibre GL JS.
+- **Optional server:** FastAPI and Uvicorn in Docker.
+- **Automation and hosting:** GitHub Actions for tests, a weekly data update and deployment, with hosting on GitHub Pages.
+- **Hardware:** our own laptops (EndeavourOS Linux). No paid cloud services.
 
-- **ISRO:** NISAR is a joint NASA-ISRO mission. The S-band data is planned (see the roadmap).
-- **ESA:** Copernicus Sentinel-2 true-colour imagery (the Optical view) and ESA WorldCover land cover. Sentinel-1, for longer history before NISAR, is planned.
-- **European Commission JRC:** Global Surface Water 1984 to 2020 (the water baseline).
+Everything is MIT-licensed, and every dependency is free and open source.
 
-## Global Offers used
+---
 
-- **Microsoft Planetary Computer:** the public catalogue we read Sentinel-2, JRC Global Surface Water and ESA WorldCover from. No account or payment.
+## Use of Super Intelligence (SI)
 
-We did not use the cloud-credit offers, because the project must keep running for free after the event.
+Yes. We used Claude (Anthropic), an AI assistant, throughout the project:
 
-## Other free resources
+- **Planning:** we used it in our first planning conversation to explore the challenge and brainstorm what to build, then shaped the plan ourselves. The team set the goals and rules: global scope, everything free and open source, a ten-part build from small to full, honest labelling of demo data, and the project's name.
+- **Code:** most of the pipeline and web app code, the tests and the GitHub workflows were written by the assistant under our direction. We ran, reviewed and debugged them on our own machines, including against real NISAR files (the coverage-selection and download fixes came from those runs).
+- **Text:** the assistant drafted the documentation, the in-app explanations (including the Hindi and Spanish versions) and this submission text, which we edited.
+- **Images and video:** no AI-generated images, audio or video are used. The demo slides use real screenshots of the app.
+- **In the app:** the app itself uses no AI. Explanations are filled in from templates that only restate numbers in the data.
 
-- USGS earthquake catalogue (FDSN event service).
-- Open-Meteo historical weather (CC BY 4.0).
-- WorldPop / JRC GHSL population.
-- Nevada Geodetic Laboratory GNSS.
-- OpenFreeMap and OpenStreetMap (ODbL), Natural Earth, and AWS Open Data Terrain Tiles.
-- MintPy (optional).
+**Where this is marked:**
 
-Every software library and its licence is listed in the README.
+- In the code: `AI_USE.md` and the "Use of AI" section of the README.
+- In the metadata: the `ai_assistance` field in `web/package.json`.
+- On the slides: the last slide says so.
 
-## References
+No NASA branding or design elements were used or modified.
 
-- NISAR mission and data user guide: nisar.jpl.nasa.gov and the ASF NISAR documentation.
-- ASF DAAC NISAR products and asf_search documentation.
-- NASA GIBS API documentation (nasa-gibs.github.io/gibs-api-docs).
-- NASA FIRMS area API documentation.
-- USGS FDSN event web service documentation.
-- Open-Meteo historical weather API documentation.
-- Yunjun, Z., Fattahi, H., and Amelung, F. (2019), "Small baseline InSAR time series analysis: Unwrapping error correction and noise reduction", *Computers & Geosciences* (MintPy).
+---
+
+## NASA Data
+
+- **NISAR (NASA-ISRO SAR mission):** L2 GCOV, L2 GUNW and L2 GOFF products (PROVISIONAL), from NASA's Alaska Satellite Facility DAAC. We found them with NASA's Common Metadata Repository (CMR) and the ASF search API, and downloaded them with NASA Earthdata Login. https://nisar.jpl.nasa.gov/ · https://asf.alaska.edu/nisar/
+- **NASA GIBS:** MODIS Terra corrected reflectance, true colour, for the Optical view when no Sentinel-2 photo is available. https://nasa-gibs.github.io/gibs-api-docs/
+- **NASA FIRMS:** VIIRS S-NPP active fires, as context for fire places. https://firms.modaps.eosdis.nasa.gov/
+- **NASA Earthdata Search and CMR**, for the "Check any area" coverage tool. https://www.earthdata.nasa.gov/
+
+---
+
+## Space Agency Partner Data and Other References
+
+**Space agency partner data**
+
+- **ISRO (Indian Space Research Organisation):** NISAR is a joint NASA-ISRO mission; all NISAR data above is shared with ISRO.
+- **ESA (European Space Agency):** Copernicus Sentinel-2 L2A true-colour imagery (contains modified Copernicus Sentinel data, 2026) and ESA WorldCover 2021 land cover (CC BY 4.0), both read through the Microsoft Planetary Computer.
+
+**Other data**
+
+- **JRC Global Surface Water 1984 to 2020** (European Commission JRC / Google), through the Microsoft Planetary Computer, a Space Apps Global Offer.
+- **USGS earthquake catalogue** (FDSN event web service, public domain).
+- **Open-Meteo historical weather** (CC BY 4.0). Weather data by Open-Meteo.com.
+- **WorldPop / JRC GHSL population** (CC BY 4.0).
+- **Nevada Geodetic Laboratory GNSS time series** (format and stations).
+- **OpenFreeMap basemap** with OpenStreetMap data (ODbL), **Natural Earth** (public domain) and **AWS Open Data Terrain Tiles**.
+
+**Software (all free and open source)**
+
+- **Pipeline:** NumPy, SciPy, h5py, rasterio, GDAL, asf_search, Shapely, Pillow, matplotlib, jsonschema and pytest.
+- **Web app:** React, TypeScript, Vite and MapLibre GL JS.
+- **Server:** FastAPI and Uvicorn.
+- **Optional:** MintPy (GPL-3.0, a separate tool whose output files we read).
+- **Fonts:** Archivo and Source Serif 4 (SIL OFL).
+
+The README lists each library with its licence.
+
+**Code and text**
+
+All project code and text are our own (MIT licence), written with the AI assistance described in the SI section. No copyrighted material is used without permission.
+
+**References**
+
+- NISAR mission and data user guide, NASA JPL. https://nisar.jpl.nasa.gov/
+- ASF DAAC NISAR documentation and the asf_search API. https://docs.asf.alaska.edu/
+- NASA GIBS API documentation. https://nasa-gibs.github.io/gibs-api-docs/
+- Microsoft Planetary Computer data catalogue. https://planetarycomputer.microsoft.com/catalog
+- Pekel, J.-F., Cottam, A., Gorelick, N. and Belward, A. S. (2016). "High-resolution mapping of global surface water and its long-term changes." *Nature* 540, 418–422.
+- Zanaga, D. et al. (2022). *ESA WorldCover 10 m 2021 v200*. Zenodo.
+- Yunjun, Z., Fattahi, H. and Amelung, F. (2019). "Small baseline InSAR time series analysis: unwrapping error correction and noise reduction." *Computers & Geosciences* 133.
+
+---
 
 ## Team
 

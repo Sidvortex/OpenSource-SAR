@@ -124,7 +124,8 @@ def read_onto_grid(href, target, bands=(1,), categorical=False):
             out_h, out_w = max(1, int(win.height // step)), max(1, int(win.width // step))
             data = src.read(list(bands), window=win, out_shape=(len(bands), out_h, out_w),
                             resampling=Resampling.nearest if categorical else Resampling.average)
-            tf = src.window_transform(win) * rasterio.Affine.scale(win.width / out_w, win.height / out_h)
+            base, sx, sy = src.window_transform(win), win.width / out_w, win.height / out_h
+            tf = rasterio.Affine(base.a * sx, base.b * sy, base.c, base.d * sx, base.e * sy, base.f)
             out = np.zeros((len(bands), target.height, target.width), dtype="uint8")
             reproject(data, out, src_transform=tf, src_crs=src.crs, dst_transform=target.transform,
                       dst_crs=water.WEB_CRS, src_nodata=src.nodata, dst_nodata=0,

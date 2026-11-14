@@ -14,6 +14,7 @@ import argparse
 import json
 import os
 import sys
+import warnings
 from collections import defaultdict
 from pathlib import Path
 
@@ -21,6 +22,7 @@ import numpy as np
 
 import coverage_check as cc
 import dance
+import fetch
 import layers
 import nisar_io
 import water
@@ -51,24 +53,31 @@ def cmd_download(args):
     west, south, east, north = spot["bbox"]
     area = {"label": spot["name"], "wkt": cc.bbox(west, south, east, north),
             "start": args.start, "end": args.end}
-    results = cc.search("GCOV", area, args.maturity, include_ur=False)
+    results = fetch.latest_versions(list(cc.search("GCOV", area, args.maturity, include_ur=False)))
     rows = [(r, cc.to_row(spot["id"], "GCOV", args.maturity, r)) for r in results]
     if not rows:
         sys.exit("No GCOV products found for this area and time. Run update_coverage.py to check.")
-    stacks = defaultdict(list)
-    for result, row in rows:
-        stacks[(row["track"], row["frame"], row["direction"])].append((result, row))
-    best_key = max(stacks, key=lambda k: len({row["date"] for _, row in stacks[k]}))
-    chosen = sorted(stacks[best_key], key=lambda pair: pair[1]["date"])[-args.max:]
-    size = sum(row["size_gb"] for _, row in chosen)
-    print(f"Best stack: track {best_key[0]}, frame {best_key[1]}, {best_key[2]}; "
-          f"downloading {len(chosen)} products, about {size:.1f} GB.")
+    chosen, plans = cc.choose_stack(rows, spot["bbox"], args.max)
+    print("Stacks over this place (best first):")
+    for p in plans[:5]:
+        print(f"  track {p['track']} {p['direction'].lower():10} frames {', '.join(str(f) for f in p['frames']):8} "
+              f"covers {p['share']:4.0%} of the place, {len(p['dates'])} dates, {p['size_gb']:.1f} GB")
+    best = plans[0]
+    if best["share"] < 0.5:
+        print(f"Warning: the best stack covers only {best['share']:.0%} of the place. "
+              "NASA may not have processed the rest yet; try again in a few weeks, or a wider --start/--end.")
+    print(f"Chosen: track {best['track']}, frames {', '.join(str(f) for f in best['frames'])}; "
+          f"downloading {len(chosen)} products for {len(best['dates'])} dates, about {best['size_gb']:.1f} GB.")
+    for _, row in chosen:
+        print(f"  {row['date']}  {row['scene']}  {row['size_gb']:.1f} GB")
+    if args.dry_run:
+        return
     out = WORK / spot["id"]
     out.mkdir(parents=True, exist_ok=True)
     session = earthdata_session()
     for result, row in chosen:
         print(f"  {row['date']}  {row['scene']}")
-        result.download(path=str(out), session=session)
+        fetch.download(result, out, session)
     print(f"Saved to {out}. Next: python pipeline/water_dance.py process --hotspot {spot['id']}")
 
 
@@ -91,7 +100,8 @@ def build_layers(spot, files, synthetic, res):
     for day, items in sorted(by_date.items()):
         pol = "HH" if "HH" in items[0][0] else "VV"
         stack = np.stack([bands[pol] for bands, _ in items])
-        with np.errstate(invalid="ignore"):
+        with np.errstate(invalid="ignore"), warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)   # pixels no frame covers stay empty
             mosaic = np.nanmean(stack, axis=0)       # adjacent frames on the same day
         hh_db[day] = water.to_db(mosaic)
         sources[day] = [name for _, name in items]
@@ -168,7 +178,7 @@ def build_layers(spot, files, synthetic, res):
 def cmd_process(args):
     spot = load_spot(args.hotspot)
     folder = Path(args.work) if args.work else WORK / spot["id"]
-    files = sorted(folder.glob("*.h5"))
+    files = fetch.usable_h5(sorted(folder.glob("*.h5")))
     if not files:
         sys.exit(f"No .h5 files in {folder}. Run the download command first.")
     synthetic = any(f.name.startswith("SYNTHETIC_") for f in files)
@@ -200,6 +210,7 @@ def main():
     p.add_argument("--end")
     p.add_argument("--max", type=int, default=12, help="most recent N products")
     p.add_argument("--maturity", default="PROVISIONAL", choices=["PROVISIONAL", "BETA"])
+    p.add_argument("--dry-run", action="store_true", help="show which stack would be downloaded, and stop")
     p.set_defaults(func=cmd_download)
     p = sub.add_parser("process", help="build web layers from downloaded .h5 files")
     p.add_argument("--hotspot", default="tonle-sap")

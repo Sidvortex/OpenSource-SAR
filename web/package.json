@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "description": "Open Source SAR: watch Earth's surface dance, measured by NISAR radar. Free and open source.",
   "license": "MIT",
+  "ai_assistance": "Code written with an AI assistant (Claude, by Anthropic) under the team's direction; see AI_USE.md",
   "type": "module",
   "scripts": {
     "sync-data": "node scripts/sync-data.mjs",

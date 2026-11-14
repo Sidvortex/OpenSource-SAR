@@ -20,6 +20,7 @@ import numpy as np
 from scipy import ndimage
 
 import dance
+import fetch
 import layers
 import nisar_io
 import water
@@ -210,7 +211,7 @@ def main():
         synthetic = True
     else:
         folder = Path(args.work) if args.work else WORK / spot["id"]
-        files = sorted(folder.glob("*.h5"))
+        files = fetch.usable_h5(sorted(folder.glob("*.h5")))
         if not files:
             sys.exit(f"No .h5 files in {folder}. Download GCOV with: python pipeline/water_dance.py download --hotspot {spot['id']}")
         hv, sources = hv_from_files(spot, files, target)

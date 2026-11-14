@@ -91,4 +91,4 @@ Ideas we've parked because they cost money (a SatDump ground station, a desk dis
 
 ## Use of AI
 
-Parts of this code were drafted with help from an AI coding assistant (Claude). Space Apps asks teams to disclose this on the project page.
+Much of this project's code, tests and documentation was written with an AI assistant (Claude, by Anthropic) under the team's direction, and the team ran, reviewed and tested it, including on real NISAR files. The app itself uses no AI. [AI_USE.md](AI_USE.md) says exactly where AI was used, as Space Apps asks.

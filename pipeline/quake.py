@@ -31,6 +31,7 @@ from scipy import ndimage
 
 import coverage_check as cc
 import dance
+import fetch
 import layers
 import nisar_io
 import water
@@ -121,29 +122,38 @@ def cmd_download(args):
     window = spot.get("window", {})
     area = {"label": spot["name"], "wkt": cc.bbox(west, south, east, north),
             "start": window.get("start", cc.PROVISIONAL_START), "end": window.get("end")}
-    results = cc.search("GUNW", area, args.maturity, include_ur=False)
+    results = fetch.latest_versions(list(cc.search("GUNW", area, args.maturity, include_ur=False)))
     if not results:
         sys.exit("No GUNW products found. Run update_coverage.py to check this area.")
-    chosen = cc.pick_pairs(results, args.max, spot.get("event"))
-    def spans_event(r):
-        d = [x.isoformat() for x in cc.acquisition_dates(r.properties)]
-        return bool(d) and d[0] < spot["event"] <= d[-1]
-    spans = sum(1 for r in chosen if spot.get("event") and spans_event(r))
-    print(f"Found {len(results)} GUNW products; downloading {len(chosen)}"
-          + (f" ({spans} spanning the {spot['event']} event)." if spot.get("event") else ", newest first."))
+    chosen, passes = cc.choose_pairs(results, spot["bbox"], args.max, spot.get("event"))
+    if not passes:
+        sys.exit("No usable GUNW pairs found.")
+    size = lambda r: sum(v.get("bytes", 0) for v in (r.properties.get("bytes") or {}).values() if isinstance(v, dict)) / 1e9
+    first = passes[0]
+    print(f"Found {len(results)} GUNW products. Using one track so every map has the same view: "
+          f"track {first['track']} {first['direction'].lower()}, {len(passes)} pairs, {len(chosen)} files, "
+          f"about {sum(size(r) for r in chosen):.1f} GB.")
+    event = spot.get("event")
+    for p in passes:
+        tag = "  <- spans the event" if event and p["start"].isoformat() < event <= p["end"].isoformat() else ""
+        print(f"  {p['start']} to {p['end']}: frames {', '.join(str(f) for f in p['frames'])}, covers {p['share']:.0%} of the place{tag}")
+    for result in chosen:
+        print(f"    {result.properties.get('sceneName')}  {size(result):.1f} GB")
+    if args.dry_run:
+        return
     out = WORK / spot["id"]
     out.mkdir(parents=True, exist_ok=True)
     session = earthdata_session()
     for result in chosen:
-        print(f"  {result.properties.get('sceneName')}")
-        result.download(path=str(out), session=session)
+        print(f"  downloading {result.properties.get('sceneName')}")
+        fetch.download(result, out, session)
     print(f"Saved to {out}. Next: python pipeline/quake.py process --hotspot {spot['id']}")
 
 
 def cmd_process(args):
     spot = load_spot(args.hotspot)
     folder = Path(args.work) if args.work else WORK / spot["id"]
-    files = sorted(folder.glob("*.h5"))
+    files = fetch.one_track(fetch.usable_h5(sorted(folder.glob("*.h5"))))
     if not files:
         sys.exit(f"No .h5 files in {folder}. Run the download command first.")
     gnss_dir = ROOT / "data" / "gnss" / spot["id"]
@@ -169,6 +179,7 @@ def main():
     p.add_argument("--hotspot", default="venezuela-coast")
     p.add_argument("--max", type=int, default=6)
     p.add_argument("--maturity", default="PROVISIONAL", choices=["PROVISIONAL", "BETA"])
+    p.add_argument("--dry-run", action="store_true", help="show which pairs would be downloaded, and stop")
     p.set_defaults(func=cmd_download)
     p = sub.add_parser("process")
     p.add_argument("--hotspot", default="venezuela-coast")

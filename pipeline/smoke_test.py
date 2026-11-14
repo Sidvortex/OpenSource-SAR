@@ -16,6 +16,7 @@ import sys
 import traceback
 
 import coverage_check as cc
+import fetch
 import ice
 import layers
 import nisar_io
@@ -49,7 +50,7 @@ def check(product, session):
     folder = layers.WORK / "smoke" / product
     folder.mkdir(parents=True, exist_ok=True)
     print(f"  downloading {result.properties.get('sceneName')} ...")
-    result.download(path=str(folder), session=session)
+    fetch.download(result, folder, session)
     files = sorted(folder.glob("*.h5"))
     if not files:
         return "FAIL", "download produced no .h5 file"

@@ -19,6 +19,7 @@ import h5py
 import numpy as np
 
 import dance
+import fetch
 import layers
 import nisar_io
 import water
@@ -164,17 +165,17 @@ def download(args):
     window = spot.get("window", {})
     area = {"label": spot["name"], "wkt": cc.bbox(west, south, east, north),
             "start": window.get("start", cc.PROVISIONAL_START), "end": window.get("end")}
-    results = cc.search("GOFF", area, args.maturity, include_ur=False)
+    results = fetch.latest_versions(list(cc.search("GOFF", area, args.maturity, include_ur=False)))
     if not results:
         sys.exit("No GOFF products found yet. Run update_coverage.py to check this area.")
-    chosen = cc.pick_pairs(results, args.max)
+    chosen, _ = cc.choose_pairs(results, spot["bbox"], args.max)
     print(f"Found {len(results)} GOFF products; downloading the newest {len(chosen)}.")
     out = WORK / spot["id"]
     out.mkdir(parents=True, exist_ok=True)
     session = earthdata_session()
     for result in chosen:
         print(f"  {result.properties.get('sceneName')}")
-        result.download(path=str(out), session=session)
+        fetch.download(result, out, session)
     print(f"Saved to {out}. Next: python pipeline/ice.py process --hotspot {spot['id']}")
 
 
@@ -205,7 +206,7 @@ def main():
         build_layers(spot, make_demo_goff(spot, WORK / f"demo-{spot['id']}"), True, args.res)
     else:
         folder = Path(args.work) if args.work else WORK / spot["id"]
-        files = sorted(folder.glob("*.h5"))
+        files = fetch.one_track(fetch.usable_h5(sorted(folder.glob("*.h5"))))
         if not files:
             sys.exit(f"No .h5 files in {folder}. Download GOFF products for this area first (see DEPLOY.md).")
         build_layers(spot, files, any(f.name.startswith("SYNTHETIC_") for f in files), args.res)

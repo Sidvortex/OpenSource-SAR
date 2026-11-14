@@ -90,11 +90,155 @@ def search(product, area, maturity, include_ur):
     return asf.search(**kwargs)
 
 
-def pick_pairs(results, count, event=None):
+MIN_SHARE = 0.15      # ignore products that only clip the edge of a place
+
+
+def footprint(result, bbox):
+    """The part of a product's footprint inside the place's box (lon/lat), or None if unknown."""
+    from shapely.geometry import box, shape
+    geometry = getattr(result, "geometry", None)
+    if not geometry:
+        return None
+    try:
+        return shape(geometry).buffer(0).intersection(box(*bbox))
+    except Exception:
+        return None
+
+
+def place_share(result, bbox):
+    """How much of the place's box a product covers, 0 to 1 (1 if the footprint is unknown)."""
+    from shapely.geometry import box
+    part = footprint(result, bbox)
+    return 1.0 if part is None else float(part.area / box(*bbox).area)
+
+
+def choose_stack(rows, bbox, max_dates):
+    """Pick the repeat-pass stack that actually covers the place.
+
+    rows: [(result, to_row(...))]. Products are grouped by track and direction. Within a
+    track, frames are added (largest share first) until the place is covered, because a
+    place can straddle two frames of the same pass. Tracks are ranked by how much of the
+    place they cover, then by how many dates they have. Returns (chosen rows, summaries).
+    """
+    from shapely.geometry import box
+    from shapely.ops import unary_union
+    whole = box(*bbox).area
+    tracks = defaultdict(lambda: defaultdict(list))
+    for result, row in rows:
+        tracks[(row["track"], row["direction"])][row["frame"]].append((result, row))
+    plans = []
+    for (track, direction), frames in tracks.items():
+        shapes = {}
+        for frame, items in frames.items():
+            parts = [p for p in (footprint(r, bbox) for r, _ in items) if p is not None and not p.is_empty]
+            shapes[frame] = unary_union(parts) if parts else None
+        known = {f: s for f, s in shapes.items() if s is not None}
+        if known:
+            order = sorted(known, key=lambda f: -known[f].area)
+            chosen, union = [order[0]], known[order[0]]
+            for f in order[1:]:
+                grown = union.union(known[f])
+                if grown.area / whole - union.area / whole >= 0.03 and union.area / whole < 0.97:
+                    chosen.append(f)
+                    union = grown
+            share = union.area / whole
+        else:                                     # no footprints: fall back to the frame with most dates
+            chosen = [max(frames, key=lambda f: len({row["date"] for _, row in frames[f]}))]
+            share = 1.0
+        anchor = chosen[0]
+        dates = sorted({row["date"] for _, row in frames[anchor]})[-max_dates:]
+        picked = []
+        for f in chosen:
+            # NASA can publish several products of one pass (other bandwidth modes or
+            # reprocessings). One per frame and date is enough: the one covering most of
+            # the place, then the smallest download.
+            per_day = defaultdict(list)
+            for r, row in frames[f]:
+                if row["date"] in dates:
+                    per_day[row["date"]].append((r, row))
+            for items in per_day.values():
+                picked.append(min(items, key=lambda p: (-round(place_share(p[0], bbox), 2), p[1]["size_gb"] or 1e9)))
+        plans.append({"track": track, "direction": direction, "frames": chosen, "share": share,
+                      "dates": dates, "rows": sorted(picked, key=lambda p: (p[1]["date"], str(p[1]["frame"]))),
+                      "size_gb": sum(row["size_gb"] for _, row in picked)})
+    plans.sort(key=lambda p: (-round(p["share"], 1), -len(p["dates"]), p["size_gb"]))
+    return (plans[0]["rows"] if plans else []), plans
+
+
+def choose_pairs(results, bbox, count, event=None):
+    """Pick pair products (GUNW, GOFF) from ONE track, so every map shares one viewing geometry.
+
+    Pairs from different tracks see the ground from different directions (ascending and
+    descending even see east-west motion with opposite signs), so they must not be mixed
+    in one time series. Products are grouped into passes: same track, direction and both
+    dates; the frames of one pass are joined to cover the place. With an event date, the
+    pass that spans it and covers most of the place picks the track; otherwise the track
+    that covers most of the place with the most pairs. Then up to `count` passes of that
+    track are taken, in date order. Returns (results to download, summary of each pass).
+    """
+    from datetime import date as _date
+    from shapely.geometry import box
+    from shapely.ops import unary_union
+    event = _date.fromisoformat(event) if isinstance(event, str) else event
+    whole = box(*bbox).area
+    passes = defaultdict(lambda: defaultdict(list))
+    for r in results:
+        d = acquisition_dates(r.properties)
+        if not d:
+            continue
+        p = r.properties
+        key = (p.get("pathNumber"), p.get("flightDirection") or "", d[0], d[-1])
+        passes[key][p.get("frameNumber")].append(r)
+    plans = []
+    for key, frames in passes.items():
+        best = {f: max(items, key=lambda r: place_share(r, bbox)) for f, items in frames.items()}
+        shapes = {f: footprint(r, bbox) for f, r in best.items()}
+        order = sorted(best, key=lambda f: -place_share(best[f], bbox))
+        chosen = [order[0]]
+        union = shapes[order[0]]
+        for f in order[1:]:
+            if union is None or shapes[f] is None:
+                continue
+            grown = unary_union([union, shapes[f]])
+            if (grown.area - union.area) / whole >= 0.03:
+                chosen.append(f)
+                union = grown
+        share = 1.0 if union is None else union.area / whole
+        plans.append({"track": key[0], "direction": key[1], "start": key[2], "end": key[3],
+                      "frames": chosen, "share": share, "products": [best[f] for f in chosen]})
+    if not plans:
+        return [], []
+    useful = [p for p in plans if p["share"] >= MIN_SHARE] or plans
+    spans = [p for p in useful if event and p["start"] < event <= p["end"]]
+    if spans:
+        anchor = min(spans, key=lambda p: (-round(p["share"], 1), (p["end"] - p["start"]).days, p["start"]))
+        track = (anchor["track"], anchor["direction"])
+    else:
+        anchor = None
+        tracks = defaultdict(list)
+        for p in useful:
+            tracks[(p["track"], p["direction"])].append(p)
+        track = max(tracks, key=lambda t: (round(max(p["share"] for p in tracks[t]), 1), len(tracks[t])))
+    same = sorted((p for p in useful if (p["track"], p["direction"]) == track), key=lambda p: p["start"])
+    if anchor is not None:
+        # the event pair first, then the passes after it (what happened next), then any before
+        later = [p for p in same if p["start"] >= anchor["start"] and p is not anchor]
+        earlier = [p for p in same if p["start"] < anchor["start"]][::-1]
+        picked = [anchor] + later[:count - 1]
+        picked += earlier[:count - len(picked)]
+    else:
+        picked = same[-count:]
+    picked.sort(key=lambda p: p["start"])
+    return [r for p in picked for r in p["products"]], picked
+
+
+def pick_pairs(results, count, event=None, bbox=None):
     """Choose which pair products to download.
 
     With an event date: pairs that span it come first, shortest span first (the cleanest
     before/after), then the newest of the rest. Without one: the newest pairs.
+    With a bbox: pairs that only clip the edge of the place are left out, and pairs that
+    cover more of it come first.
     """
     from datetime import date as _date
     event = _date.fromisoformat(event) if isinstance(event, str) else event
@@ -103,9 +247,13 @@ def pick_pairs(results, count, event=None):
         return (d[0], d[-1]) if d else (None, None)
     rows = [(r, *dates(r)) for r in results]
     rows = [row for row in rows if row[1] is not None]
+    share = {id(r): (place_share(r, bbox) if bbox else 1.0) for r, *_ in rows}
+    if any(s >= MIN_SHARE for s in share.values()):
+        rows = [row for row in rows if share[id(row[0])] >= MIN_SHARE]
+    cover = lambda row: -round(share[id(row[0])], 1)
     spanning = [] if event is None else sorted(
-        (row for row in rows if row[1] < event <= row[2]), key=lambda row: (row[2] - row[1], row[1]))
-    rest = sorted((row for row in rows if row not in spanning), key=lambda row: row[1], reverse=True)
+        (row for row in rows if row[1] < event <= row[2]), key=lambda row: (cover(row), row[2] - row[1], row[1]))
+    rest = sorted((row for row in rows if row not in spanning), key=lambda row: (cover(row), -row[1].toordinal()))
     return [row[0] for row in (spanning + rest)[:count]]
 
 
