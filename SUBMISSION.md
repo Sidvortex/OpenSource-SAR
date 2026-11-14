@@ -50,7 +50,7 @@ The classifier is written twice, in Python and TypeScript, and both pass one sha
 
 A converter also imports MintPy time series for research-grade ground motion.
 
-**Context.** Earthquakes from USGS, rain from Open-Meteo and, optionally, fires from NASA FIRMS are drawn on each place's chart. An Optical button swaps radar for NASA GIBS true-colour imagery of the same date, which makes radar's advantage obvious. A population layer (WorldPop or GHSL) counts the people living where the ground changed. The app is careful to call this a count of residents, not of people harmed.
+**Context.** Earthquakes from USGS, rain from Open-Meteo and, optionally, fires from NASA FIRMS are drawn on each place's chart. An Optical button swaps radar for a true-colour photo near the same date (ESA Sentinel-2, or NASA GIBS MODIS where there is none), which makes radar's advantage obvious. For floods we compare against 36 years of JRC surface-water records, so the app shows only the water that is new, and ESA WorldCover says what kind of land it covered. A population layer (WorldPop or GHSL) counts the people living where the ground changed. The app is careful to call this a count of residents, not of people harmed.
 
 **For everyone:**
 
@@ -81,7 +81,14 @@ We used an AI coding assistant (Claude, by Anthropic) to help draft code, tests 
 ## Space agency partner data
 
 - **ISRO:** NISAR is a joint NASA-ISRO mission. The S-band data is planned (see the roadmap).
-- **ESA:** Sentinel-1, for longer history before NISAR. This is planned and will be clearly labelled.
+- **ESA:** Copernicus Sentinel-2 true-colour imagery (the Optical view) and ESA WorldCover land cover. Sentinel-1, for longer history before NISAR, is planned.
+- **European Commission JRC:** Global Surface Water 1984 to 2020 (the water baseline).
+
+## Global Offers used
+
+- **Microsoft Planetary Computer:** the public catalogue we read Sentinel-2, JRC Global Surface Water and ESA WorldCover from. No account or payment.
+
+We did not use the cloud-credit offers, because the project must keep running for free after the event.
 
 ## Other free resources
 

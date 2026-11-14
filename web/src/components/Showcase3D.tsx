@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent, PointerEvent } from 'react';
 import maplibregl from 'maplibre-gl';
-import { STYLE_URL, TERRAIN_ATTRIBUTION, TERRAIN_URL, applyOptical, applyOverlay, overlayFor, useOfflineFallback } from '../mapStyle';
+import { STYLE_URL, TERRAIN_ATTRIBUTION, TERRAIN_URL, applyOptical, applyOverlay, opticalOverlay, overlayFor, useOfflineFallback } from '../mapStyle';
 import type { Hotspot, LayerManifest } from '../types';
 import { Legend, frameLabel, statText } from './TimeBar';
 
@@ -79,7 +79,7 @@ export default function Showcase3D({ spot, manifest, kind: initialKind, onClose 
   useEffect(() => {
     if (!beforeBox.current || !afterBox.current) return;
     const first = (m: maplibregl.Map, i: number) => {
-      if (state.current.kind === 'optical') applyOptical(m, manifest.frames[i].date);
+      if (state.current.kind === 'optical') { const shot = opticalOverlay(manifest, i); if (shot) applyOverlay(m, shot); else applyOptical(m, manifest.frames[i].date); }
       else applyOverlay(m, overlayFor(manifest, i, state.current.kind));
     };
     const a = createMap(beforeBox.current, spot, exaggeration, (m) => first(m, state.current.before));
@@ -107,7 +107,7 @@ export default function Showcase3D({ spot, manifest, kind: initialKind, onClose 
 
   // 'optical' swaps the radar layer for NASA's same-day true-colour image on each side.
   const show = useCallback((m: maplibregl.Map, i: number) => {
-    if (kind === 'optical') { applyOverlay(m, null); applyOptical(m, manifest.frames[i].date); }
+    if (kind === 'optical') { const shot = opticalOverlay(manifest, i); applyOverlay(m, shot); applyOptical(m, shot ? null : manifest.frames[i].date); }
     else { applyOptical(m, null); applyOverlay(m, overlayFor(manifest, i, kind)); }
   }, [kind, manifest]);
   useEffect(() => { if (maps.current) show(maps.current.before, before); }, [before, show]);
@@ -182,7 +182,7 @@ export default function Showcase3D({ spot, manifest, kind: initialKind, onClose 
           <strong>{sideB}: {frameLabel(a)}</strong>
           {stat && <span>{statText(stat, a.stats[stat.id])}</span>}
         </div>
-        <div className="stage-legend">{kind === 'optical' ? <p className="legend">NASA MODIS true colour for each side's date. White is cloud.</p> : <Legend layer={layer} />}</div>
+        <div className="stage-legend">{kind === 'optical' ? <p className="legend">{manifest.optical ? 'ESA Sentinel-2 true colour, the clearest pass near each side\u2019s date (NASA MODIS where there is none).' : 'NASA MODIS true colour for each side\u2019s date.'} White is cloud.</p> : <Legend layer={layer} />}</div>
         <div className="divider" style={{ left: `${split}%` }}
           role="slider" tabIndex={0} aria-label="Before and after divider" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(split)}
           onKeyDown={onDividerKey}

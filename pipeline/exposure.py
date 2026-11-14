@@ -11,7 +11,8 @@ pixel, not density) and pass its path. The script sums people inside the changed
 area of every frame and adds "people_km" statistics to the place's manifest.
 
 What counts as changed ground, per module:
-  water    open water or likely flooded vegetation (the class layer)
+  water    open water or likely flooded vegetation (the class layer); only NEW water
+           once planetary.py water-history has been run
   fire     burned or cleared (the class layer)
   ground   total movement beyond 5 cm (from the inspector cube)
   farming, ice: not meaningful, so skipped
@@ -31,6 +32,7 @@ from layers import DATA, load_spot
 
 MOVED_CM = 5.0
 CLASS_LAYER = {"water": "water", "fire": "burn"}
+NEW_WATER_RGBA = (240, 120, 30, 225)    # "new water" in the layer planetary.py adds
 
 
 def population_on_grid(path, target):
@@ -61,6 +63,11 @@ def changed_masks(manifest, out, target):
     if module in CLASS_LAYER:
         key = CLASS_LAYER[module]
         for frame in manifest["frames"]:
+            if "newwater" in frame["files"]:
+                # Once we know the long-term water, only water beyond it counts as change.
+                rgba = np.asarray(Image.open(out / frame["files"]["newwater"]).convert("RGBA"))
+                yield frame, (rgba[..., :3] == NEW_WATER_RGBA[:3]).all(axis=-1) & (rgba[..., 3] > 0)
+                continue
             alpha = np.asarray(Image.open(out / frame["files"][key]).convert("RGBA"))[..., 3]
             yield frame, alpha > 0
     elif module == "ground":

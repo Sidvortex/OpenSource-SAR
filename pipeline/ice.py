@@ -7,6 +7,7 @@ metres along track (the flight direction) and in slant range (the look direction
 Speed = size of that shift, with slant range converted to ground range, divided by the days between passes.
 
     python pipeline/ice.py demo --hotspot shisper          # synthetic surging glacier, labelled
+    python pipeline/ice.py download --hotspot shisper --max 6   # needs a free Earthdata login
     python pipeline/ice.py process --hotspot shisper       # real GOFF files in pipeline/work/shisper/
 """
 import argparse
@@ -155,6 +156,28 @@ def make_demo_goff(spot, out_dir, spacing=60.0, epsg=32643):
     return written
 
 
+def download(args):
+    import coverage_check as cc
+    from water_dance import earthdata_session
+    spot = load_spot(args.hotspot)
+    west, south, east, north = spot["bbox"]
+    window = spot.get("window", {})
+    area = {"label": spot["name"], "wkt": cc.bbox(west, south, east, north),
+            "start": window.get("start", cc.PROVISIONAL_START), "end": window.get("end")}
+    results = cc.search("GOFF", area, args.maturity, include_ur=False)
+    if not results:
+        sys.exit("No GOFF products found yet. Run update_coverage.py to check this area.")
+    chosen = cc.pick_pairs(results, args.max)
+    print(f"Found {len(results)} GOFF products; downloading the newest {len(chosen)}.")
+    out = WORK / spot["id"]
+    out.mkdir(parents=True, exist_ok=True)
+    session = earthdata_session()
+    for result in chosen:
+        print(f"  {result.properties.get('sceneName')}")
+        result.download(path=str(out), session=session)
+    print(f"Saved to {out}. Next: python pipeline/ice.py process --hotspot {spot['id']}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Open Source SAR Part 7: ice speed from GOFF.")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -163,9 +186,16 @@ def main():
         p.add_argument("--hotspot", default="shisper")
         p.add_argument("--res", type=float, default=60.0)
         p.add_argument("--work")
+    p = sub.add_parser("download", help="download the newest GOFF pairs for a place")
+    p.add_argument("--hotspot", default="shisper")
+    p.add_argument("--max", type=int, default=6)
+    p.add_argument("--maturity", default="PROVISIONAL", choices=["PROVISIONAL", "BETA"])
     p = sub.add_parser("inspect")
     p.add_argument("file")
     args = parser.parse_args()
+    if args.command == "download":
+        download(args)
+        return
     if args.command == "inspect":
         print("\n".join(nisar_io.list_tree(args.file)))
         return

@@ -1,10 +1,10 @@
 {
   "hotspot": "tonle-sap",
-  "created": "2026-10-27",
+  "created": "2026-11-14",
   "module": "water",
   "title": "Tonle Sap: the water dance",
-  "headline": "Open water grew from 2,750 km\u00b2 to 7,550 km\u00b2 between the first and last pass.",
-  "synthetic": true,
+  "headline": "Open water grew from 194 km\u00b2 to 165 km\u00b2 between the first and last pass.",
+  "synthetic": false,
   "product": "NISAR L2 GCOV (terrain-corrected backscatter), HH polarisation",
   "bounds": [
     [
@@ -53,6 +53,22 @@
       ]
     },
     {
+      "id": "newwater",
+      "label": "New water",
+      "opacity": 0.9,
+      "legend": [
+        {
+          "label": "New on this pass",
+          "color": "#f0781e"
+        },
+        {
+          "label": "Usually water (1984-2020)",
+          "color": "#7896be"
+        }
+      ],
+      "note": "Radar water outside the area that was water in at least 75% of 1984-2020 satellite observations."
+    },
+    {
       "id": "radar",
       "label": "Radar image",
       "opacity": 0.9,
@@ -86,9 +102,10 @@
       "color": "#37c2b0"
     },
     {
-      "id": "people_exposed",
-      "label": "People on changed ground",
-      "unit": "people"
+      "id": "new_water_km2",
+      "label": "New water",
+      "unit": "km\u00b2",
+      "color": "#f0781e"
     }
   ],
   "chart": {
@@ -98,191 +115,278 @@
   },
   "series": {
     "file": "series.bin",
-    "count": 8,
+    "count": 5,
     "width": 141,
     "height": 153,
     "factor": 9,
     "full_width": 1262,
     "full_height": 1370,
     "dates": [
-      "2026-06-19",
-      "2026-07-01",
-      "2026-07-13",
-      "2026-07-25",
-      "2026-08-18",
-      "2026-08-30",
-      "2026-09-11",
-      "2026-09-23"
+      "2026-09-04",
+      "2026-09-16",
+      "2026-09-28",
+      "2026-10-10",
+      "2026-10-22"
     ],
     "label": "Radar brightness",
     "unit": "dB",
     "sigma": 0.6,
-    "threshold": -15.0,
+    "threshold": -24.0,
     "threshold_label": "Below the dashed line counts as open water"
   },
   "dance": {
-    "dance": "march",
-    "confidence": "high",
-    "reason": "A steady trend of about +780 km\u00b2 every 12 days.",
-    "rate_per_12_days": 779.8800000000001,
+    "dance": "tango",
+    "confidence": "medium",
+    "reason": "A sudden change of -27 km\u00b2 between Oct 10 and Oct 22.",
+    "jump": -26.82499999999999,
+    "at": [
+      36.0,
+      48.0
+    ],
     "basis": "total water area"
   },
   "method": [
     "Each pass is averaged onto one shared grid, so dates line up pixel for pixel.",
     "Open water: HH backscatter below a per-pass Otsu threshold, kept between -24 and -14 dB.",
-    "Likely flooded vegetation: HH at least 3 dB brighter than on the driest pass (2026-06-19) and brighter than -8 dB.",
+    "Likely flooded vegetation: HH at least 3 dB brighter than on the driest pass (2026-10-22) and brighter than -8 dB.",
     "Areas are true areas, corrected for map-projection stretch.",
-    "People on changed ground: a population raster summed inside the changed area of each frame."
+    "New water: radar water outside the JRC Global Surface Water area that was water in at least 75% of 1984-2020 observations.",
+    "Land cover: ESA WorldCover 2021 sampled on the layer grid, summed inside the changed area of each frame.",
+    "Optical view: the least cloudy Sentinel-2 pass within 10 days of each radar date; frames without one fall back to NASA MODIS."
   ],
   "frames": [
     {
-      "date": "2026-06-19",
-      "label": "2026-06-19",
+      "date": "2026-09-04",
+      "label": "2026-09-04",
       "files": {
-        "water": "water_2026-06-19.png",
-        "radar": "radar_2026-06-19.webp"
+        "water": "water_2026-09-04.png",
+        "radar": "radar_2026-09-04.webp",
+        "newwater": "newwater_2026-09-04.png"
       },
       "stats": {
-        "open_water_km2": 2749.8,
+        "open_water_km2": 193.6,
         "flooded_veg_km2": 0.0,
-        "water_total_km2": 2749.8,
-        "threshold_db": -15.2,
-        "people_exposed": 522
+        "water_total_km2": 193.6,
+        "threshold_db": -24.0,
+        "new_water_km2": 193.6
       },
       "sources": [
-        "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260619T221500_20260619T221540_DEMO.h5"
+        "NISAR_L2_PR_GCOV_029_155_A_009_2005_DHDH_A_20260904T222847_20260904T222922_P05023_N_F_J_001.h5",
+        "NISAR_L2_PR_GCOV_029_155_A_009_2005_DHDH_A_20260904T222847_20260904T222922_P05023_N_F_J_002.h5"
       ]
     },
     {
-      "date": "2026-07-01",
-      "label": "2026-07-01",
+      "date": "2026-09-16",
+      "label": "2026-09-16",
       "files": {
-        "water": "water_2026-07-01.png",
-        "radar": "radar_2026-07-01.webp"
+        "water": "water_2026-09-16.png",
+        "radar": "radar_2026-09-16.webp",
+        "newwater": "newwater_2026-09-16.png"
       },
       "stats": {
-        "open_water_km2": 2841.4,
-        "flooded_veg_km2": 1114.0,
-        "water_total_km2": 3955.4,
-        "threshold_db": -15.1,
-        "people_exposed": 25511
+        "open_water_km2": 190.2,
+        "flooded_veg_km2": 0.0,
+        "water_total_km2": 190.2,
+        "threshold_db": -24.0,
+        "new_water_km2": 190.2
       },
       "sources": [
-        "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260701T221500_20260701T221540_DEMO.h5"
+        "NISAR_L2_PR_GCOV_030_155_A_009_2005_DHDH_A_20260916T222847_20260916T222922_P05023_N_F_J_001.h5"
       ]
     },
     {
-      "date": "2026-07-13",
-      "label": "2026-07-13",
+      "date": "2026-09-28",
+      "label": "2026-09-28",
       "files": {
-        "water": "water_2026-07-13.png",
-        "radar": "radar_2026-07-13.webp"
+        "water": "water_2026-09-28.png",
+        "radar": "radar_2026-09-28.webp",
+        "newwater": "newwater_2026-09-28.png"
       },
       "stats": {
-        "open_water_km2": 3117.9,
-        "flooded_veg_km2": 1217.4,
-        "water_total_km2": 4335.3,
-        "threshold_db": -15.1,
-        "people_exposed": 40381
+        "open_water_km2": 190.5,
+        "flooded_veg_km2": 0.0,
+        "water_total_km2": 190.5,
+        "threshold_db": -24.0,
+        "new_water_km2": 190.5
       },
       "sources": [
-        "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260713T221500_20260713T221540_DEMO.h5"
+        "NISAR_L2_PR_GCOV_031_155_A_009_2005_DHDH_A_20260928T222847_20260928T222922_P05023_N_F_J_001.h5"
       ]
     },
     {
-      "date": "2026-07-25",
-      "label": "2026-07-25",
+      "date": "2026-10-10",
+      "label": "2026-10-10",
       "files": {
-        "water": "water_2026-07-25.png",
-        "radar": "radar_2026-07-25.webp"
+        "water": "water_2026-10-10.png",
+        "radar": "radar_2026-10-10.webp",
+        "newwater": "newwater_2026-10-10.png"
       },
       "stats": {
-        "open_water_km2": 3707.4,
-        "flooded_veg_km2": 1238.8,
-        "water_total_km2": 4946.2,
-        "threshold_db": -15.1,
-        "people_exposed": 69986
+        "open_water_km2": 193.4,
+        "flooded_veg_km2": 0.0,
+        "water_total_km2": 193.4,
+        "threshold_db": -24.0,
+        "new_water_km2": 193.4
       },
       "sources": [
-        "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260725T221500_20260725T221540_DEMO.h5"
+        "NISAR_L2_PR_GCOV_032_155_A_009_2005_DHDH_A_20261010T222847_20261010T222922_P05023_N_F_J_001.h5"
       ]
     },
     {
-      "date": "2026-08-18",
-      "label": "2026-08-18",
+      "date": "2026-10-22",
+      "label": "2026-10-22",
       "files": {
-        "water": "water_2026-08-18.png",
-        "radar": "radar_2026-08-18.webp"
+        "water": "water_2026-10-22.png",
+        "radar": "radar_2026-10-22.webp",
+        "newwater": "newwater_2026-10-22.png"
       },
       "stats": {
-        "open_water_km2": 5225.9,
-        "flooded_veg_km2": 1392.1,
-        "water_total_km2": 6618.0,
-        "threshold_db": -15.0,
-        "people_exposed": 207514
+        "open_water_km2": 165.1,
+        "flooded_veg_km2": 0.0,
+        "water_total_km2": 165.1,
+        "threshold_db": -24.0,
+        "new_water_km2": 165.1
       },
       "sources": [
-        "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260818T221500_20260818T221540_DEMO.h5"
-      ]
-    },
-    {
-      "date": "2026-08-30",
-      "label": "2026-08-30",
-      "files": {
-        "water": "water_2026-08-30.png",
-        "radar": "radar_2026-08-30.webp"
-      },
-      "stats": {
-        "open_water_km2": 6040.1,
-        "flooded_veg_km2": 1475.0,
-        "water_total_km2": 7515.1,
-        "threshold_db": -15.0,
-        "people_exposed": 375309
-      },
-      "sources": [
-        "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260830T221500_20260830T221540_DEMO.h5"
-      ]
-    },
-    {
-      "date": "2026-09-11",
-      "label": "2026-09-11",
-      "files": {
-        "water": "water_2026-09-11.png",
-        "radar": "radar_2026-09-11.webp"
-      },
-      "stats": {
-        "open_water_km2": 6874.4,
-        "flooded_veg_km2": 1534.0,
-        "water_total_km2": 8408.4,
-        "threshold_db": -15.0,
-        "people_exposed": 503825
-      },
-      "sources": [
-        "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260911T221500_20260911T221540_DEMO.h5"
-      ]
-    },
-    {
-      "date": "2026-09-23",
-      "label": "2026-09-23",
-      "files": {
-        "water": "water_2026-09-23.png",
-        "radar": "radar_2026-09-23.webp"
-      },
-      "stats": {
-        "open_water_km2": 7550.1,
-        "flooded_veg_km2": 1550.3,
-        "water_total_km2": 9100.4,
-        "threshold_db": -15.0,
-        "people_exposed": 564375
-      },
-      "sources": [
-        "SYNTHETIC_NISAR_L2_PR_GCOV_DEMO_20260923T221500_20260923T221540_DEMO.h5"
+        "NISAR_L2_PR_GCOV_033_155_A_009_2005_DHDH_A_20261022T222848_20261022T222922_P05023_N_F_J_001.h5"
       ]
     }
   ],
-  "exposure": {
-    "source": "SYNTHETIC_population_tonle-sap.tif",
-    "synthetic": true,
-    "note": "People per pixel summed where this layer shows change. A count of people living there, not of people harmed."
+  "baseline": {
+    "source": "JRC Global Surface Water 1984-2020 (EC JRC/Google), via Microsoft Planetary Computer",
+    "permanent_km2": 2549.6,
+    "agreement_pct": 0,
+    "note": "Agreement: the share of long-term water (present in 90% or more of 1984-2020 observations) that our radar method also maps as water, on a typical pass."
+  },
+  "landcover": {
+    "source": "ESA WorldCover 2021 (10 m, CC BY 4.0), via Microsoft Planetary Computer",
+    "peak_date": "2026-09-04",
+    "peak": [
+      {
+        "label": "Tree cover",
+        "color": "#006400",
+        "km2": 148.6
+      },
+      {
+        "label": "Grassland",
+        "color": "#ffff4c",
+        "km2": 26.1
+      },
+      {
+        "label": "Cropland",
+        "color": "#f096ff",
+        "km2": 18.8
+      }
+    ],
+    "by_frame": {
+      "2026-09-04": {
+        "Tree cover": 148.6,
+        "Grassland": 26.1,
+        "Cropland": 18.8
+      },
+      "2026-09-16": {
+        "Tree cover": 145.8,
+        "Grassland": 25.7,
+        "Cropland": 18.6
+      },
+      "2026-09-28": {
+        "Tree cover": 146.0,
+        "Grassland": 25.8,
+        "Cropland": 18.7
+      },
+      "2026-10-10": {
+        "Tree cover": 148.5,
+        "Grassland": 26.1,
+        "Cropland": 18.8
+      },
+      "2026-10-22": {
+        "Tree cover": 124.0,
+        "Grassland": 22.3,
+        "Cropland": 18.8
+      }
+    },
+    "note": "The kind of land under the changed area, from a 2021 map. Land use may have changed since."
+  },
+  "optical": {
+    "source": "ESA Copernicus Sentinel-2 L2A true colour, via Microsoft Planetary Computer",
+    "bounds": [
+      [
+        103.3,
+        13.7
+      ],
+      [
+        105.000385,
+        13.7
+      ],
+      [
+        105.000385,
+        11.899567
+      ],
+      [
+        103.3,
+        11.899567
+      ]
+    ],
+    "res": 86.0,
+    "frames": {
+      "2026-09-04": {
+        "file": "optical_2026-09-04.webp",
+        "date": "2026-08-27",
+        "dates": [
+          "2026-08-25",
+          "2026-08-27",
+          "2026-09-06"
+        ],
+        "cloud": 35,
+        "covered": 1.0
+      },
+      "2026-09-16": {
+        "file": "optical_2026-09-16.webp",
+        "date": "2026-09-16",
+        "dates": [
+          "2026-09-06",
+          "2026-09-16"
+        ],
+        "cloud": 39,
+        "covered": 1.0
+      },
+      "2026-09-28": {
+        "file": "optical_2026-09-28.webp",
+        "date": "2026-10-04",
+        "dates": [
+          "2026-09-29",
+          "2026-10-04",
+          "2026-10-06"
+        ],
+        "cloud": 44,
+        "covered": 0.79
+      },
+      "2026-10-10": {
+        "file": "optical_2026-10-10.webp",
+        "date": "2026-10-04",
+        "dates": [
+          "2026-10-04",
+          "2026-10-06",
+          "2026-10-11",
+          "2026-10-16"
+        ],
+        "cloud": 39,
+        "covered": 0.79
+      },
+      "2026-10-22": {
+        "file": "optical_2026-10-22.webp",
+        "date": "2026-10-16",
+        "dates": [
+          "2026-10-14",
+          "2026-10-16",
+          "2026-10-19",
+          "2026-10-26",
+          "2026-10-29"
+        ],
+        "cloud": 34,
+        "covered": 0.79
+      }
+    },
+    "note": "The clearest Sentinel-2 pass near each radar date. It can be several days away, so check its date."
   }
 }

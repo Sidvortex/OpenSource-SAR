@@ -104,6 +104,13 @@ export function applyOptical(map: maplibregl.Map, isoDate: string | null, before
   }
 }
 
+/** The Sentinel-2 photo for a frame, when the pipeline found a clear one; otherwise null (fall back to GIBS). */
+export function opticalOverlay(manifest: LayerManifest, index: number): Overlay | null {
+  const shot = manifest.optical?.frames[manifest.frames[index].date];
+  if (!shot || !manifest.optical) return null;
+  return { url: siteUrl(`data/layers/${manifest.hotspot}/${shot.file}`), coordinates: manifest.optical.bounds, opacity: 1 };
+}
+
 /** The image overlay for one frame and layer of a place. */
 export function overlayFor(manifest: LayerManifest, index: number, kind: string): Overlay {
   const frame = manifest.frames[index];

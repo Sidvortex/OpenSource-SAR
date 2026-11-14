@@ -110,6 +110,12 @@ export interface LayerManifest {
   } | null;
   bridged?: string[][];
   exposure?: { source: string; synthetic: boolean; note: string };
+  /** Sentinel-2 photos near each radar date, keyed by frame date (pipeline/planetary.py). */
+  optical?: { source: string; bounds: [[number, number], [number, number], [number, number], [number, number]]; note?: string;
+              frames: Record<string, { file: string; date: string; dates?: string[]; cloud: number; covered?: number }> };
+  baseline?: { source: string; permanent_km2: number; agreement_pct: number | null; note: string };
+  landcover?: { source: string; peak_date: string; note: string; peak: { label: string; color: string; km2: number }[];
+                by_frame: Record<string, Record<string, number>> };
 }
 
 export interface SeriesDef {

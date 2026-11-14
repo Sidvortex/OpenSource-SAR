@@ -127,7 +127,7 @@ export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, on
           ))}
           {onOptical && (
             <button type="button" aria-pressed={!!optical} onClick={() => onOptical(!optical)}
-              title="NASA MODIS true-colour image of the same day: see the clouds radar looks through">Optical</button>
+              title="A true-colour satellite photo near the same date: see the clouds radar looks through">Optical</button>
           )}
         </div>
       </div>
@@ -170,7 +170,14 @@ export function TimeBar({ manifest, index, onIndex, playing, onPlaying, kind, on
         </label>
       )}
       {optical ? (
-        <p className="legend">Optical: NASA MODIS (Terra) true colour on {frameLabel(current)}. White is cloud: the radar layers see through it.</p>
+        (() => {
+          const shot = manifest.optical?.frames[current.date];
+          return shot ? (
+            <p className="legend">Optical: ESA Sentinel-2 true colour taken {formatDate(shot.date)}{shot.dates && shot.dates.length > 1 ? ` (and ${shot.dates.length - 1} nearby ${shot.dates.length === 2 ? 'date' : 'dates'})` : ''}, about {shot.cloud}% cloud. It is the clearest pass near this radar date, not the same day.</p>
+          ) : (
+            <p className="legend">Optical: NASA MODIS (Terra) true colour on {frameLabel(current)}. White is cloud: the radar layers see through it.</p>
+          );
+        })()
       ) : <Legend layer={layer} />}
       {!!context?.events.length && (
         <p className="timebar-foot events-line">

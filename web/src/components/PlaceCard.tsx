@@ -97,6 +97,31 @@ export function PlaceCard({ spot, coverage, manifest, canInspect, explainData, r
           </section>
         );
       })()}
+      {manifest?.landcover && manifest.landcover.peak.length > 0 && (() => {
+        const lc = manifest.landcover;
+        const total = lc.peak.reduce((sum, row) => sum + row.km2, 0);
+        return (
+          <section className="card-section" aria-labelledby="landcover-title">
+            <h3 id="landcover-title" className="card-subtitle">What kind of land changed</h3>
+            <div className="lc-bar" role="img" aria-label={lc.peak.map((r) => `${r.label} ${Math.round((100 * r.km2) / total)}%`).join(', ')}>
+              {lc.peak.map((r) => <span key={r.label} style={{ width: `${(100 * r.km2) / total}%`, background: r.color }} />)}
+            </div>
+            <ul className="lc-list">{lc.peak.slice(0, 5).map((r) => (
+              <li key={r.label}><span className="lc-dot" style={{ background: r.color }} />{r.label}<strong>{r.km2.toLocaleString('en')} km²</strong></li>
+            ))}</ul>
+            <p className="fineprint">At the peak, {lc.peak_date}. {lc.note} Source: {lc.source}.</p>
+          </section>
+        );
+      })()}
+      {manifest?.baseline && (
+        <section className="card-section" aria-labelledby="baseline-title">
+          <h3 id="baseline-title" className="card-subtitle">Compared with 1984 to 2020</h3>
+          <p className="card-people"><strong>{manifest.baseline.permanent_km2.toLocaleString('en')} km²</strong> here is usually water. The "New water" layer shows only what lies beyond it.</p>
+          {manifest.baseline.agreement_pct !== null && (
+            <p className="fineprint">Check: our radar method finds {manifest.baseline.agreement_pct}% of that long-term water on a typical pass. Source: {manifest.baseline.source}.</p>
+          )}
+        </section>
+      )}
       {reports.length > 0 && (
         <section className="card-section" aria-labelledby="reports-title">
           <h3 id="reports-title" className="card-subtitle">Ground reports here</h3>

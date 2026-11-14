@@ -28,6 +28,9 @@ Watch Earth's surface dance: sinking cities, swelling lakes, burning forests, gr
 | Also happened | Earthquakes (USGS, M4.5+) and fires (NASA FIRMS, optional free key) marked on the time chart, with daily rain (Open-Meteo) as bars |
 | Radar vs optical | An "Optical" button swaps the radar layer for NASA GIBS true colour on the same date, on the globe and in 3D, to show the clouds radar sees through |
 | People on changed ground | WorldPop or GHSL population summed where water, fire or ground motion changed (a count of residents, not of people harmed) |
+| Sharp optical photos | ESA Sentinel-2 (10 m) for the Optical button, the clearest pass near each radar date; NASA MODIS fills any gap |
+| New water vs usual water | A "New water" layer and statistic: radar water beyond what was water in 1984 to 2020 (JRC Global Surface Water), plus a check of our method against that record |
+| What kind of land changed | Cropland, built-up, forest and so on under the changed area (ESA WorldCover) |
 | MintPy import | Brings a corrected MintPy time series in as a ground-motion place |
 | Ground reports on the map | GitHub issues from the report form appear as pins, and in the place card |
 | Real-data smoke test | Downloads one small real product per type and tests our readers |
@@ -60,6 +63,7 @@ Check any area with `python pipeline/coverage_check.py --name my-area --wkt "POL
 | Extra | Command |
 | --- | --- |
 | Context events and rain | `python pipeline/context.py [--hotspot X]` (set `FIRMS_MAP_KEY` for fires) |
+| Sentinel-2 photos, water history, land cover | `python pipeline/planetary.py all --hotspot X` (free, no account) |
 | People on changed ground | `python pipeline/exposure.py --hotspot X --population worldpop.tif` |
 | MintPy time series | `python pipeline/mintpy_import.py --hotspot X --timeseries geo_timeseries.h5 --velocity geo_velocity.h5` |
 | Ground reports | `python pipeline/reports.py` |
@@ -70,7 +74,7 @@ Check any area with `python pipeline/coverage_check.py --name my-area --wkt "POL
 data/        hotspots, coverage, explain.json, stories.json, manifest.schema.json, reports.json,
              layers/<place>/ (manifest, images, series, context.json), stac/, feed.xml
 pipeline/    coverage checks; nisar_io (HDF5 reader); water_dance, quake + ground + gnss, backscatter, ice;
-             dance (classifier); layers (shared output); context, exposure, mintpy_import, reports;
+             dance (classifier); layers (shared output); fetch (resumable downloads); planetary; context, exposure, mintpy_import, reports;
              smoke_test; stac; validate; build_demos; tests/
 web/         React + TypeScript + Vite + MapLibre app; src/dance.ts mirrors pipeline/dance.py
 server/      optional FastAPI companion (Docker); the site never depends on it
@@ -81,7 +85,7 @@ server/      optional FastAPI companion (Docker); the site never depends on it
 
 Our code: MIT. MapLibre GL JS (BSD-3-Clause), React (MIT), Vite (MIT), TypeScript (Apache-2.0), Archivo and Source Serif 4 (SIL OFL), asf_search, NumPy, SciPy, h5py, rasterio (BSD-3-Clause), GDAL (MIT), matplotlib (PSF-based), Pillow (MIT-CMU), FastAPI (MIT), Uvicorn (BSD-3-Clause), jsonschema (MIT), pytest (MIT). MintPy (GPL-3.0) is an optional separate tool; we only read its output files.
 
-Data: NISAR (NASA/JPL and ISRO, via ASF DAAC, free); OpenFreeMap basemap with OpenStreetMap data (ODbL); Natural Earth (public domain); AWS Open Data Terrain Tiles; GNSS format from the Nevada Geodetic Laboratory; USGS earthquake catalogue (public domain); weather data by Open-Meteo.com (CC BY 4.0); NASA GIBS imagery and NASA FIRMS fire data (free and open; NASA asks for attribution, which the app shows); WorldPop (CC BY 4.0) or JRC GHSL population. Open Source SAR is informational, not an official warning system.
+Data: NISAR (NASA/JPL and ISRO, via ASF DAAC, free); OpenFreeMap basemap with OpenStreetMap data (ODbL); Natural Earth (public domain); AWS Open Data Terrain Tiles; GNSS format from the Nevada Geodetic Laboratory; USGS earthquake catalogue (public domain); weather data by Open-Meteo.com (CC BY 4.0); NASA GIBS imagery and NASA FIRMS fire data (free and open; NASA asks for attribution, which the app shows); WorldPop (CC BY 4.0) or JRC GHSL population; and, through Microsoft's Planetary Computer (free and public, a Space Apps Global Offer): Copernicus Sentinel-2 (ESA), JRC Global Surface Water (EC JRC/Google) and ESA WorldCover (CC BY 4.0). Open Source SAR is informational, not an official warning system.
 
 Ideas we've parked because they cost money (a SatDump ground station, a desk display) are in [ROADMAP.md](ROADMAP.md). The project page text and video script are in [SUBMISSION.md](SUBMISSION.md).
 

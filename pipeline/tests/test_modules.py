@@ -54,3 +54,17 @@ def test_reports_parse_issue_form():
     assert (r["lat"], r["lon"], r["kind"], r["date"]) == (12.85, 104.05, "Flooding", "2026-10-01")
     assert reports.parse({**issue, "pull_request": {}}) is None
     assert reports.parse({**issue, "body": "### Place\n\nnear the market"})["lat"] is None
+
+
+def test_pick_pairs_prefers_event_spanning_shortest():
+    import coverage_check as cc
+
+    class R:
+        def __init__(self, a, b):
+            self.properties = {"sceneName": f"NISAR_L2_PR_GUNW_X_{a}T000000_{a}T000010_{b}T000000_{b}T000010_P"}
+
+    rs = [R("20260716", "20260728"), R("20260618", "20260630"), R("20260606", "20260630"), R("20260704", "20260716")]
+    picked = [cc.acquisition_dates(r.properties)[0].isoformat() for r in cc.pick_pairs(rs, 3, "2026-06-24")]
+    assert picked == ["2026-06-18", "2026-06-06", "2026-07-16"]
+    newest = [cc.acquisition_dates(r.properties)[0].isoformat() for r in cc.pick_pairs(rs, 2)]
+    assert newest == ["2026-07-16", "2026-07-04"]

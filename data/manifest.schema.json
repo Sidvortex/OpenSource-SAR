@@ -37,6 +37,11 @@
                              "confidence": {"enum": ["high", "medium", "low"]}}},
     "validation": {"type": ["object", "null"]},
     "exposure": {"type": "object", "required": ["source", "synthetic"]},
+    "optical": {"type": "object", "required": ["source", "bounds", "frames"],
+                "properties": {"frames": {"type": "object", "additionalProperties": {
+                  "type": "object", "required": ["file", "date", "cloud"]}}}},
+    "baseline": {"type": "object", "required": ["source", "permanent_km2"]},
+    "landcover": {"type": "object", "required": ["source", "peak_date", "peak", "by_frame"]},
     "bridged": {"type": "array"}
   },
   "$defs": {

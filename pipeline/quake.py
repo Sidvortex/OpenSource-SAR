@@ -124,11 +124,17 @@ def cmd_download(args):
     results = cc.search("GUNW", area, args.maturity, include_ur=False)
     if not results:
         sys.exit("No GUNW products found. Run update_coverage.py to check this area.")
-    print(f"Found {len(results)} GUNW products; downloading up to {args.max}.")
+    chosen = cc.pick_pairs(results, args.max, spot.get("event"))
+    def spans_event(r):
+        d = [x.isoformat() for x in cc.acquisition_dates(r.properties)]
+        return bool(d) and d[0] < spot["event"] <= d[-1]
+    spans = sum(1 for r in chosen if spot.get("event") and spans_event(r))
+    print(f"Found {len(results)} GUNW products; downloading {len(chosen)}"
+          + (f" ({spans} spanning the {spot['event']} event)." if spot.get("event") else ", newest first."))
     out = WORK / spot["id"]
     out.mkdir(parents=True, exist_ok=True)
     session = earthdata_session()
-    for result in list(results)[:args.max]:
+    for result in chosen:
         print(f"  {result.properties.get('sceneName')}")
         result.download(path=str(out), session=session)
     print(f"Saved to {out}. Next: python pipeline/quake.py process --hotspot {spot['id']}")

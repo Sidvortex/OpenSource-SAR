@@ -30,7 +30,7 @@ The ten-part plan is built, along with the final-version extras: context events,
 - **Landslide hazard fusion:** motion, slope, rainfall (we already fetch it) and land cover, trained on NASA's Global Landslide Catalog and labelled experimental.
 - **Fault-slip sketch** for Venezuela: an Okada elastic model fitted to the coseismic map.
 - **Buildings on changing ground:** add open building footprints (Overture, Microsoft, Google) beside the population count.
-- **Longer history:** Sentinel-1 (ESA) before NISAR, clearly labelled; ISRO S-band beside L-band for crops.
+- **Longer history:** Sentinel-1 (ESA) before NISAR, through the Planetary Computer, clearly labelled; ISRO S-band beside L-band for crops.
 
 ## Product upgrades
 

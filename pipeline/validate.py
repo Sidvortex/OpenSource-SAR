@@ -30,6 +30,9 @@ def problems_for(folder, validator, index):
                 out.append(f"frame {i}: file key '{key}' has no matching layer")
             if not (folder / name).exists():
                 out.append(f"frame {i}: missing file {name}")
+    for day, shot in manifest.get("optical", {}).get("frames", {}).items():
+        if not (folder / shot["file"]).exists():
+            out.append(f"optical {day}: missing file {shot['file']}")
     series = manifest.get("series")
     if series:
         expected = series["count"] * series["height"] * series["width"] * 4

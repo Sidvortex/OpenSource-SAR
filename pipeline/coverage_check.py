@@ -90,6 +90,25 @@ def search(product, area, maturity, include_ur):
     return asf.search(**kwargs)
 
 
+def pick_pairs(results, count, event=None):
+    """Choose which pair products to download.
+
+    With an event date: pairs that span it come first, shortest span first (the cleanest
+    before/after), then the newest of the rest. Without one: the newest pairs.
+    """
+    from datetime import date as _date
+    event = _date.fromisoformat(event) if isinstance(event, str) else event
+    def dates(r):
+        d = acquisition_dates(r.properties)
+        return (d[0], d[-1]) if d else (None, None)
+    rows = [(r, *dates(r)) for r in results]
+    rows = [row for row in rows if row[1] is not None]
+    spanning = [] if event is None else sorted(
+        (row for row in rows if row[1] < event <= row[2]), key=lambda row: (row[2] - row[1], row[1]))
+    rest = sorted((row for row in rows if row not in spanning), key=lambda row: row[1], reverse=True)
+    return [row[0] for row in (spanning + rest)[:count]]
+
+
 def acquisition_dates(props):
     """Distinct acquisition dates in the scene name (pair products carry two passes)."""
     found = sorted({datetime.strptime(d, "%Y%m%d").date()

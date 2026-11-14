@@ -13,7 +13,7 @@ import type { Story, StoryStep } from './components/StoryMode';
 import { TimeBar } from './components/TimeBar';
 import { MODULE_ORDER } from './catalog';
 import type { ExplainData } from './explain';
-import { overlayFor, siteUrl } from './mapStyle';
+import { opticalOverlay, overlayFor, siteUrl } from './mapStyle';
 import type { Overlay } from './mapStyle';
 import { loadSeries, pixelAt } from './series';
 import type { Pick, SeriesData } from './series';
@@ -132,11 +132,13 @@ export default function App() {
   }, [playing, manifest]);
 
   const overlay = useMemo<Overlay | null>(() => {
-    if (!manifest || showcase || optical || manifest.hotspot !== selectedId) return null;
+    if (!manifest || showcase || manifest.hotspot !== selectedId) return null;
+    if (optical) return opticalOverlay(manifest, Math.min(dateIndex, manifest.frames.length - 1));
     return overlayFor(manifest, Math.min(dateIndex, manifest.frames.length - 1), kind);
   }, [manifest, dateIndex, kind, showcase, selectedId, optical]);
 
-  const opticalDate = optical && manifest && !showcase && manifest.hotspot === selectedId
+  // NASA's daily MODIS image fills in wherever there is no Sentinel-2 photo for the frame.
+  const opticalDate = optical && !overlay && manifest && !showcase && manifest.hotspot === selectedId
     ? manifest.frames[Math.min(dateIndex, manifest.frames.length - 1)].date : null;
 
   const reportPins = useMemo<FeatureCollection>(() => ({

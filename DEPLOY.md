@@ -89,6 +89,20 @@ git add data && git commit -m "Real NISAR water layers for Tonle Sap" && git pus
 - **GNSS checks:** put Nevada Geodetic Laboratory tenv3 files in `data/gnss/<place>/`, and `quake.py process` compares them.
 - **The synthetic banner disappears on its own:** real manifests say `"synthetic": false`.
 
+### Sharper photos, water history and land cover (Planetary Computer)
+
+Microsoft's Planetary Computer is one of this year's Space Apps Global Offers. Its catalogue is public, so this needs no account, key or card:
+
+```bash
+python pipeline/planetary.py all --hotspot tonle-sap
+```
+
+- **optical:** the clearest ESA Sentinel-2 photo near each radar date, for the Optical button.
+- **water-history** (water places): a "New water" layer, from 36 years of JRC records.
+- **landcover** (water, fire and ground places): what kind of land changed, from ESA WorldCover.
+
+Order matters, because rebuilding a place's radar layers wipes these additions. I always run: process, then `planetary.py all`, then `exposure.py`, then `context.py`. Anonymous access is rate limited; if it gets slow, wait a minute and run it again.
+
 ### Better ground motion with MintPy
 
 For the sinking-city heroes, I'd like us to run MintPy (free, GPL-3.0, a separate tool) on the GUNW stack and import its corrected time series:
@@ -133,6 +147,7 @@ The API adds coverage for any box and on-demand processing. It is bound to local
 | --- | --- |
 | Blank globe | The basemap is blocked; the offline outlines should appear. Check the console for `tiles.openfreemap.org` |
 | Optical shows nothing | GIBS has no image for that date yet (a day or two of latency), or zoom is past level 9 |
+| Optical still looks blurry | No clear Sentinel-2 pass near that date, so it fell back to MODIS. Try `planetary.py optical --days 20 --max-cloud 80` |
 | No earthquakes or rain | Run the Weekly update; it keeps last week's context if the services are down |
 | No ground reports | The issues need the `ground-report` label and a "lat, lon" in the Place field |
 | "Couldn't match the layer grid" | Rebuild the place's layers; new manifests record `grid_res` |
