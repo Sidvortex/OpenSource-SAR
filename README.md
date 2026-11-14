@@ -1,6 +1,6 @@
 # Open Source SAR
 
-Watch Earth's surface dance: sinking cities, swelling lakes, burning forests, growing crops and surging glaciers, measured by the NASA-ISRO NISAR radar every 12 days. Repository: https://github.com/Sidvortex/OpenSource-SAR. Built for the NASA Space Apps Challenge 2026, "Dancing with the SARs".
+Watch Earth's surface dance: sinking cities, swelling lakes, burning forests, growing crops and surging glaciers, measured by the NASA-ISRO NISAR radar every 12 days. Repository: https://github.com/Sidvortex/OpenSource-SAR. Live site: https://sidvortex.github.io/OpenSource-SAR/. Demo slides: [docs/OpenSource-SAR-demo.pdf](docs/OpenSource-SAR-demo.pdf). Built for the NASA Space Apps Challenge 2026, "Dancing with the SARs".
 
 **Motto: free and open, end to end.** Every line of code is open source (MIT), every dataset is free, and nothing costs money: no paid APIs, no API keys in the app, no server bill.
 

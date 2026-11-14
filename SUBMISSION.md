@@ -1,6 +1,6 @@
 # Space Apps submission: Open Source SAR
 
-*Written by Mind (Ravada Siddharth), team lead. One section per field of the Space Apps project form, in the form's order. Paste each one as it is, and fill in the two bracketed links and the team names.*
+*Written by Mind (Ravada Siddharth), team lead. One section per field of the Space Apps project form, in the form's order. Paste each one as it is.*
 
 - **Challenge:** Dancing with the SARs
 - **Repository:** https://github.com/Sidvortex/OpenSource-SAR
@@ -22,7 +22,9 @@ Open Source SAR is a free, open-source web app and data pipeline that lets anyon
 
 ## Link to Project Demo
 
-[link to the 7-slide presentation PDF, e.g. https://github.com/Sidvortex/OpenSource-SAR/blob/main/docs/OpenSource-SAR-demo.pdf]
+https://github.com/Sidvortex/OpenSource-SAR/blob/main/docs/OpenSource-SAR-demo.pdf
+
+(A 7-slide presentation: title, the problem, what we built, how it works, context, accessibility, and free and open.)
 
 ---
 
@@ -171,5 +173,5 @@ All project code and text are our own (MIT licence), written with the AI assista
 ## Team
 
 - **Mind (Ravada Siddharth):** team lead, pipeline and deployment.
-- **[Teammate 2]:** [role]
-- **[Teammate 3]:** [role]
+
+Teammates are listed on our Space Apps team page.
