@@ -60,9 +60,18 @@ export default function App() {
   const [showcase, setShowcase] = useState(false);
   const [context, setContext] = useState<PlaceContext | null>(null);
   const [optical, setOptical] = useState(false);
+  const [sheetPeek, setSheetPeek] = useState(false);     // phones: shrink the bottom sheet to see more map
+  useEffect(() => { setSheetPeek(false); }, [selectedId]);
   const [reports, setReports] = useState<GroundReport[]>([]);
   const [seriesData, setSeriesData] = useState<SeriesData | null>(null);
   const [pick, setPick] = useState<Pick | null>(null);
+  useEffect(() => {
+    // Phones: a tapped spot's history opens in the sheet, so bring it into view.
+    if (!pick || window.innerWidth > 900) return;
+    setSheetPeek(false);
+    const t = window.setTimeout(() => document.querySelector('.inspector')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 150);
+    return () => window.clearTimeout(t);
+  }, [pick]);
   const [explainData, setExplainData] = useState<ExplainData | null>(null);
   const [stories, setStories] = useState<Story[]>([]);
   const [story, setStory] = useState<{ story: Story; step: number } | null>(null);
@@ -221,7 +230,7 @@ export default function App() {
   const selected = hotspots.find((h) => h.id === selectedId) ?? null;
   const placeManifest = manifest && manifest.hotspot === selectedId ? manifest : null;
   return (
-    <main className="app">
+    <main className={`app${selected && !areaMode ? ' has-place' : ''}${sheetPeek ? ' sheet-peek' : ''}`}>
       <Globe hotspots={hotspots} visibleIds={visibleIds} selectedId={selectedId} onSelect={select} overlay={overlay}
         onMapClick={onMapClick} pick={pick && !showcase ? [pick.lng, pick.lat] : null}
         drawBox={areaMode ? box : null} onReady={(m) => { mapRef.current = m; }}
@@ -237,19 +246,24 @@ export default function App() {
         onArea={() => { setSelectedId(null); setCorners([]); setAreaMode(true); setSheetOpen(false); }}
       />
       {selected && !areaMode && (
+        <div className="place-sheet">
+        {/* On phones the time bar and the card share one bottom sheet; on wide screens this wrapper has no box. */}
+        <button type="button" className="sheet-handle" onClick={() => setSheetPeek((v) => !v)}
+          aria-label={sheetPeek ? 'Show the details' : 'Show more of the map'} aria-expanded={!sheetPeek} />
+        {placeManifest && !showcase && (
+          <TimeBar manifest={placeManifest} index={Math.min(dateIndex, placeManifest.frames.length - 1)} onIndex={setDateIndex}
+            playing={playing} onPlaying={setPlaying} kind={kind} onKind={setKind} onSnapshot={snapshot}
+            context={context} optical={optical} onOptical={setOptical} />
+        )}
         <PlaceCard spot={selected} coverage={coverage} manifest={placeManifest} explainData={explainData}
           reports={reports.filter((r) => r.lat !== null && r.lon !== null && r.lon >= selected.bbox[0] && r.lon <= selected.bbox[2] && r.lat >= selected.bbox[1] && r.lat <= selected.bbox[3])}
           canInspect={!!seriesData && !!placeManifest}
           inspector={placeManifest && seriesData && pick ? <Inspector manifest={placeManifest} data={seriesData} pick={pick} onClose={() => setPick(null)} /> : null}
           onOpen3D={() => { setPlaying(false); setShowcase(true); }}
           onClose={() => setSelectedId(null)} />
+        </div>
       )}
       {areaMode && <AreaCheck box={box} onClose={() => { setAreaMode(false); setCorners([]); }} />}
-      {placeManifest && !showcase && (
-        <TimeBar manifest={placeManifest} index={Math.min(dateIndex, placeManifest.frames.length - 1)} onIndex={setDateIndex}
-          playing={playing} onPlaying={setPlaying} kind={kind} onKind={setKind} onSnapshot={snapshot}
-          context={context} optical={optical} onOptical={setOptical} />
-      )}
       {story && (
         <StoryMode story={story.story} step={story.step}
           onStep={(i) => goToStep(story.story, i)} onExit={() => setStory(null)} />

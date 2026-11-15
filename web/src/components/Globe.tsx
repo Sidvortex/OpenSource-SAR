@@ -161,7 +161,7 @@ export function Globe({ hotspots, visibleIds, selectedId, onSelect, overlay, onM
     map.fitBounds([[w, s], [e, n]], {
       padding: wide
         ? { top: 60, bottom: 280, left: 400, right: 440 }
-        : { top: 40, bottom: window.innerHeight * 0.5, left: 30, right: 30 },
+        : { top: 24, bottom: window.innerHeight * 0.6, left: 24, right: 24 },   // the bottom sheet covers 58%
       maxZoom: 9,
       duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 2200,
     });

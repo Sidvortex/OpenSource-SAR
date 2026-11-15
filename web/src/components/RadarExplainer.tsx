@@ -48,8 +48,8 @@ export default function RadarExplainer({ onClose }: { onClose: () => void }) {
             <rect x="142" y="50" width="16" height="58" fill="#7a5a3a" />
             <ellipse cx="150" cy="45" rx="70" ry="38" fill="#5f9a4e" />
             <line x1="60" y1="0" x2="60" y2={8 + b.depth * 100} stroke="#1f8fd1" strokeWidth="6" strokeLinecap="round" />
-            <text x="72" y="16" fontSize="11" fill="#1a2233">{b.note}</text>
           </svg>
+          <p className="lesson-note" aria-live="polite">{b.note}</p>
         </section>
 
         <section className="lesson">
