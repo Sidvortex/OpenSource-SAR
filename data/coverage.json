@@ -1,21 +1,21 @@
 {
-  "checked": "2026-11-09",
+  "checked": "2026-11-16",
   "maturity": "PROVISIONAL",
   "hotspots": {
     "venezuela-coast": {
       "verdict": "pass",
-      "score": 2,
+      "score": 6,
       "need": 1,
       "rule": "12-day GUNW pairs spanning the Jun 24 earthquakes",
       "products": {
         "GUNW": {
           "stacks": 6,
-          "items": 28,
+          "items": 34,
           "best_stack": "T162 F6 ASCENDING",
-          "best_items": 5,
+          "best_items": 6,
           "first": "2026-05-20",
           "last": "2026-08-21",
-          "size_gb": 64.4
+          "size_gb": 78.2
         },
         "GCOV": {
           "stacks": 6,
@@ -37,12 +37,12 @@
       "products": {
         "GUNW": {
           "stacks": 5,
-          "items": 40,
-          "best_stack": "T19 F11 ASCENDING",
+          "items": 43,
+          "best_stack": "T113 F78 DESCENDING",
           "best_items": 9,
           "first": "2026-06-10",
           "last": "2026-10-20",
-          "size_gb": 94.7
+          "size_gb": 101.7
         },
         "GCOV": {
           "stacks": 5,
@@ -58,18 +58,18 @@
     },
     "jakarta": {
       "verdict": "pass",
-      "score": 8,
+      "score": 9,
       "need": 6,
       "rule": "back-to-back 12-day GUNW pairs on one track and frame",
       "products": {
         "GUNW": {
           "stacks": 5,
-          "items": 40,
-          "best_stack": "T10 F174 ASCENDING",
-          "best_items": 8,
-          "first": "2026-06-26",
+          "items": 41,
+          "best_stack": "T82 F175 ASCENDING",
+          "best_items": 9,
+          "first": "2026-06-19",
           "last": "2026-10-17",
-          "size_gb": 93.7
+          "size_gb": 96.0
         },
         "GCOV": {
           "stacks": 5,
@@ -91,12 +91,12 @@
       "products": {
         "GUNW": {
           "stacks": 4,
-          "items": 33,
+          "items": 36,
           "best_stack": "T136 F70 DESCENDING",
           "best_items": 9,
-          "first": "2026-06-23",
+          "first": "2026-06-18",
           "last": "2026-10-21",
-          "size_gb": 79.1
+          "size_gb": 86.1
         },
         "GCOV": {
           "stacks": 4,
@@ -118,12 +118,12 @@
       "products": {
         "GUNW": {
           "stacks": 9,
-          "items": 77,
+          "items": 80,
           "best_stack": "T106 F20 ASCENDING",
           "best_items": 10,
           "first": "2026-06-05",
           "last": "2026-10-21",
-          "size_gb": 182.7
+          "size_gb": 189.7
         },
         "GCOV": {
           "stacks": 9,
@@ -139,18 +139,18 @@
     },
     "joshimath": {
       "verdict": "pass",
-      "score": 9,
+      "score": 10,
       "need": 6,
       "rule": "back-to-back 12-day GUNW pairs on one track and frame",
       "products": {
         "GUNW": {
           "stacks": 4,
-          "items": 33,
-          "best_stack": "T106 F73 DESCENDING",
-          "best_items": 9,
+          "items": 35,
+          "best_stack": "T55 F17 ASCENDING",
+          "best_items": 10,
           "first": "2026-06-06",
           "last": "2026-10-20",
-          "size_gb": 79.0
+          "size_gb": 83.7
         },
         "GCOV": {
           "stacks": 4,
@@ -199,12 +199,12 @@
       "products": {
         "GUNW": {
           "stacks": 2,
-          "items": 15,
+          "items": 16,
           "best_stack": "T152 F68 DESCENDING",
           "best_items": 8,
-          "first": "2026-06-24",
+          "first": "2026-06-17",
           "last": "2026-10-15",
-          "size_gb": 30.2
+          "size_gb": 32.5
         },
         "GCOV": {
           "stacks": 2,
@@ -409,18 +409,18 @@
     },
     "shisper": {
       "verdict": "pass",
-      "score": 8,
+      "score": 9,
       "need": 4,
       "rule": "GOFF pixel-offset pairs on one track and frame",
       "products": {
         "GOFF": {
           "stacks": 3,
-          "items": 22,
+          "items": 25,
           "best_stack": "T55 F20 ASCENDING",
-          "best_items": 8,
-          "first": "2026-06-30",
+          "best_items": 9,
+          "first": "2026-06-18",
           "last": "2026-10-16",
-          "size_gb": 24.6
+          "size_gb": 27.8
         },
         "GCOV": {
           "stacks": 3,
@@ -442,12 +442,12 @@
       "products": {
         "GOFF": {
           "stacks": 6,
-          "items": 48,
+          "items": 51,
           "best_stack": "T131 F37 ASCENDING",
           "best_items": 9,
-          "first": "2026-06-23",
+          "first": "2026-06-18",
           "last": "2026-10-21",
-          "size_gb": 45.5
+          "size_gb": 48.3
         },
         "GCOV": {
           "stacks": 6,
